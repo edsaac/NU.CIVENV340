@@ -1,3 +1,7 @@
+.math {
+    font-size: 1.2rem;
+}
+
 tr .math {
     font-size: 0.8rem;
 }
@@ -16,6 +20,7 @@ iframe {
     display: block;
     margin-left: auto;
     margin-right: auto;
+    border-radius: 2%;
 }
 
 [data-testid="stCaptionContainer"] {
@@ -28,6 +33,7 @@ img {
     display: block;
     margin-left: auto;
     margin-right: auto;
+    border-radius: 5px;
 }
 
 [data-testid="stImage"] {

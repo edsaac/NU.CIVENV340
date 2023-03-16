@@ -35,6 +35,13 @@ with st.sidebar:
     Pearson Education Inc., Boston.
     """
 
+    "*****"
+    with st.expander("🧷 Practice excercises (HW1):"):
+        r"""
+        - Units: 1.3.4
+        - Viscosity measurement: 1.4.10
+        - Dam stability: 2.5.2 + What is uplift and how does it affect dam stability?
+        """
 ####################################################################
     
 if option == "System of units":
@@ -307,7 +314,6 @@ elif option == "Water properties":
     """
     - What is a `stokes`? 
     - Who was GG Stoke? 🇬🇧 
-    - HW: 1.4.10
     """)
 
 elif option == "Fluid classification":
@@ -484,7 +490,6 @@ elif option == "Pressure and head":
     st.info(
         """
         - What are the center of gravity (CG) and the center of pressure (CP) on a surface?
-        - HW: 2.5.2
         """
     )
 
