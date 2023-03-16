@@ -5,24 +5,10 @@ import numpy as np
 
 st.set_page_config(layout='centered')
 
-st.markdown("""
-<style>
+with open("assets/style.css") as f:
+    st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
 
-tr .math {
-    font-size: 0.8rem;
-}
-
-table {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-h1 {
-    font-size: 2rem;
-    text-align: center;
-}
-</style>
-""", unsafe_allow_html=True)
+#####################################################################
 
 st.title("CIV-ENV 340: Hydraulics and hydrology")
 "****"
@@ -32,23 +18,24 @@ with st.sidebar:
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_w9GTXN.json"  background="transparent"  speed="1"  style="width: 200px; height: 100px;"  loop  autoplay></lottie-player>
     """
-    st.components.v1.html(lottie, width=310, height=100)
+    st.components.v1.html(lottie, width=200, height=100)
 
     "## Week 1"
     "### Select a topic:"
     option = st.radio("Select a topic:",
         ["System of units", "Water properties", "Fluid classification", "Pressure and head", "Mass & energy"],
         label_visibility="collapsed")
+    
+    "***"
+    st.image("https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/syndetics.com/index.php?client=primo&isbn=9780134292380/sc.jpg")
+    
     r"""
-    ***
-    ### Class textbook:
+    #### Class textbook:
+    [🌐](https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9980502032702441]) *Houghtalen, Akan & Hwang* (2017). **Fundamentals of hydraulic engineering systems** 5th ed.,
+    Pearson Education Inc., Boston.
     """
-    cols = st.columns([1,2])
-    with cols[0]: st.image("https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/syndetics.com/index.php?client=primo&isbn=9780134292380/sc.jpg")
-    with cols[1]: 
-        r"""[🌐](https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9980502032702441]) *Houghtalen, et al.*, **Fundamentals of hydraulic engineering systems** Fifth edition (2017),
-        Boston. Pearson.
-        """
+
+####################################################################
     
 if option == "System of units":
 
@@ -153,8 +140,16 @@ elif option == "Water properties":
 
     r"""
     ****
-    ## Dynamic Viscosity $\mu_{(T)}$
+    ## Dynamic Viscosity $\mu(T)$
+
+    $$
+        \tau = \mu \dfrac{\partial u}{\partial y} 
+    $$
     """
+
+    with st.expander("🖼️ **Viscosity diagram**"):
+        st.image("https://upload.wikimedia.org/wikipedia/commons/9/93/Laminar_shear.svg", use_column_width=True)
+        st.caption("*Source* [🛸](https://en.wikipedia.org/wiki/Viscosity)")
 
     viscosity = pd.read_excel("week_01/properties.xlsx", sheet_name="Viscosity")
     viscosity["Water viscosity (μ) [SI]"] = viscosity["Water viscosity (μ) [SI]"] * 1e-3  # Convert to N.s/m²
@@ -312,6 +307,7 @@ elif option == "Water properties":
     """
     - What is a `stokes`? 
     - Who was GG Stoke? 🇬🇧 
+    - HW: 1.4.10
     """)
 
 elif option == "Fluid classification":
@@ -321,14 +317,27 @@ elif option == "Fluid classification":
 
     ### Compressible | Non-compressible
 
-    Does the fluid density depend on pressure?
+    Does the fluid density change with changes on pressure?
+    """
     
-
+    with st.expander("🧮 As math:"):
+        
+        r"""
+        $$
+            \textsf{Compressibility}: \quad \beta = \dfrac{1}{\rho} \left(\dfrac{\partial \rho}{\partial p}\right)
+        $$
+        """
+    
+    r"""
     ### Newtonian | Non-newtonian
 
-    Does the fluid viscosity depend on the shear stress?
+    Does the fluid viscosity change with changes on the shear stress?
 
     """
+    with st.expander("🖼️ **Non-newtonian fluids**"):
+        st.image("https://upload.wikimedia.org/wikipedia/commons/8/89/Rheology_of_time_independent_fluids.svg", use_column_width=True)
+        st.caption("*Source* [🛸](https://en.wikipedia.org/wiki/Non-Newtonian_fluid)")
+
 
     r"""
     *****
@@ -347,19 +356,33 @@ elif option == "Fluid classification":
 
     Are viscous stresses dominant over the flow inertia?
 
-    **Reynolds number:**
+    **Reynolds number $R_e$:**
     $$
         R_e = \dfrac{\textrm{Inertial forces}}{\textrm{Viscous forces}} = \dfrac{uL}{\nu}
     $$
+
+    | Parameter | Symbol   | Units  |
+    |:---------|:--------:|:------------------:|
+    |Characteristic length   | $L$   | Length        | 
+    |Characteristic velocity | $u$    | Length/Time  |
+    |Kinematic viscosity | $\nu$    | Area/Time  | 
+
+    &nbsp;
 
     ### Subcritical/supercritical
 
     Are body forces dominant over the flow inertia?
 
-    **Froude number:**
+    **Froude number $F_r$**
     $$
         F_r = \dfrac{\textrm{Inertial forces}}{\textrm{Body forces}} = \dfrac{u}{\sqrt{gL}}
     $$
+
+    | Parameter | Symbol   | Units  |
+    |:---------|:--------:|:------------------:|
+    |Characteristic length   | $L$   | Length        | 
+    |Characteristic velocity | $u$    | Length/Time  |
+    |Gravitational acceleration | $g$    | Length/Time²  | 
 
     """
 
@@ -461,7 +484,7 @@ elif option == "Pressure and head":
     st.info(
         """
         - What are the center of gravity (CG) and the center of pressure (CP) on a surface?
-        - Check Problem 2.5.2
+        - HW: 2.5.2
         """
     )
 
@@ -530,11 +553,11 @@ elif option == "Mass & energy":
     |$H$| Total head | ${\rm m}$|
     |$h$| Elevation head | ${\rm m}$|
     |$p/\gamma$| Pressure head | ${\rm m}$|
-    |$V/2g$| Velocity head | ${\rm m}$|
+    |$V^2/2g$| Velocity head | ${\rm m}$|
 
     &nbsp;
 
-    For a pipe with a uniform size $V_1 = V_2$
+    For a pipe of uniform size $V_1 = V_2$
 
     $$
         h_1 + \dfrac{p_1}{\gamma} = h_2 + \dfrac{p_2}{\gamma} + h_L
