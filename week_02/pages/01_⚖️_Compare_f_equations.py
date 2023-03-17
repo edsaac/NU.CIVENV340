@@ -6,6 +6,35 @@ from scipy.optimize import root
 import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter
 
+def main(): 
+    st.set_page_config(layout='wide')
+
+    with open("assets/style.css") as f:
+        st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
+
+    st.title("CIV-ENV 340: Hydraulics and hydrology")
+    "****"
+
+    #####################################################################
+
+    f_cw = cw_multidimensional()
+    f_sj = sj_multidimensional()
+    
+    cols = st.columns(2)
+    with cols[0]:
+        "#### Colebrook-White eq."
+        st.pyplot(friction_factor_heatmap(f_cw))
+    
+    with cols[1]:
+        "#### Swamme-Jain eq."
+        st.pyplot(friction_factor_heatmap(f_sj))
+
+    "#### Difference between the two equations"
+    
+    cols = st.columns([1,2,1])
+    with cols[1]:
+        st.pyplot(error_equations_heatmap())
+
 NCELLS = 30
 Re = np.logspace(4, 8, NCELLS, base=10.0)
 eD = np.logspace(-6, -1, NCELLS, base=10)
@@ -73,25 +102,6 @@ def error_equations_heatmap():
     ax.spines['right'].set_visible(False)
 
     return fig
-
-def main(): 
-    f_cw = cw_multidimensional()
-    f_sj = sj_multidimensional()
-    
-    cols = st.columns(2)
-    with cols[0]:
-        "#### Colebrook-White eq."
-        st.pyplot(friction_factor_heatmap(f_cw))
-    
-    with cols[1]:
-        "#### Swamme-Jain eq."
-        st.pyplot(friction_factor_heatmap(f_sj))
-
-    "#### Difference between the two equations"
-    
-    cols = st.columns([1,2,1])
-    with cols[1]:
-        st.pyplot(error_equations_heatmap())
 
 if __name__ == "__main__":
     main()
