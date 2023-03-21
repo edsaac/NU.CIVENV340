@@ -80,6 +80,8 @@ def main():
         ****
         ## 4️⃣ Build the system of equations
         """
+        swamme_jain = st.session_state.swamme_jain
+        
         with st.echo():
             def system_of_equations(Q, roughness, D, L):
         
@@ -96,7 +98,7 @@ def main():
                 ## Energy conservation
                 Reynolds = 4.0 * Q / (np.pi * D * ν)
                 rel_rough = roughness / D
-                f = st.session_state.swamme_jain(rel_rough, Reynolds)
+                f = swamme_jain(rel_rough, Reynolds)
                 K = 0.0826 * f * L / np.power(D, 5)
                 KQ = 2.0 * K * Q
 

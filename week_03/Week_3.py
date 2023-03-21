@@ -48,10 +48,9 @@ def main():
         """
         st.components.v1.html(lottie, width=200, height=200)
 
-        "## Week 3"
         "### Select a topic:"
         option = st.radio("Select a topic:",
-            ["Pipes in series/parallel", "Branched systems", "Looped networks", "Newton method"],
+            ["Pipes in series/parallel", "Looped networks", "Newton method", "Branched systems"],
             label_visibility="collapsed")
         
         "***"
@@ -109,13 +108,6 @@ def main():
             Q = Q_{1} + Q_{2} + \mathellipsis + Q_{n}
         $$
         
-        """
-
-    elif option == "Branched systems":
-        r" ### 🚧 Under construction 🚧"
-        r"""
-        ## Branched networks
-
         """
         
     elif option == "Looped networks":
@@ -419,6 +411,15 @@ def main():
             🏁 A solution has been found!
             """            
 
+    
+    elif option == "Branched systems":
+
+        r" ### 🚧 Under construction 🚧"
+        r"""
+        ## Branched networks
+
+        """
+
     else: 
         r" ### 🚧 Under construction 🚧"
 
@@ -625,23 +626,23 @@ def write_network_equations():
             """
     return None
 
-def build_table(netprops:pd.DataFrame):
-    KQ = netprops["2KQ (s/m²)"].to_numpy(dtype=np.float64)
-    print(KQ[0])
-    matrix = np.array([
-        [1.0, 0.0 , 1.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0],
-        [-1.0 , 1.0 , 0.0 , 1.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0],
-        [0.0 , -1.0 , 0.0 , 0.0 , 1.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0],
-        [0.0 , 0.0  , 0.0 , -1.0, 0.0 , 1.0 , -1.0, 0.0 , 0.0 , 0.0],
-        [0.0 , 0.0  , -1.0 , 0.0, 0.0 , 0.0 , 0.0 , 0.0 , 1.0 , 0.0],
-        [0.0 , 0.0  , 0.0  , 0.0, 0.0 , 0.0 , 1.0 , 0.0 , -1.0 , 1.0] ,
-        [0.0 , 0.0  , 0.0  , 0.0, 0.0 , 0.0 , 0.0 , -1.0 , 0.0 , -1.0],
-        [ KQ[0], 0.0, -KQ[2], KQ[3], 0.0, 0.0, -KQ[6], 0.0, -KQ[8], 0.0],
-        [0.0, KQ[1], 0.0, -KQ[3], KQ[4], -KQ[5], 0.0, 0.0, 0.0, 0.0],
-        [0.0, 0.0, 0.0, 0.0, 0.0, KQ[5], KQ[6], KQ[7], 0.0, -KQ[9]]
-    ], dtype=np.float64)
-    print(matrix.dtype)
-    return matrix
+# def build_table(netprops:pd.DataFrame):
+#     KQ = netprops["2KQ (s/m²)"].to_numpy(dtype=np.float64)
+#     print(KQ[0])
+#     matrix = np.array([
+#         [1.0, 0.0 , 1.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0],
+#         [-1.0 , 1.0 , 0.0 , 1.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0],
+#         [0.0 , -1.0 , 0.0 , 0.0 , 1.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0],
+#         [0.0 , 0.0  , 0.0 , -1.0, 0.0 , 1.0 , -1.0, 0.0 , 0.0 , 0.0],
+#         [0.0 , 0.0  , -1.0 , 0.0, 0.0 , 0.0 , 0.0 , 0.0 , 1.0 , 0.0],
+#         [0.0 , 0.0  , 0.0  , 0.0, 0.0 , 0.0 , 1.0 , 0.0 , -1.0 , 1.0] ,
+#         [0.0 , 0.0  , 0.0  , 0.0, 0.0 , 0.0 , 0.0 , -1.0 , 0.0 , -1.0],
+#         [ KQ[0], 0.0, -KQ[2], KQ[3], 0.0, 0.0, -KQ[6], 0.0, -KQ[8], 0.0],
+#         [0.0, KQ[1], 0.0, -KQ[3], KQ[4], -KQ[5], 0.0, 0.0, 0.0, 0.0],
+#         [0.0, 0.0, 0.0, 0.0, 0.0, KQ[5], KQ[6], KQ[7], 0.0, -KQ[9]]
+#     ], dtype=np.float64)
+#     print(matrix.dtype)
+#     return matrix
 
 def build_graph(nodes_df, edges_df):
     nodes_xy = { k: [ v['x'], v['y']]  for k,v in nodes_df[["x","y"]].to_dict(orient="index").items() }

@@ -1,13 +1,14 @@
 import streamlit as st
-import plotly.graph_objects as go
-from itertools import cycle
+import pickle
 import numpy as np
 from scipy.optimize import root
 import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter
 
 def main(): 
-    st.set_page_config(layout='wide')
+
+    with open("assets/page_config.pkl", 'rb') as f:
+        st.session_state.page_config = pickle.load(f)
 
     with open("assets/style.css") as f:
         st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)

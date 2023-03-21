@@ -2,8 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 from itertools import cycle
 import numpy as np
-from scipy.optimize import root
-import matplotlib.pyplot as plt
+import pickle
 
 def colebook_white(relative_roughness:float, reynolds_number:float, fguess:float=0.01):   
     fcalc = 1.0 / np.power(- 2.0 * np.log10(relative_roughness/3.7 + 2.51/(reynolds_number*np.sqrt(fguess))), 2)
@@ -14,24 +13,11 @@ def swamme_jain(relative_roughness:float, reynolds_number:float):
     return fcalc
 
 def main():
+    
+    with open("assets/page_config.pkl", 'rb') as f:
+        st.session_state.page_config = pickle.load(f)
 
-    st.set_page_config(
-        layout='wide',
-        menu_items={
-            "Get help" : "https://canvas.northwestern.edu/courses/189865",
-            "Report a bug"  : "https://github.com/edsaac/NU.CIVENV340/issues/new",
-            "About" :r"""
-                **CIVENV 340: Hydraulics & Hydrology** - Supporting material
-
-                - Northwestern University - Spring/2023
-                - Instructor: Edwin Saavedra Cifuentes
-
-                [![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff+from+Edwin&color=white&logo=streamlit)](https://edsaac.github.io)
-                
-                *****
-                """
-        }
-    )
+    st.set_page_config(**st.session_state.page_config)
 
     with open("assets/style.css") as f:
         st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
@@ -58,7 +44,6 @@ def main():
         """
         st.components.v1.html(lottie, width=200, height=200)
 
-        "## Week 2"
         "### Select a topic:"
         option = st.radio("Select a topic:",
             ["Friction head loss", "Empirical relationships", "Equations summary", "Accessories", "Momentum and forces"],
