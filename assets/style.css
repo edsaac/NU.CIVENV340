@@ -6,6 +6,17 @@ tr .math {
     font-size: 0.8rem;
 }
 
+[data-baseweb="accordion"] .math {
+    font-size: 0.66rem;
+}
+
+div.glideDataEditor{
+    display: block;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 table {
   margin-left: auto;
   margin-right: auto;
@@ -41,3 +52,10 @@ img {
     margin-left: auto;
     margin-right: auto;
 }
+
+[data-testid="stCheckbox"] {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+  }

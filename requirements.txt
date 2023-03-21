@@ -6,3 +6,4 @@ pandas
 scipy
 plotly
 openpyxl
+array_to_latex

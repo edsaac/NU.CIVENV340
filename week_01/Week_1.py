@@ -53,6 +53,7 @@ def main():
             - Viscosity measurement: 1.4.10
             - Dam stability: 2.5.2 + What is uplift and how does it affect dam stability?
             """
+        
     ####################################################################
         
     if option == "System of units":
@@ -476,7 +477,7 @@ def main():
         ## Reynolds number $R_e$
 
         $$
-            R_e = \dfrac{uL}{\nu} = \underbrace{\dfrac{VD}{\nu}}_{\textsf{For circular pipes}}
+            R_e = \dfrac{uL}{\nu} = \underbrace{\dfrac{VD}{\nu}}_{\textsf{For circular pipes}} = \dfrac{4Q}{\pi D \nu}
         $$
         
         """
