@@ -19,13 +19,21 @@ def main():
     with st.sidebar:
         lottie = """
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        <lottie-player src="https://assets4.lottiefiles.com/private_files/lf30_nep75hmm.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 100px;"  loop  autoplay></lottie-player>
+        <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_cmzv38mj.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 200px;"  loop  autoplay></lottie-player>
         """
-        st.components.v1.html(lottie, width=200, height=100)
+        st.components.v1.html(lottie, width=200, height=200)
 
         "### Select a topic:"
         option = st.radio("Select a topic:",
-            [],
+            [
+                "Operation point",
+                "Pump selection",
+                "Efficiency",
+                "Open channel flow",
+                "Section geometry",
+                "Specific energy",
+                "Froude number"
+            ],
             label_visibility="collapsed")
         
         "***"
@@ -46,9 +54,26 @@ def main():
             r""" [![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
     
     ####################################################################
-    
-    if option == "":
-        r" ### 🚧 Under construction 🚧"
+    if option == "Operation point":
+        r"### 🚧 Under construction"
+
+    elif option == "Pump selection":
+        r"### 🚧 Under construction"
+
+    elif option == "Efficiency":
+        r"### 🚧 Under construction"
+
+    elif option == "Open channel flow":
+        r"### 🚧 Under construction"
+
+    elif option == "Section geometry":
+        r"### 🚧 Under construction"
+
+    elif option == "Specific energy":
+        r"### 🚧 Under construction"
+
+    elif option == "Froude number":
+        r"### 🚧 Under construction"
 
     else: 
         st.error("You should not be here!")

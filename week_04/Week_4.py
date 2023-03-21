@@ -19,13 +19,19 @@ def main():
     with st.sidebar:
         lottie = """
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        <lottie-player src="https://assets4.lottiefiles.com/private_files/lf30_nep75hmm.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 100px;"  loop  autoplay></lottie-player>
+        <lottie-player src="https://assets7.lottiefiles.com/packages/lf20_tuzu65Bu6N.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 150px;"  loop  autoplay></lottie-player>
         """
-        st.components.v1.html(lottie, width=200, height=100)
+        st.components.v1.html(lottie, width=200, height=150)
 
         "### Select a topic:"
         option = st.radio("Select a topic:",
-            ["System curve"],
+            [
+                "System curve", 
+                "Types of pumps", 
+                "Characteristic curves", 
+                "Cavitation", 
+                "Pumps in series/parallel"
+            ],
             label_visibility="collapsed")
         
         "***"
@@ -47,7 +53,19 @@ def main():
     
     ####################################################################
     
-    if option == "":
+    if option == "System curve":
+        r" ### 🚧 Under construction 🚧"
+
+    elif option == "Types of pumps":
+        r" ### 🚧 Under construction 🚧"
+
+    elif option == "Characteristic curves":
+        r" ### 🚧 Under construction 🚧"
+
+    elif option == "Cavitation":
+        r" ### 🚧 Under construction 🚧"
+
+    elif option == "Pumps in series/parallel":
         r" ### 🚧 Under construction 🚧"
 
     else: 
