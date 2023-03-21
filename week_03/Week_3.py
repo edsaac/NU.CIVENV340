@@ -206,16 +206,6 @@ def main():
         - $\textsf{Loops}$ -- Number of energy conservation equations
         - $\textsf{Edges}$ -- Number of unknown discharges to be solved
         
-        *****
-        
-        #### Some notation:
-
-        | Symbol | Description |
-        |:----:|:----------|
-        |$j$            | Junction or node|
-        |$\texttt{II}$  | Loop or circuit|
-        |$\texttt{3-4}$ | Pipe or edge connecting nodes 3 and 4 |
-
         """
 
 
