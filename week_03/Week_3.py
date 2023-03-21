@@ -431,6 +431,7 @@ def main():
     else: 
         r" ### 🚧 Under construction 🚧"
 
+@st.cache_data
 def pipes_in_series():
 
     fig, ax = plt.subplots()
