@@ -1,13 +1,13 @@
 import streamlit as st
 import numpy as np
-import pandas as pd
-import json, pickle
-from scipy.optimize import root
+import pickle
 
 def main():
 
     with open("assets/page_config.pkl", 'rb') as f:
         st.session_state.page_config = pickle.load(f)
+    
+    st.set_page_config(**st.session_state.page_config)
 
     with open("assets/style.css") as f:
         st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
@@ -32,17 +32,14 @@ def main():
     $$
         -2\log\left( \dfrac{e}{3.7\,D} + \dfrac{2.51}{R_e \, \sqrt{f}} \right) - \dfrac{1}{\sqrt{f}} = 0
     $$
-
     """
 
     r"""
     ****
     ## 2️⃣ Define a function with the equation
     """
-    guesses = list()
     with st.echo():
         def colebrook_white_equation(fguess, rel_rough, reynolds):
-            guesses.append(fguess)
             return (-2 * np.log10(rel_rough/3.7 + 2.51/(reynolds * np.sqrt(fguess)))) - (1.0/np.sqrt(fguess))
             
 

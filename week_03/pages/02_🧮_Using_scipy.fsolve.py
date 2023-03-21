@@ -1,9 +1,18 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import json
+import json, pickle
 
 def main():
+
+
+    with open("assets/page_config.pkl", 'rb') as f:
+        st.session_state.page_config = pickle.load(f)
+    
+    st.set_page_config(**st.session_state.page_config)
+
+    with open("assets/style.css") as f:
+        st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
 
     format_dict = {
         "Q_Guess" : "{:.3f}",
@@ -17,12 +26,7 @@ def main():
         "K" : "{:.1f}",
         "2KQ" : "{:.1f}"
     }
-
-    st.set_page_config(layout='wide')
-
-    with open("assets/style.css") as f:
-        st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
-
+    
     st.title("CIV-ENV 340: Hydraulics and hydrology")
     "****"
 

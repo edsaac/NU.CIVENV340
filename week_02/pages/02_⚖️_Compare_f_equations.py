@@ -9,6 +9,8 @@ def main():
 
     with open("assets/page_config.pkl", 'rb') as f:
         st.session_state.page_config = pickle.load(f)
+    
+    st.set_page_config(**st.session_state.page_config)
 
     with open("assets/style.css") as f:
         st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)

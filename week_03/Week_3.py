@@ -1,37 +1,16 @@
-from itertools import cycle
-import json 
-
 import streamlit as st
 import numpy as np
-import pandas as pd
-
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
-
-import array_to_latex as a2l
-
-import plotly.graph_objects as go
-
 import networkx as nx
+import json, pickle
 
 def main():
-    st.set_page_config(
-        layout='wide',
-        menu_items={
-            "Get help" : "https://canvas.northwestern.edu/courses/189865",
-            "Report a bug"  : "https://github.com/edsaac/NU.CIVENV340/issues/new",
-            "About" :r"""
-                **CIVENV 340: Hydraulics & Hydrology** - Supporting material
-
-                - Northwestern University - Spring/2023
-                - Instructor: Edwin Saavedra Cifuentes
-
-                [![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff+from+Edwin&color=white&logo=streamlit)](https://edsaac.github.io)
-                
-                *****
-                """
-        }
-    )
+    
+    with open("assets/page_config.pkl", 'rb') as f:
+        st.session_state.page_config = pickle.load(f)
+    
+    st.set_page_config(**st.session_state.page_config)
 
     with open("assets/style.css") as f:
         st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)

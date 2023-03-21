@@ -1,16 +1,16 @@
 import streamlit as st
-import numpy as np
 import pandas as pd
 import networkx as nx
-import matplotlib.pyplot as plt
-import array_to_latex as a2l
-import json
+import json, pickle
 
 build_graph = st.session_state.build_graph
 
 def main():
 
-    st.set_page_config(layout='wide')
+    with open("assets/page_config.pkl", 'rb') as f:
+        st.session_state.page_config = pickle.load(f)
+    
+    st.set_page_config(**st.session_state.page_config)
 
     with open("assets/style.css") as f:
         st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
