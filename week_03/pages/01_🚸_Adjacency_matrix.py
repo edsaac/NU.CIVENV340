@@ -51,7 +51,10 @@ def main():
         
         submit_btn = st.form_submit_button("🧱 Build!", use_container_width=True)
 
-    if submit_btn:
+    if "submit_btn_pressed" not in st.session_state:
+        st.session_state.submit_btn_pressed = False
+    
+    if submit_btn or st.session_state.submit_btn_pressed:
         
         G, fig = build_graph(nodes_df, edges_df)
         st.pyplot(fig)
