@@ -4,7 +4,23 @@ import plotly.graph_objects as go
 import numpy as np
 
 def main():
-    st.set_page_config(layout='centered')
+    st.set_page_config(
+        layout='wide',
+        menu_items={
+            "Get help" : "https://canvas.northwestern.edu/courses/189865",
+            "Report a bug"  : "https://github.com/edsaac/NU.CIVENV340/issues/new",
+            "About" :r"""
+                **CIVENV 340: Hydraulics & Hydrology** - Supporting material
+
+                - Northwestern University - Spring/2023
+                - Instructor: Edwin Saavedra Cifuentes
+
+                [![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff+from+Edwin&color=white&logo=streamlit)](https://edsaac.github.io)
+                
+                *****
+                """
+        }
+    )
 
     with open("assets/style.css") as f:
         st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
@@ -53,7 +69,15 @@ def main():
             - Viscosity measurement: 1.4.10
             - Dam stability: 2.5.2 + What is uplift and how does it affect dam stability?
             """
-        
+                
+        cols = st.columns(2)
+        with cols[0]:
+            r"""
+            [![Github Repo](https://img.shields.io/static/v1?label=&message=Repository&color=black&logo=github)](https://github.com/edsaac/NU.CIVENV340)
+            """
+        with cols[1]:
+            r""" [![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
+    
     ####################################################################
         
     if option == "System of units":

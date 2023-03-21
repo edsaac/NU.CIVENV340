@@ -15,7 +15,23 @@ def swamme_jain(relative_roughness:float, reynolds_number:float):
 
 def main():
 
-    st.set_page_config(layout='wide')
+    st.set_page_config(
+        layout='wide',
+        menu_items={
+            "Get help" : "https://canvas.northwestern.edu/courses/189865",
+            "Report a bug"  : "https://github.com/edsaac/NU.CIVENV340/issues/new",
+            "About" :r"""
+                **CIVENV 340: Hydraulics & Hydrology** - Supporting material
+
+                - Northwestern University - Spring/2023
+                - Instructor: Edwin Saavedra Cifuentes
+
+                [![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff+from+Edwin&color=white&logo=streamlit)](https://edsaac.github.io)
+                
+                *****
+                """
+        }
+    )
 
     with open("assets/style.css") as f:
         st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
@@ -55,9 +71,10 @@ def main():
         #### Class textbook:
         [🌐](https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9980502032702441]) *Houghtalen, Akan & Hwang* (2017). **Fundamentals of hydraulic engineering systems** 5th ed.,
         Pearson Education Inc., Boston.
+        
+        *****
         """
 
-        "****"
         with st.expander("🧷 Recommended exercises:"):
             r"""
             - Direct: 3.5.2
@@ -66,6 +83,17 @@ def main():
             - Calibration: 3.5.14
             - 3.3.6 + Calculate the K of the elbow.
             """
+        
+        cols = st.columns(2)
+        with cols[0]:
+            r"""
+            [![Github Repo](https://img.shields.io/static/v1?label=&message=Repository&color=black&logo=github)](https://github.com/edsaac/NU.CIVENV340)
+            """
+        with cols[1]:
+            r""" [![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
+    
+
+        "****"
 
     ####################################################################
         

@@ -72,6 +72,7 @@ def main():
             """
         with cols[1]:
             r""" [![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
+    
     ####################################################################
         
     if option == "Pipes in series/parallel":
