@@ -4,5 +4,5 @@ gatherUsageStats = false
 [theme]
 base="light"
 primaryColor="#4E2A84"
-backgroundColor="#FFFFFF00"
-secondaryBackgroundColor="rgba(245, 40, 145)"
+backgroundColor="#FFFFFF"
+secondaryBackgroundColor="#B6ACD1"
