@@ -42,7 +42,15 @@ def main():
         
         *****
         """
-
+        with st.expander("🧷 Recommended exercises:"):
+            r"""
+            - Networks: (but using Newton method, a spreadsheet or `scipy.optimize.fsolve`)
+                - 4.4.2 
+                - 4.4.5
+                - 4.4.10
+            - Design: 4.7.2
+            """
+        
         cols = st.columns(2)
         with cols[0]:
             r"""
@@ -55,23 +63,26 @@ def main():
         
     if option == "Pipes in series/parallel":
         
-        r""" ## Pipes in series """
+
+        cols = st.columns(2)
+        with cols[1]:
+            st.pyplot(pipes_in_series())
+
+        with cols[0]:
+            r""" ## Pipes in series """
+            r"""
+
+            The mass between consecutive pipes must be conserved,
+            $$
+                Q_1 = Q_2 = \mathellipsis  = Q_n
+            $$
+
+            Whereas the head loss adds up
+            $$
+                h_{L} = h_{L_1} + h_{L_2} + \mathellipsis + h_{L_n}
+            $$
             
-        st.pyplot(pipes_in_series())
-
-        r"""
-
-        The mass between consecutive pipes must be conserved,
-        $$
-            Q_1 = Q_2 = \mathellipsis  = Q_n
-        $$
-
-        Whereas the head loss adds up
-        $$
-            h_{L} = h_{L_1} + h_{L_2} + \mathellipsis + h_{L_n}
-        $$
-        
-        """
+            """
 
         r""" 
         ****

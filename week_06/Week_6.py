@@ -19,13 +19,23 @@ def main():
     with st.sidebar:
         lottie = """
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        <lottie-player src="https://assets4.lottiefiles.com/private_files/lf30_nep75hmm.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 100px;"  loop  autoplay></lottie-player>
+        <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_ntrhqntu.json"  background="transparent"  speed="1.5"  style="width: 260px; height: 250px;"  loop  autoplay></lottie-player>
         """
-        st.components.v1.html(lottie, width=200, height=100)
+        st.components.v1.html(lottie, width=250, height=250)
 
         "### Select a topic:"
         option = st.radio("Select a topic:",
-            [],
+            [   
+                "Transitions and jumps",
+                "Energy losses",
+                "Uniform flow",
+                "Gradually varied flow", 
+                "Water profiles",
+                "Free-surface calculation",
+                "Sediments & rivers",
+                "Lane's diagram",
+                "Shear stress"
+            ],
             label_visibility="collapsed")
         
         "***"
@@ -47,8 +57,24 @@ def main():
     
     ####################################################################
     
-    if option == "":
-        r" ### 🚧 Under construction 🚧"
+    if option == "Transitions and jumps":
+        r"### 🚧 Under construction 🚧"
+    elif option == "Energy losses":
+        r"### 🚧 Under construction 🚧"
+    elif option == "Uniform flow":
+        r"### 🚧 Under construction 🚧"
+    elif option == "Gradually varied flow":
+        r"### 🚧 Under construction 🚧"
+    elif option == "Water profiles":
+        r"### 🚧 Under construction 🚧"
+    elif option == "Free-surface calculation":
+        r"### 🚧 Under construction 🚧"
+    elif option == "Sediments & rivers":
+        r"### 🚧 Under construction 🚧"
+    elif option == "Lane's diagram":
+        r"### 🚧 Under construction 🚧"
+    elif option == "Shear stress":
+        r"### 🚧 Under construction 🚧"
 
     else: 
         st.error("You should not be here!")
