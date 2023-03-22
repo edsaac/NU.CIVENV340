@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 import pickle
 import numpy as np
 import json
+from plotly.subplots import make_subplots
 
 def main():
     
@@ -129,19 +130,19 @@ def main():
 
             "### System curve ($Q$, $H_p$)"
 
-            fig = go.Figure([
+            h_pump_fig = go.Figure([
                 go.Scatter(
                     x = discharge,
                     y = head_pump,
                     name="System curve",
-                    hovertemplate="<i>H<sub>p</sub></i> = %{y:.1f} m <br><b>Q = %{x:.2f} m³/s</b>",
+                    hovertemplate="<i>H<sub>p</sub></i> = %{y:.1f} m <br><b>Q = %{x:.2f} L/min</b>",
                     line=dict(
                         width=5, 
                         color="#018749")
                 )
             ])
             
-            fig.add_hline(
+            h_pump_fig.add_hline(
                 y = H_static_head,
                 name= "Static head",
                 annotation=dict(
@@ -155,7 +156,7 @@ def main():
             )
             
 
-            fig.update_layout(
+            h_pump_fig.update_layout(
                 height=650,
                 margin=dict(t=40),
                 #title_text = '''System curve''',
@@ -178,15 +179,340 @@ def main():
                 hoverlabel=dict(font_size=18),
             )
             
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(h_pump_fig, use_container_width=True)
     
         "****"
 
     elif option == "Types of pumps":
-        r" ### 🚧 Under construction 🚧"
+        r" ## Types of pumps"
+        
+        cols = st.columns(2)
+        
+        with cols[0]:
+            "### Turbo-hydraulic pumps"
+            
+            with st.expander("🚁 **Centrifugal pumps**"):
+                url = "https://www.lockewell.com/images/large/goulds/3656m_LRG.jpg"
+                st.caption(f"Source: [lockwell.com]({url})")
+                st.image(url, use_column_width=True)
+                "*****"
+                
+                url = "https://en.wikipedia.org/wiki/Centrifugal_pump#/media/File:Centrifugal_Pump.png"
+                st.caption("Source: [wikimedia.org]({url})")
+                st.image("https://upload.wikimedia.org/wikipedia/commons/4/4a/Centrifugal_Pump.png", use_column_width=True)
+                "*****"
+                
+                url = "https://www.youtube.com/watch?v=BaEHVpKc-1Q"
+                st.caption(f"Source: [youtube.com/@Lesics]({url})")
+                st.video(url)
+            
+            with st.expander("🦖 **Axial-flow (propeller) pumps**" ):
+                url = "https://www.industrialchemicalpump.com/photo/pl23155791-single_stage_horizontal_axial_flow_pump_axially_split_impeller_centrifugal_pump.jpg"
+                st.caption(f"Source: [industrialchemicalpump.com]({url})")
+                st.image(url, use_column_width=True)
+            
+
+        with cols[1]:
+            r"""
+            ### Positive-displacement pumps
+            """
+            with st.expander("➰ **Rotary lobe pumps**" ):
+                url = "https://www.youtube.com/watch?v=1ca-rXDqMMo"
+                st.caption(f"Source: [youtube.com/@VikingPumpInc]({url})")
+                st.video(url)
+                "*****"
+
+            with st.expander("➰ **Peristaltic pumps**" ):
+                url = "https://www.youtube.com/watch?v=3H4Ftf_imrg"
+                st.caption(f"Source: [youtube.com/@sityu82]({url})")
+                st.video(url)
+                "*****"
 
     elif option == "Characteristic curves":
-        r" ### 🚧 Under construction 🚧"
+        r" ## Characteristic curves"
+
+        tabs = st.tabs(["**🌊 Pump head**", "**🦾 Efficiency**", "**🔋Power input**", "**🫧 NSPH**"])
+
+        discharge = np.linspace(0,500,100)
+        system_head = 1e-4 * discharge**2 + 10.0
+
+        with tabs[0]:  ## Head vs Q plot
+            r"""
+            **🌊 Pump head**
+
+            $$
+                H_p = a_0 + a_1 Q + a_2Q^2
+            $$
+            """
+            cols = st.columns(3)
+            with cols[0]: a0 = st.slider("$a_0$", 0.0, 100.0, 25.0)
+            with cols[1]: a1 = st.slider("$a_1$", -0.0200, -0.0010, -0.0054, 0.0001, format="%.4f")
+            with cols[2]: a2 = st.slider("$a_2$", -0.000200, -0.000010, -0.000086, -0.000001, format="%.6f")
+
+            discharge_manufacturer = np.linspace(100,400,100)
+            head_pump_manufacturer = a0 + a1*discharge_manufacturer + a2*discharge_manufacturer**2
+
+            h_pump_fig = go.Figure()
+
+            h_pump_fig.add_traces(
+                [
+                    go.Scatter(
+                        x = discharge,
+                        y = system_head,
+                        name="System",
+                        hovertemplate="<i>H<sub>p</sub></i> = %{y:.1f} m <br><b>Q = %{x:.2f} L/min</b>",
+                        visible='legendonly',
+                        line=dict(
+                            width=3,
+                            dash="longdash",
+                            color="cornflowerblue")
+                    ),
+                    go.Scatter(
+                        x=discharge_manufacturer,
+                        y=head_pump_manufacturer,
+                        name="Centrifugal pump",
+                        hovertemplate="<i>H<sub>p</sub></i> = %{y:.1f} m <br><b>Q = %{x:.2f} L/min</b>",
+                        line=dict(
+                            width=8, 
+                            color="purple")
+                    ),
+                    go.Scatter(
+                        x = [200,195],
+                        y = [0,30],
+                        name="Positive displacement",
+                        hovertemplate="<i>H<sub>p</sub></i> = %{y:.1f} m <br><b>Q = %{x:.2f} L/min</b>",
+                        visible='legendonly',
+                        line=dict(
+                            width=8,
+                            color="chocolate")
+                    ),
+                ]
+            )
+            
+            h_pump_fig.add_hline(
+                y = a0,
+                name= "Shutoff head",
+                annotation=dict(
+                    text="Shutoff head",
+                    font_size=19
+                ),
+                line=dict(
+                        width=2,
+                        dash="dashdot", 
+                        color="#ff0044")
+            )
+
+            h_pump_fig.add_vline(
+                x = 260,
+                name= "Rated capacity",
+                annotation=dict(
+                    text="Rated capacity",
+                    font_size=19,
+                    font_color="purple"
+                ),
+                annotation_position = "top",
+                line=dict(
+                        width=2,
+                        dash="dot", 
+                        color="purple")
+            )
+
+            h_pump_fig.update_layout(
+                height=600,
+                margin=dict(t=40),
+                #title_text = '''System curve''',
+                yaxis=dict(
+                    title="Head pump [m]",
+                    range=[0,30],
+                    **axis_format),
+                xaxis=dict(
+                    title="Discharge [L/min]",
+                    range=[0,500],
+                    **axis_format),
+                legend=dict(
+                    title="Curves",
+                    font=dict(size=18),
+                    orientation="v",
+                    bordercolor="gainsboro",
+                    borderwidth=1,
+                    yanchor="top", y=0.30,
+                    xanchor="left", x=0.05
+                ),
+                hoverlabel=dict(font_size=18),
+            )
+
+            st.plotly_chart(h_pump_fig, use_container_width=True)
+        
+        with tabs[1]:  ## Efficiency vs Q plot
+            efficiency_manufacturer =  (-0.0007*np.power(discharge_manufacturer, 2) + 0.3667*discharge_manufacturer + 15)/100
+            
+            r"""
+            🦾 **Efficiency:** ratio of the power output to the power input 
+            """
+
+            efficiency_fig = go.Figure()
+
+            efficiency_fig.add_trace(
+                go.Scatter(
+                    x=discharge_manufacturer,
+                    y=efficiency_manufacturer,
+                    name="Centrifugal pump",
+                    hovertemplate="<i>η</i> = %{y:.2f} <br><b>Q = %{x:.2f} L/min</b>",
+                    line=dict(
+                        width=8, 
+                        color="purple")
+                )
+            )
+
+            efficiency_fig.add_vline(
+                x = 260,
+                name= "Optimal operation point",
+                annotation=dict(
+                    text="Optimal operation point",
+                    font_size=19,
+                    font_color="purple"
+                ),
+                annotation_position="top",
+                line=dict(
+                        width=2,
+                        dash="dot", 
+                        color="purple")
+            )
+
+            efficiency_fig.update_layout(
+                height=600,
+                margin=dict(t=40),
+                yaxis=dict(
+                    title="Efficiency [-]",
+                    #range=[0,30],
+                    **axis_format),
+                xaxis=dict(
+                    title="Discharge [L/min]",
+                    range=[0,500],
+                    **axis_format),
+                legend=dict(
+                    title="Curves",
+                    font=dict(size=18),
+                    orientation="v",
+                    bordercolor="gainsboro",
+                    borderwidth=1,
+                    yanchor="top", y=0.96,
+                    xanchor="right", x=0.96
+                ),
+                hoverlabel=dict(font_size=18),
+            )
+
+            st.plotly_chart(efficiency_fig, use_container_width=True) 
+
+        with tabs[2]:  ## Power vs Q plot
+            r"""
+            🔋 **Power input:** required by the pump.
+            $$
+                \mathcal{P} = \dfrac{Q H_p \rho g}{\eta}
+            $$
+            
+            🐎 **Brake horsepower:** power input in horsepower units.
+            """
+            brake_power_manufacturer = discharge_manufacturer/(1000*60) * head_pump_manufacturer * 1000 * 9.71 / efficiency_manufacturer
+
+            power_fig = go.Figure()
+
+            power_fig.add_trace(
+                go.Scatter(
+                    x=discharge_manufacturer,
+                    y=brake_power_manufacturer,
+                    name="Centrifugal pump",
+                    hovertemplate="<i><b>P</b></i> = %{y:.1f} W <br><b>Q = %{x:.2f} L/min</b>",
+                    line=dict(
+                        width=8, 
+                        color="purple")
+                )
+            )
+            
+            power_fig.update_layout(
+                height=600,
+                margin=dict(t=40),
+                #title_text = '''System curve''',
+                yaxis=dict(
+                    title="Power input [W]",
+                    range=[0,2000],
+                    **axis_format),
+                xaxis=dict(
+                    title="Discharge [L/min]",
+                    range=[0,500],
+                    **axis_format),
+                legend=dict(
+                    title="Curves",
+                    font=dict(size=18),
+                    orientation="v",
+                    bordercolor="gainsboro",
+                    borderwidth=1,
+                    yanchor="top", y=0.96,
+                    xanchor="right", x=0.96
+                ),
+                hoverlabel=dict(font_size=18),
+            )
+
+            st.plotly_chart(power_fig, use_container_width=True)
+
+        with tabs[3]:  ## NPSH vs Q plot
+            r"""
+            🫧 **Net Positive Suction Head (NPSHr):** See Cavitation .
+            
+            """
+            npsh_manufacturer = 2.93 - 0.017*discharge_manufacturer + 0.000037*discharge_manufacturer**2
+
+            npsh_fig = go.Figure()
+
+            npsh_fig.add_trace(
+                go.Scatter(
+                    x=discharge_manufacturer,
+                    y=npsh_manufacturer,
+                    name="Centrifugal pump",
+                    hovertemplate="<i><b>P</b></i> = %{y:.1f} W <br><b>Q = %{x:.2f} L/min</b>",
+                    line=dict(
+                        width=8, 
+                        color="purple")
+                )
+            )
+            
+            npsh_fig.update_layout(
+                height=600,
+                margin=dict(t=40),
+                #title_text = '''System curve''',
+                yaxis=dict(
+                    title="NPSH [m]",
+                    range=[0,3],
+                    **axis_format),
+                xaxis=dict(
+                    title="Discharge [L/min]",
+                    range=[0,500],
+                    **axis_format),
+                legend=dict(
+                    title="Curves",
+                    font=dict(size=18),
+                    orientation="v",
+                    bordercolor="gainsboro",
+                    borderwidth=1,
+                    yanchor="top", y=0.96,
+                    xanchor="right", x=0.96
+                ),
+                hoverlabel=dict(font_size=18),
+            )
+
+            st.plotly_chart(npsh_fig, use_container_width=True)
+
+        "****"
+
+        r"## Pump Selection"
+        "Check a catalogue!"
+        html = r"""
+        <div>
+            <object data="https://www.centrifugal-pump-online.com/MD.pdf" type="application/pdf" width="100%" height="800">
+            </object>
+        </div>
+        """
+        st.components.v1.html(html, height=800, scrolling=True)
 
     elif option == "Cavitation":
         r" ### 🚧 Under construction 🚧"
