@@ -3,6 +3,8 @@ import pickle
 import numpy as np
 import plotly.graph_objects as go
 import pandas as pd
+import matplotlib.pyplot as plt
+
 
 def main():
     
@@ -183,8 +185,123 @@ def main():
         r"### 🚧 Under construction"
 
     elif option == "Section geometry":
-        r"### 🚧 Under construction"
+        r"""
+        ## 📜 Some definitions
 
+        |Parameter | Symbol | Description | Units |
+        |:---------|:------:|:------------|:-----:|
+        |Discharge |$Q$     |Volumetric flow rate| Volume/Time |
+        |Flow area |$A$     |Cross-sectional area of the flow| Area |
+        |Average velocity| $V$ | $Q = VA$ | Length/Time |
+        |Depth     |$y$     |Vertical distance from the channel bottom to the free surface| Length |
+        |Top width |$T$     |Width at the surface | Length |
+        |Bottom width | $b$ | Width at the bottom | Length |
+        |Wetted perimeter | $P_w$| Contact length of water and the channel | Lenght |
+        |Hydraulic depth  | $D_h$| $D_h = \dfrac{A}{T}$| Lenght |
+        |Hydraulic radius | $R_h$| $R_h = \dfrac{A}{P_w}$ | Lenght |
+        |Bottom slope     | $S_0$| Longitudinal slope | - |
+        |Side slope       | $m$  | 1 vertical over $m$ horizontal | - |
+        """
+        st.caption("Adapted from pp. 198-199 - Course textbook")
+
+        r"""
+        *****
+        ## 📐 Cross-section geometry
+        """
+        tabs = st.tabs(["Rectangular", "Trapezoidal", "Triangular", "Circular"])
+
+        with tabs[0]: #Rectangular
+            cols = st.columns(2)
+            with cols[0]:
+                st.pyplot(draw_sections("rectangle"))
+            
+            with cols[1]: #Equations
+                r"""
+                $$
+                    \begin{align*}
+                        A &= by \\
+                        \\
+                        P_w &= b + 2y \\
+                        \\
+                        R_h &= \dfrac{by}{b + 2y}\\
+                        \\
+                        T &= b \\
+                        \\
+                        D_h &= y
+                    \end{align*}
+                $$
+                """
+
+        with tabs[1]: #Trapezoidal
+            cols = st.columns(2)
+            with cols[0]:
+                st.pyplot(draw_sections("trapezoid"))
+
+            with cols[1]:
+                r"""
+                $$
+                    \begin{align*}
+                        A &= (b+my)y \\
+                        \\  
+                        P_w &= b + 2y\sqrt{1+m^2} \\
+                        \\
+                        R_h &= \dfrac{(b+my)y}{b + 2y\sqrt{1+m^2}}\\
+                        \\
+                        T &= b + 2my \\
+                        \\
+                        D_h &= \dfrac{(b+my)y}{b + 2my}
+                    \end{align*}
+                $$
+                """
+
+        with tabs[2]: #Triangular
+            cols = st.columns(2)
+
+            with cols[0]:
+                st.pyplot(draw_sections("triangle"))
+
+            with cols[1]:
+                r"""
+                $$
+                    \begin{align*}
+                        A &= my^2 \\
+                        \\
+                        P_w &= 2y\sqrt{1+m^2} \\
+                        \\
+                        R_h &= \dfrac{my}{2\sqrt{1+m^2}}\\
+                        \\
+                        T &= 2my \\
+                        \\
+                        D_h &= \dfrac{y}{2}
+                    \end{align*}
+                $$
+                """
+
+        with tabs[3]: #Circular
+            cols = st.columns(2)
+            
+            with cols[0]:
+                st.pyplot(draw_sections("circle"))
+
+            with cols[1]:
+                r"""
+                $$
+                    \begin{align*}
+                        \theta &= \pi - \arccos{\left( \dfrac{y - d_0/2}{d_0/2} \right)} \\
+                        \\
+                        A &= \tfrac{1}{8}\left( 2\theta - \sin{2\theta} \right)d_0^2 \\
+                        \\
+                        P_w &= \theta d_0 \\
+                        \\
+                        R_h &= \dfrac{d_0}{4} \left( 1 - \dfrac{\sin{2\theta}}{2\theta} \right) \\
+                        \\
+                        T &= d_0 \sin{\theta} = 2\sqrt{y(d_0 - y)} \\
+                        \\
+                        D_h &= \dfrac{d_0}{8}\left( \dfrac{2\theta - \sin{2\theta}}{\sin{\theta}} \right)
+                    \end{align*}
+                $$
+                """
+            
     elif option == "Specific energy":
         r"### 🚧 Under construction"
 
@@ -195,5 +312,143 @@ def main():
         st.error("You should not be here!")
         r" ### 🚧 Under construction 🚧"
 
+from collections import namedtuple
+Point = namedtuple("Point", ["x", "y"])
+
+def draw_sections(shape:str):
+    from matplotlib.patches import Rectangle, Polygon, Circle
+    
+    p = Point(0,0)
+    width = 2.0
+    height = 1.0
+
+    fig, ax = plt.subplots()
+
+    if shape == "rectangle":
+        
+        ax.add_patch(
+            Rectangle(p, width, height, 
+                hatch="/////", ec="#0000ff40",
+                fc="#0000ff10", zorder=0)
+        )
+        
+        ax.plot(
+            [p.x, p.x, p.x + width, p.x + width],
+            [p.y + 1.1*height, p.y, p.y, p.y + 1.1*height],
+            lw=2, c="k", zorder=2)
+
+        # Height
+        ax.plot([p.x - 0.1, p.x - 0.1], [p.y, p.y + height], marker="o", c="gray")
+        ax.text(p.x - 0.15, 0.5 * height, r"$y$", fontdict=dict(size=20, color='gray'),ha='right')
+
+        # Width
+        ax.plot([p.x, p.x + width], [p.y - 0.1, p.y - 0.1], marker="o", c="gray")
+        ax.text(p.x + 0.5 * width, p.y - 0.15, r"$b = T$", fontdict=dict(size=20, color='gray'), ha='center', va='top')
+
+    if shape == "trapezoid":
+        ax.add_patch(
+            Polygon([(p.x, p.y + height), (p.x + 0.5, p.y), (p.x + 1.5, p.y), (2, p.y + height)], 
+                hatch="/////", ec="#0000ff40",
+                fc="#0000ff10", zorder=0, closed=True))
+        ax.plot(
+            [-0.1, 0.5, 1.5, 2.1], 
+            [1.2, 0, 0, 1.2],
+            lw=2, c="k", zorder=2
+        )
+        
+        # Height
+        ax.plot([p.x - 0.1, p.x - 0.1], [p.y, p.y + height], marker="o", c="gray")
+        ax.text(p.x - 0.15, 0.5 * height, r"$y$", fontdict=dict(size=20, color='gray'),ha='right')
+
+        # Top width
+        ax.plot([p.x, p.x + width], [p.y + height + 0.1 , p.y + height + 0.1], marker="o", c="gray")
+        ax.text(p.x + 0.5 * width, p.y + height + 0.15, r"$T$", fontdict=dict(size=20, color='gray'), ha='center', va='bottom')
+        
+        # Bottom width
+        ax.plot([p.x + 0.5, p.x + width - 0.5], [p.y - 0.1 , p.y - 0.1], marker="o", c="gray")
+        ax.text(p.x + 0.5 * width, p.y - 0.15, r"$b$", fontdict=dict(size=20, color='gray'), ha='center', va='top')
+        
+        # Slope
+        ax.plot([1.70, 1.85, 1.85], [0.3, 0.3, 0.6], marker=".", c="gray")
+        ax.text(1.77, 0.29, r"$m$", fontdict=dict(size=20, color='gray'), ha='center', va='top')
+        ax.text(1.85, 0.45, r"$1$", fontdict=dict(size=20, color='gray'), ha='left', va='center')
+
+    if shape == "triangle":
+        ax.add_patch(
+            Polygon([(p.x, p.y + height), (p.x + 0.5*width, p.y), (p.x + width, p.y + height)], 
+                hatch="/////", ec="#0000ff40",
+                fc="#0000ff10", zorder=0, closed=True))
+        
+        ax.plot(
+            [p.x - 0.1 , p.x + 0.5*width, p.x + width + 0.1], 
+            [p.y + height + 0.1, p.y, p.y + height + 0.1],
+            lw=2, c="k", zorder=2
+        )
+        
+        # Height
+        ax.plot([p.x - 0.1, p.x - 0.1], [p.y, p.y + height], marker="o", c="gray")
+        ax.text(p.x - 0.15, 0.5 * height, r"$y$", fontdict=dict(size=20, color='gray'),ha='right')
+
+        # Top width
+        ax.plot([p.x, p.x + width], [p.y + height + 0.1 , p.y + height + 0.1], marker="o", c="gray")
+        ax.text(p.x + 0.5 * width, p.y + height + 0.15, r"$T$", fontdict=dict(size=20, color='gray'), ha='center', va='bottom')
+        
+        # Slope
+        ax.plot([1.35, 1.65, 1.65], [0.3, 0.3, 0.6], marker=".", c="gray")
+        ax.text(1.50, 0.29, r"$m$", fontdict=dict(size=20, color='gray'), ha='center', va='top')
+        ax.text(1.67, 0.45, r"$1$", fontdict=dict(size=20, color='gray'), ha='left', va='center')
+
+    if shape == "circle":
+        from matplotlib.patches import Arc
+
+        c = Point(1.1,0.9)
+        r = 0.85
+        ax.add_patch(
+            Circle(c, r, 
+                fc="#0000ff00", zorder=0,
+                ec="k", lw=2))
+
+        ax. add_patch(
+            Arc(c, 2*r, 2*r, 
+                theta1=150, theta2=30, 
+                hatch="/////", ec="#0000ff40", zorder=0)
+        )
+        
+        # Center
+        ax.plot([c.x], [c.y], lw=0, marker='o', c='k')
+        
+        # Diameter
+        ax.plot([p.x-0.2, p.x-0.2], [c.y - r, c.y + r], marker="o", c="gray")
+        ax.text(p.x - 0.21, c.y, r"$d_0$", fontdict=dict(size=20, color='gray'),ha='right')
+
+        # Depth
+        ax.plot([p.x+0.1, p.x+0.1], [c.y - r, c.y + 0.42], marker="o", c="gray")
+        ax.text(p.x + 0.08, c.y - 0.22, r"$y$", fontdict=dict(size=20, color='gray'),ha='right')
+
+        # Top width
+        ax.plot([0.38, 1.82], [1.31 , 1.31], marker="o", c="gray")
+        ax.text(0.5*(1.82+0.38), 1.32 ,r"$T$", fontdict=dict(size=20, color='gray'), ha='center', va='bottom')
+
+        # Angle
+        ax.plot([c.x, c.x, c.x + r], [c.y - r - 0.1, c.y, c.y + r - 0.36], ls="dotted", c="gray")
+        ax.text(1.35, 0.75, r"$\theta$", fontdict=dict(size=20, color='gray'), ha='left', va='center')
+        
+        ax. add_patch(
+            Arc(c, 0.5*r, 0.5*r, 
+                theta1=270, theta2=30, 
+                ec="gray", lw=2, zorder=1)
+        )
+
+    # Final touches
+    #ax.legend(ncols=2, loc="upper right", bbox_to_anchor=(0.20, 0.95))
+    ax.set_xlim(-0.5, 2.2)
+    ax.set_ylim(-0.5, 2)
+    ax.set_aspect('equal')
+    #ax.grid(True)
+    for spine in ax.spines: ax.spines[spine].set_visible(False)
+    ax.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+
+    return fig
+    
 if __name__ == "__main__":
     main()
