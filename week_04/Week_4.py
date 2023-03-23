@@ -1,10 +1,12 @@
 import streamlit as st
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle, Circle
 import plotly.graph_objects as go
-import pickle
+import pickle, json
 import numpy as np
-import json
-from plotly.subplots import make_subplots
+
+from collections import namedtuple
+Point = namedtuple("Point", ["x", "y"])
 
 def main():
     
@@ -231,7 +233,7 @@ def main():
     elif option == "Characteristic curves":
         r" ## Characteristic curves"
 
-        tabs = st.tabs(["**🌊 Pump head**", "**🦾 Efficiency**", "**🔋Power input**", "**🫧 NSPH**"])
+        tabs = st.tabs(["**🌊 Pump head**", "**🦾 Efficiency**", "**🔋Power input**", "**🫧 NSPHr**"])
 
         discharge = np.linspace(0,500,100)
         system_head = 1e-4 * discharge**2 + 10.0
@@ -384,7 +386,7 @@ def main():
                 margin=dict(t=40),
                 yaxis=dict(
                     title="Efficiency [-]",
-                    #range=[0,30],
+                    range=[0,1.0],
                     **axis_format),
                 xaxis=dict(
                     title="Discharge [L/min]",
@@ -457,8 +459,8 @@ def main():
 
         with tabs[3]:  ## NPSH vs Q plot
             r"""
-            🫧 **Net Positive Suction Head (NPSHr):** See Cavitation .
-            
+            🫧 **Net Positive Suction Head (NPSHr):** represents the pressure drop between the eye
+            of the pump and the tip of the impeller vanes.
             """
             npsh_manufacturer = 2.93 - 0.017*discharge_manufacturer + 0.000037*discharge_manufacturer**2
 
@@ -515,7 +517,117 @@ def main():
         st.components.v1.html(html, height=800, scrolling=True)
 
     elif option == "Cavitation":
-        r" ### 🚧 Under construction 🚧"
+        r"""
+        ### 🌘 Water phase diagram
+        """ 
+
+        st.image("https://www.101diagrams.com/wp-content/uploads/2017/09/phase-diagram-of-water-image.jpg", use_column_width=True)
+        
+        r"""
+        *****
+        ### 🫧 Cavitation
+
+        """
+        st.video("https://www.youtube.com/watch?v=0dd6AlyOnfc")
+        st.caption("Source: [youtube.com/@MntengDenver](https://www.youtube.com/watch?v=0dd6AlyOnfc)")
+
+        r"""
+        *****
+        ### 🪠 Pressure drop in a pump suction line
+        """
+        tabs = st.tabs([
+            "**⛲ No cavitation**", 
+            "**✨ Cavitation in line**", 
+            "**🫧 Cavitation in pump**"]
+        )
+        with tabs[0]: st.pyplot(suction_pipeline_cavitate(where=False))
+        with tabs[1]: st.pyplot(suction_pipeline_cavitate(where="pipe"))
+        with tabs[2]: st.pyplot(suction_pipeline_cavitate(where="pump"))
+
+        r"""
+
+        Energy balance between the suction tank and the eye of the pump:
+        $$
+            z_{\rm tank} + \dfrac{p_{\rm tank}}{\gamma} = z_{\rm eye} + \dfrac{p_{\rm eye,abs}}{\gamma} + \dfrac{V^2}{2g} + h_L
+        $$
+
+        $$
+            \dfrac{p_{\rm eye,abs}}{\gamma} = \underbrace{z_{\rm tank} - z_{\rm eye}}_{\substack{\textsf{Difference in} \\ \textsf{elevation} \\ \Delta z}} + \dfrac{p_{\rm tank,abs}}{\gamma} - \dfrac{V^2}{2g} - h_L
+        $$
+
+        $$
+            \dfrac{p_{\rm eye,abs}}{\gamma} = \Delta z + \dfrac{p_{\rm atm}}{\gamma} - \dfrac{V^2}{2g} - h_L
+        $$
+
+        To avoid fluid cavitation, the pressure cannot be lower than its vapor pressure:
+        
+        $$
+            \dfrac{p_{\rm eye,abs}}{\gamma} >  \dfrac{p_{\rm vapor}}{\gamma}
+        $$
+        
+        ### ⚬ Net Pressure Suction Head -- $\mathtt{NPSH}$
+        
+        The pressure head drops even further inside a centrifugal pump. 
+        Pump manufacturers often especify the minimum required pressure at the 
+        eye $(\mathtt{NPSH_r})$.
+
+        """ 
+        cols = st.columns(2)
+
+        with cols[0]:
+            r"""
+            #### $\mathtt{NPSH_a}$
+
+            Absolute head  at the suction eye of the pump
+
+            $$
+                \mathtt{NPSH_a} = \dfrac{p_{\rm eye,abs}}{\gamma} +  \dfrac{V^2}{2g} - \dfrac{p_{\rm vapor}}{\gamma}
+            $$
+            """
+
+        with cols[1]:
+            r"""
+            #### $\mathtt{NPSH_r}$
+
+            Minimum pressure required at the suction eye to keep the pump from cavitating 
+            
+            $$
+                \mathtt{NPSH_r} = \substack{\textsf{Check pump} \\ \textsf{characteristic curve!}}
+            $$
+            
+            """
+
+        r"""
+        $$
+            \textsf{To avoid cavitation:} \quad \mathtt{NPSH_a} > \mathtt{NPSH_r}
+        $$
+        """
+
+        r"""
+        *****
+        ### Euler number
+
+        $$
+            \mathsf{E_u} = \dfrac{\textsf{Pressure forces}}{\textsf{Inertial forces}} = \dfrac{p_\textsf{U} - p_\textsf{D}}{\rho u^2}
+        $$
+
+        | Parameter | Symbol   | Units  |
+        |:---------|:--------:|:------------------:|
+        |Pressure upstream   | $p_\textsf{U}$   | Force/Area        | 
+        |Pressure downstream   | $p_\textsf{D}$   | Force/Area        | 
+        |Characteristic velocity | $u$    | Length/Time  |
+        |Fluid density | $\rho$    | Mass/Volume  | 
+
+        &nbsp;
+
+        In an ideal flow with no energy losses, $\mathsf{E_u} = 0$
+
+        ### Cavitation number 
+
+        $$
+            \sigma = \dfrac{\mathtt{NPSH_r}}{H_p}
+        $$
+        """
 
     elif option == "Pumps in series/parallel":
         r" ### 🚧 Under construction 🚧"
@@ -538,23 +650,102 @@ def get_roughness_database():
         pipe_roughness_db = json.load(f)
     return pipe_roughness_db
 
-def pump_and_pipeline():
+def tank(ax, p:Point, width:float, height:float):
+    ax.add_patch(Rectangle(p, width, height, fc="#0000aa10", zorder=0))
+    ax.plot(
+        [p.x, p.x, p.x + width, p.x + width],
+        [p.y + 1.1*height, p.y, p.y, p.y + 1.1*height],
+        lw=2, c="k", zorder=1)
 
-    from collections import namedtuple
-    Point = namedtuple("Point", ["x", "y"])
+def pump(ax, p:Point, radius:float):
+    ax.add_patch(Circle(p, radius, fc="#11eeee", ec="#44444450", zorder=2))
+    ax.text(p.x, p.y, r"$\mathtt{P}$", ha='center', va='center')
 
-    from matplotlib.patches import Rectangle, Circle
+def get_realistic_pump():
+    import requests
+    from PIL import Image
+    from io import BytesIO
     
-    def tank(ax, p:Point, width:float, height:float):
-        ax.add_patch(Rectangle(p, width, height, fc="#0000aa10", zorder=0))
-        ax.plot(
-            [p.x, p.x, p.x + width, p.x + width],
-            [p.y + 1.1*height, p.y, p.y, p.y + 1.1*height],
-            lw=2, c="k", zorder=1)
+    url = "https://www.pump.co.uk/images/cm50-range-of-end-suction-centrifugal-pumps-p5471-2913_medium.jpg"
+    r = requests.get(url, stream=True)
 
-    def pump(ax, p:Point, radius:float):
-        ax.add_patch(Circle(p, radius, fc="#11eeee", ec="#44444450", zorder=2))
-        ax.text(p.x, p.y, r"$\mathtt{P}$", ha='center', va='center')
+    img = Image.open(BytesIO(r.content), formats=["png", "jpg"])
+
+    return img
+
+def realistic_pump(ax, p:Point, size:float):
+    
+    if "realistic_pump" not in st.session_state:
+        img = get_realistic_pump()
+        st.session_state.realistic_pump = img
+    else:
+        img = st.session_state.realistic_pump
+        
+    from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+
+    imagebox = OffsetImage(img, zoom=size, cmap="bone_r")
+
+    ax.add_artist(
+        AnnotationBbox(
+            imagebox, 
+            p,
+            frameon=False,
+            zorder=1
+        )
+    )
+
+def suction_pipeline_cavitate(where:str) -> plt.figure:
+
+    fig, ax = plt.subplots()
+
+    if where == "pipe":
+        tank_xy = Point(-1, -3.8)
+
+    elif where == "pump":
+        tank_xy = Point(-1, -2.2)
+
+    else:
+        tank_xy = Point(-1, 0)
+
+    tank(ax, tank_xy, 3, 2) 
+    realistic_pump(ax, Point(10.6, 0.2), 0.10)
+    
+    ## Pipeline    
+    ax.plot([2.1, 3.0, 8.5, 10.0, 10.0],  [tank_xy.y+0.2, tank_xy.y+0.2, 0.1, 0.1, 10.0], lw=7, color='gray', alpha=0.7, zorder=1)
+
+    ## HGL
+    #ax.plot([2.1, 9.0, 10., 10.5], [2.0, -0.5, -1.5, 6.0], lw=1.5, c='k', ls=":", label="HGL")
+
+    ax.plot([2.1, 9.6, 10, 10.5], [tank_xy.y+2.0, tank_xy.y-0.5, tank_xy.y-1.5, 6.0], lw=1.5, c='k', ls=":", label="HGL")
+
+    # Datum
+    ax.axhline(-5.5, xmin=0.5, lw=1, color='k', ls="dashed", zorder=0)
+    ax.text(6, -5.3, r"Datum: Vaccum", ha="left", fontdict=dict(size=8))
+
+    # Atmospheric pressure    
+    ax.axhline(tank_xy.y+2.0, lw=1, color='gray', ls=":")
+    ax.text(-2, tank_xy.y+2.2, r"$P_{\rm atm}/\gamma$", ha="center", fontdict=dict(size=8))
+
+    # Vapor pressure    
+    ax.axhline(-4, lw=1, color='gray', ls=":")
+    ax.text(-2, -3.8, r"$P_{\rm vapor}/\gamma$", ha="center", fontdict=dict(size=8))
+
+    # Vapor pressure    
+    ax.axhline(-3, lw=1, color='gray', ls=":")
+    ax.text(-2, -2.8, r"$\mathtt{NPSHr}$", ha="center", fontdict=dict(size=8))
+
+    # Final touches
+    ax.legend(ncols=2, loc="upper right", bbox_to_anchor=(0.20, 0.95))
+    ax.set_xlim(-2.5, 13.5)
+    ax.set_ylim(-6, 6.0)
+    ax.set_aspect('equal')
+    #ax.grid(True)
+    for spine in ax.spines: ax.spines[spine].set_visible(False)
+    ax.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+
+    return fig
+
+def pump_and_pipeline():
     
     fig, ax = plt.subplots()
     

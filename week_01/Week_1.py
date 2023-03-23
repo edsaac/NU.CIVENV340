@@ -306,6 +306,57 @@ def main():
         - Who was GG Stoke? 🇬🇧 
         """)
 
+        r"""
+        ****
+        ## Vapor pressure
+        """
+
+        vapor = pd.read_excel("week_01/properties.xlsx", sheet_name="vapor_pressure")
+        vapor["Vapor pressure (mH2O)"] = vapor["Vapor pressure (atm)"] * 10.3326 
+
+        units = st.radio("Units", ["(atm)", "(mH2O)"], horizontal=True)
+
+        fig = go.Figure([
+            go.Scatter(
+                x=vapor["Temperature"],
+                y=vapor[f"Vapor pressure {units}"],
+                name="Water",
+                hovertemplate="T = %{x} °C <br><b>p<sub>v</sub> = %{y:.2f}" + f"{units} </b>",
+                line=dict(
+                    width=4, 
+                    color="blue"),
+                marker=dict(
+                    size=6
+                )
+            )
+        ])
+
+        fig.update_layout(
+            height=700,
+            title=dict(
+                text='''Vapor pressure of water<br> <i>Data retrieved from the <a href="https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9982163963102441">CRC Handbook of Chemistry and Physics Online</a></i>''',
+                font_color="#444"),
+            yaxis=dict(
+                title=f"Vapor pressure {units}",
+                **axis_format),
+            xaxis=dict(
+                title="Temperature [°C]",
+                **axis_format),
+            legend=dict(
+                title="Fluid",
+                font=dict(size=18),
+                orientation="v",
+                bordercolor="gainsboro",
+                borderwidth=1,
+                yanchor="top", y=0.50,
+                xanchor="center", x=0.96
+            ),
+            hovermode='x',
+            hoverlabel=dict(font_size=18),
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
     elif option == "Fluid classification":
 
         r"""
