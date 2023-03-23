@@ -59,3 +59,7 @@ img {
     margin-right: auto;
     justify-content: center;
   }
+
+[data-testid="stHeader"] {
+    background-color: rgba(078, 042, 132, 0.5);
+}

@@ -182,8 +182,14 @@ def main():
         st.plotly_chart(fig, use_container_width=True)
 
     elif option == "Open channel flow":
+        st.image("https://upload.wikimedia.org/wikipedia/commons/9/92/Japan_Kyoto_philosophers_walk_DSC00297.jpg", use_column_width=True)
+        st.caption("Lake Biwa Canal. Source: [wikimedia.org](https://upload.wikimedia.org/wikipedia/commons/9/92/Japan_Kyoto_philosophers_walk_DSC00297.jpg)")
+        
+        r"""
+        ### Open-channel flow classification
+        """
         r"### 🚧 Under construction"
-
+    
     elif option == "Section geometry":
         r"""
         ## 📜 Some definitions
