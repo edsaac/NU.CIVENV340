@@ -548,15 +548,15 @@ def main():
 
         Energy balance between the suction tank and the eye of the pump:
         $$
-            z_{\rm tank} + \dfrac{p_{\rm tank}}{\gamma} = z_{\rm eye} + \dfrac{p_{\rm eye,abs}}{\gamma} + \dfrac{V^2}{2g} + h_L
+            z_{\rm tank} + \dfrac{p_{\rm tank}}{\gamma} = \cancel{z_{\rm eye}} + \dfrac{p_{\rm eye,abs}}{\gamma} + \dfrac{V^2}{2g} + h_L
         $$
 
         $$
-            \dfrac{p_{\rm eye,abs}}{\gamma} = \underbrace{z_{\rm tank} - z_{\rm eye}}_{\substack{\textsf{Difference in} \\ \textsf{elevation} \\ \Delta z}} + \dfrac{p_{\rm tank,abs}}{\gamma} - \dfrac{V^2}{2g} - h_L
+            \dfrac{p_{\rm eye,abs}}{\gamma} = z_{\rm tank} + \dfrac{p_{\rm tank,abs}}{\gamma} - \dfrac{V^2}{2g} - h_L
         $$
 
         $$
-            \dfrac{p_{\rm eye,abs}}{\gamma} = \Delta z + \dfrac{p_{\rm atm}}{\gamma} - \dfrac{V^2}{2g} - h_L
+            \dfrac{p_{\rm eye,abs}}{\gamma} = z_{\rm tank} + \dfrac{p_{\rm atm}}{\gamma} - \dfrac{V^2}{2g} - h_L
         $$
 
         To avoid fluid cavitation, the pressure cannot be lower than its vapor pressure:
@@ -622,11 +622,6 @@ def main():
 
         In an ideal flow with no energy losses, $\mathsf{E_u} = 0$
 
-        ### Cavitation number 
-
-        $$
-            \sigma = \dfrac{\mathtt{NPSH_r}}{H_p}
-        $$
         """
 
     elif option == "Pumps in series/parallel":
@@ -719,8 +714,12 @@ def suction_pipeline_cavitate(where:str) -> plt.figure:
     ax.plot([2.1, 9.6, 10, 10.5], [tank_xy.y+2.0, tank_xy.y-0.5, tank_xy.y-1.5, 6.0], lw=1.5, c='k', ls=":", label="HGL")
 
     # Datum
+    ax.axhline(0.1, xmin=0.5, lw=1, color='k', ls="dashed", zorder=0)
+    ax.text(12.2, 0.3, r"Datum", ha="left", fontdict=dict(size=8))
+
+    # Vaccum
     ax.axhline(-5.5, xmin=0.5, lw=1, color='k', ls="dashed", zorder=0)
-    ax.text(6, -5.3, r"Datum: Vaccum", ha="left", fontdict=dict(size=8))
+    ax.text(6, -5.3, r"Vaccum", ha="left", fontdict=dict(size=8))
 
     # Atmospheric pressure    
     ax.axhline(tank_xy.y+2.0, lw=1, color='gray', ls=":")
