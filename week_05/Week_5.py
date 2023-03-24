@@ -5,6 +5,9 @@ import plotly.graph_objects as go
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from collections import namedtuple
+Point = namedtuple("Point", ["x", "y"])
+
 
 def main():
     
@@ -116,7 +119,7 @@ def main():
 
         fig.add_traces(
             [
-                go.Scatter(
+                go.Scatter( ## System curve
                     x = discharge,
                     y = system_head,
                     name="System",
@@ -125,7 +128,7 @@ def main():
                         width=4,
                         color="cornflowerblue")
                 ),
-                go.Scatter(
+                go.Scatter( ## Pump curve
                     x=discharge_manufacturer,
                     y=head_pump_manufacturer,
                     name="Pump",
@@ -134,7 +137,7 @@ def main():
                         width=8, 
                         color="purple")
                 ),
-                go.Scatter(
+                go.Scatter( ## Operation point
                     x = operation_point["Discharge (LPS)"],
                     y = operation_point["Head (m)_Pump"],
                     name = "Operation <br>point",
@@ -309,17 +312,221 @@ def main():
                 """
             
     elif option == "Specific energy":
-        r"### 🚧 Under construction"
+        r"""
+
+        ## Total and specific energy
+
+        The **total energy** per unit weight of water flowing in an open channel is the sum of:
+        - Kinetic energy
+        - Pressure energy
+        - Potential energy (elevation above a datum line) 
+        
+        $$
+            H = \underbrace{z}_{\substack{ \textsf{Elevation} \\ \textsf{head} }} + \underbrace{ \dfrac{p}{\gamma} }_{ \substack{ \textsf{Pressure} \\ \textsf{head} }} + \underbrace{ \alpha\dfrac{V^2}{2g} }_{ \substack{\textsf{Kinetic} \\ \textsf{head}}}
+        $$
+
+        |Parameter | Symbol | Units |
+        |:---------|:------:|:-----:|
+        |Total energy per unit weight |$H$ | Length |
+        |Pressure head |$p/\gamma$ | Length |
+        |Energy coefficient |$\alpha \in [1.0, 1.20] $ | - |
+        |Mean velocity |$V$ | Length/Time |
+
+        &nbsp;
+
+        On a plane surface, the water depth $y$ represents the pressure head $p/\gamma$.
+
+
+        The **specific energy** is the energy head measured with respect of the channel bottom
+
+        $$
+            E = y + \dfrac{V^2}{2g} = y + \dfrac{Q^2}{2gA^2}
+        $$
+        """
+        
+        r"""
+        *****
+        ## Specific energy curve
+
+        """
+
+        cols = st.columns([2,1])
+
+        with cols[1]: ## Controls for plot
+            "&nbsp;"
+            width =st.slider("Width -- $b$ [m]", 0.1, 10.0, 3.0, 0.1)
+            discharge = st.slider("Discharge -- $Q$ [m³/s]", 1.0, 30.0, 15.0, 0.1)
+            
+            depth = np.geomspace(0.01, 10, 100)
+            area = width * depth
+            specific_energy = depth + np.power(discharge, 2)/(2 * 9.81 * np.power(area, 2))
+
+            critical_i = np.argmin(specific_energy)
+
+        with cols[0]: ## Plotly plot
+            fig = go.Figure()
+            fig.add_trace( ## Specific energy
+                go.Scatter(
+                    x = specific_energy,
+                    y = depth,
+                    name="Specific energy",
+                    hovertemplate="<i><b>E</b></i> = %{x:.1f} m <br>y = %{y:.1f} m",
+                    line=dict(
+                        width=8, 
+                        color="purple")
+                )
+            )
+
+            fig.add_trace( ## Critical point
+                go.Scatter(
+                    x = [specific_energy[critical_i]],
+                    y = [depth[critical_i]],
+                    name = "Critical flow",
+                    mode = "markers",
+                    visible = 'legendonly',
+                    hovertemplate="<i><b>E<sub>min</sub></b></i> = %{x:.1f} m <br><i>y<sub>c</sub></i> = %{y:.1f} m",
+                    marker=dict(
+                        size=20,
+                        color="#ff8811",
+                        opacity=0.5,
+                        line=dict(
+                            color="MediumPurple",
+                            width=2
+                        )
+                    ),
+                )
+            )
+            
+            fig.update_layout(
+                    height=600,
+                    margin=dict(t=40),
+                    title_text = '''Specific energy for a rectangular channel''',
+                    yaxis=dict(
+                        title="Depth &nbsp; <i>y</i> [m]",
+                        range=[0,10],
+                        showspikes=True,
+                        **axis_format),
+                    xaxis=dict(
+                        title="Specific energy &nbsp; <i>E</i> [m]",
+                        range=[0,10],
+                        showspikes=True,
+                        **axis_format),
+                    legend=dict(
+                        # title="",
+                        font=dict(size=18),
+                        orientation="v",
+                        bordercolor="gainsboro",
+                        borderwidth=1,
+                        yanchor="top", y=0.96,
+                        xanchor="left", x=0.04
+                    ),
+                    hoverlabel=dict(font_size=18),
+                )
+
+            st.plotly_chart(fig, use_container_width=True)
+
+        r"""
+        *****
+        ## Critical flow
+
+        Depth at which the specific energy is minimized
+
+        $$
+            \dfrac{dE}{dy} = \dfrac{d}{dy} \left(y + \dfrac{Q^2}{2gA^2}\right) = 0 
+        $$
+
+        $$
+            -\dfrac{Q^2}{gA^3}\dfrac{dA}{dy} + 1 = 0
+        $$
+
+        Why $dA/dy = T$ ?
+
+        $$
+            1 - \dfrac{Q^2T}{gA^3} = 0
+        $$
+
+        Introducing the hydraulic depth,
+
+        $$
+            1 - \dfrac{Q^2}{g A^2} \dfrac{1}{D_h} = 0 
+        $$
+
+        Specific energy is minimal when 
+        $$
+            \dfrac{Q^2}{g A^2} \dfrac{1}{D_h} = 1
+        $$
+
+        Or in terms of velocity
+        $$
+            \underbrace{\dfrac{V}{\sqrt{g \, D_h}}}_{\substack{\textsf{Froude} \\ \textsf{number} \\ \mathsf{F_r} }} = 1
+        $$
+
+        """
 
     elif option == "Froude number":
-        r"### 🚧 Under construction"
+        r"""
+        ## Critical depth $y_c$
+
+        The depth that minimizes the specific energy, i.e., follows that
+        $$
+            \dfrac{Q^2}{g} = A^2 \, D_h
+        $$
+
+        For a rectangular channel, an explicit equation for the critical depth can be found:
+        $$
+            y_c = \sqrt[3]{\dfrac{Q^2}{g \, b^2}}
+        $$
+
+        For trapezoidal and circular channels, numerical approximation is necessary.
+        
+        ****
+        ## Froude number $\mathsf{F_r}$
+        """
+
+        cols = st.columns(3, gap="medium")
+        with cols[0]: # Subcritical
+            r"""
+            #### Subcritical flow
+
+            $$
+                \begin{align*}
+                    y > y_c \\ \mathsf{F_r} < 1.0
+                \end{align*}
+            $$
+            """
+
+        with cols[1]: # Critical
+            r"""
+            #### Critical flow
+
+            $$
+                \begin{align*}
+                    y = y_c \\ \mathsf{F_r} = 1.0
+                \end{align*}
+            $$
+            """
+        
+        with cols[2]: # Subcritical
+            r"""
+            #### Supercritical flow
+
+            $$
+                \begin{align*}
+                    y < y_c \\ \mathsf{F_r} > 1.0
+                \end{align*}
+            
+            $$
+            """
+        
+        url = "https://www.youtube.com/watch?v=cRnIsqSTX7Q"
+        st.video(url)
+        st.caption(f"Source: [youtube.com/@emulenews]({url})")
+
 
     else: 
         st.error("You should not be here!")
         r" ### 🚧 Under construction 🚧"
 
-from collections import namedtuple
-Point = namedtuple("Point", ["x", "y"])
 
 def draw_sections(shape:str):
     from matplotlib.patches import Rectangle, Polygon, Circle
