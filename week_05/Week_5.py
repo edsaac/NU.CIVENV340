@@ -185,13 +185,88 @@ def main():
         st.plotly_chart(fig, use_container_width=True)
 
     elif option == "Open channel flow":
-        st.image("https://upload.wikimedia.org/wikipedia/commons/9/92/Japan_Kyoto_philosophers_walk_DSC00297.jpg", use_column_width=True)
-        st.caption("Lake Biwa Canal. Source: [wikimedia.org](https://upload.wikimedia.org/wikipedia/commons/9/92/Japan_Kyoto_philosophers_walk_DSC00297.jpg)")
+        url = "https://upload.wikimedia.org/wikipedia/commons/9/92/Japan_Kyoto_philosophers_walk_DSC00297.jpg"
+        st.image(url, use_column_width=True)
+        st.caption(f"Lake Biwa Canal. Source: [wikimedia.org]({url})")
         
         r"""
         ### Open-channel flow classification
         """
-        r"### 🚧 Under construction"
+        tabs = st.tabs(["**Uniform**", "**Gradually varied** (Accelerating)", "**Gradually varied** (Slowing down)", "**Rapidly varied**"])
+        
+        with tabs[0]: ## Uniform flow
+            st.pyplot(draw_profiles(which="uniform"))
+
+            cols = st.columns(3)
+            with cols[0]:
+                r"""
+                $$
+                    y_1 = y_2
+                $$
+                """
+            with cols[1]:
+                r"""
+                $$
+                    \dfrac{V^2_1}{2g} = \dfrac{V^2_2}{2g}
+                $$
+                """
+            with cols[2]:
+                r"""
+                $$
+                    S_0 = S_w = S_e
+                $$
+                """
+            
+        with tabs[1]: ## GVF -> Accelerates
+            st.pyplot(draw_profiles(which="gvf_accelerate"))
+
+            cols = st.columns(3)
+            with cols[0]:
+                r"""
+                $$
+                    y_1 > y_2
+                $$
+                """
+            with cols[1]:
+                r"""
+                $$
+                    \dfrac{V^2_1}{2g} < \dfrac{V^2_2}{2g}
+                $$
+                """
+            with cols[2]:
+                r"""
+                $$
+                    S_0 \neq S_w \neq S_e 
+                $$
+                """
+            
+        with tabs[2]: ## GVF -> Deaccelerates
+            st.pyplot(draw_profiles(which="gvf_slowing"))
+
+            cols = st.columns(3)
+            with cols[0]:
+                r"""
+                $$
+                    y_1 < y_2
+                $$
+                """
+            with cols[1]:
+                r"""
+                $$
+                    \dfrac{V^2_1}{2g} > \dfrac{V^2_2}{2g}
+                $$
+                """
+            with cols[2]:
+                r"""
+                $$
+                    S_0 \neq S_w \neq S_e 
+                $$
+                """
+
+        with tabs[3]: ## RVF
+            url = "https://www.youtube.com/watch?v=nX6aemsdFIo"
+            st.video(url)
+            st.caption(f"Source: [youtube.com/@fluidsin4k719]({url})")
     
     elif option == "Section geometry":
         r"""
@@ -477,8 +552,12 @@ def main():
             y_c = \sqrt[3]{\dfrac{Q^2}{g \, b^2}}
         $$
 
-        For trapezoidal and circular channels, numerical approximation is necessary.
-        
+        For trapezoidal and circular channels, a numerical approximation is necessary.
+        """
+
+        st.info("&nbsp; Check `scipy.optimize.root` to find a solution", icon="👈")
+
+        r"""
         ****
         ## Froude number $\mathsf{F_r}$
         """
@@ -527,6 +606,101 @@ def main():
         st.error("You should not be here!")
         r" ### 🚧 Under construction 🚧"
 
+def draw_profiles(which:str):
+    from matplotlib.patches import Rectangle, Polygon, Circle
+    
+    So = -1/10.  # 1 + x*S0
+    x0, x1, x2 = 1, 3, 8
+
+    if which == "uniform":
+        Sw = So      # 3 + x*Sw
+        Se = So      # 4 + x*Se
+
+    elif which == "gvf_accelerate":
+        Sw = 1.5 * So
+        Se = 1/1.5 * So
+
+    if which == "gvf_slowing":
+        So = -1/10.
+        Sw = 0.8 * So
+        Se = 1/0.8 * So
+
+    section1 = [-1, 1 + x1*So, 3 + x1*Sw, 4 + x1*Se]
+    section2 = [-1, 1 + x2*So, 3 + x2*Sw, 4 + x2*Se]
+        
+    fig, ax = plt.subplots()
+    
+    ## Channel bottom
+    ax.axline((0,1), slope=So, lw=2, c="#00000040")
+    ax.text(x0, 1 + x0*So, r"Channel bottom", ha="center", rotation=-7, fontdict=dict(size=8, color="0.2"))
+    ax.add_patch(
+        Polygon([(0,0.8), (0,1), (10,0), (10,-0.2)], closed=False, hatch="////", ec="#00000030", fc="#ffffff")
+    )
+
+    ## Water surface
+    ax.axline((0,3), slope=Sw, c="navy")
+    ax.text(x0, 3 + x0*Sw, r"HGL", ha="center", rotation=-8, fontdict=dict(size=10, color="navy"))
+
+    # ax.add_patch(
+    #     Polygon([(0,1), (0,p1.y+1), (10, p2.y), (10,0)], 
+    #     closed=False, hatch="....", ec="#0000ff10",
+    #             fc="#0000ff10", zorder=0)
+    # )
+
+    ## EGL
+    ax.axline((0,4), slope=Se , c="mediumseagreen", ls="dashed")
+    ax.text(x0, 4 + x0*Se, r"EGL", ha="center", rotation=-8, fontdict=dict(size=10, color="mediumseagreen"))
+
+    # Datum
+    ax.axhline(-1, lw=1, color='k', ls="dashed", zorder=0)
+    ax.text(1.0, -0.9, r"Datum", ha="center", fontdict=dict(size=8))
+
+    ## Upstream section
+
+    ### Head components - Section 1
+    for i, (x,sect) in enumerate(zip([x1,x2], [section1, section2]), start=1):
+        ax.plot([x]*2, [sect[-1], 4.5], ls="dotted", lw=1, c="gray")
+        ax.text(x, 4.6, f"Section\n{i}", ha="center", fontdict=dict(size=8, color="gray"))
+        ax.plot([x]*4, sect, marker="o", ms=4 ,lw=2, c='darkslategray', ls=":")
+        ax.text(x+0.05, np.mean(sect[0:2]), rf"$z_{i}$", ha="left", va="center", fontdict=dict(color='darkslategray', size=12))
+        ax.text(x+0.05, np.mean(sect[1:3]), rf"$y_{i}$", ha="left", va="center", fontdict=dict(color='darkslategray', size=12))
+        ax.text(x+0.05, np.mean(sect[2:4]), rf"$\dfrac{{V^2_{i}}}{{2g}}$", ha="left", va="center", fontdict=dict(color='darkslategray', size=10))
+
+    ### Slopes 
+    ax.annotate(r"$S_0$", (5, 1 + 5*So), (5.5,-0.1),
+        size=10, color="darkslategray", ha='left', va='top',
+        arrowprops=dict(
+            arrowstyle="->", color="darkslategray",
+            shrinkA=8, shrinkB=1,
+            patchA=None, patchB=None,
+            connectionstyle="arc3, rad=-0.3"))
+    
+    ax.annotate(r" $S_w$", (5, 3 + 5*Sw), (5.5,1.5),
+        size=10, color='navy',
+        arrowprops=dict(
+            arrowstyle="->", color="navy",
+            shrinkA=8, shrinkB=1,
+            patchA=None, patchB=None,
+            connectionstyle="arc3, rad=-0.3"))
+    
+    ax.annotate(r" $S_e$", (5, 4 + 5*Se), (5.5, 4),
+        size=10, color='mediumseagreen',
+        arrowprops=dict(
+            arrowstyle="->", color="mediumseagreen",
+            shrinkA=8, shrinkB=1,
+            patchA=None, patchB=None,
+            connectionstyle="arc3, rad=0.3"))
+
+    # Final touches
+    #ax.legend(ncols=2, loc="upper right", bbox_to_anchor=(0.20, 0.95))
+    ax.set_xlim(0.0, 10.0)
+    ax.set_ylim(-1.5, 5.0)
+    ax.set_aspect('equal')
+    #ax.grid(True, color="lightgray")
+    for spine in ax.spines: ax.spines[spine].set_visible(False)
+    ax.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+
+    return fig
 
 def draw_sections(shape:str):
     from matplotlib.patches import Rectangle, Polygon, Circle
