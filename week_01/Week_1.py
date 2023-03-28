@@ -355,7 +355,7 @@ def main():
             hoverlabel=dict(font_size=18),
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True) #?
 
     elif option == "Fluid classification":
 
