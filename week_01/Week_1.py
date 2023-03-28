@@ -252,7 +252,7 @@ def main():
                 x=viscosity["Temp (C)"],
                 y=viscosity["Kinematic water viscosity (ν) [SI]"],
                 name="Water",
-                hovertemplate="T = %{x} °C <br><b>μ = %{y:.2e} N.s/m²</b>",
+                hovertemplate="T = %{x} °C <br><b>ν = %{y:.2e} m²/s</b>",
                 line=dict(
                     width=2, 
                     color="blue"),
@@ -264,7 +264,7 @@ def main():
                 x=viscosity["Temp (C)"],
                 y=viscosity["Kinematic air viscosity (ν) [SI]"],
                 name="Air",
-                hovertemplate="T = %{x} °C <br><b>μ = %{y:.2e} N.s/m²</b>",
+                hovertemplate="T = %{x} °C <br><b>ν = %{y:.2e} m²/s</b>",
                 line=dict(
                     width=2, 
                     color="red"),
