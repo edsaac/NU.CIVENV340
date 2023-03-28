@@ -103,7 +103,7 @@ def main():
             r"""
             | Condition           | Symbol | Units       | SI                                | BG                                     |
             |:--------------------|:------:|:-----------:|:---------------------------------:|:--------------------------------------:|
-            |Temperature          | $T$    | Temperature | $4 \, \degree\textrm{C}$       | $68.4 \, \degree\textrm{F}$            |
+            |Temperature          | $T$    | Temperature | $4 \, \degree\textrm{C}$       | $39.2 \, \degree\textrm{F}$            |
             |Atmospheric pressure | $p_{\rm atm}$    | Force/Area  | $1.014 \times 10^{5} \, \textrm{Pa}$ | $14.7 \, \textrm{lb}/\textrm{in}^2$ |
             |Atmospheric pressure | $p_{\rm atm}/\gamma$ | Lenght  | ❓   | ❓ |
             |Gravitational acceleration| $g$ | Lenght/Time²  | $9.81 \, \textrm{m}/\textrm{s}^2$| $32.2 \, \textrm{ft}/\textrm{s}^2$ |

@@ -64,7 +64,7 @@ def main():
     
     if option == "Smooth transitions":
         r"""
-        ## Contractions and expansions"""
+        ## 🌁 Contractions and expansions"""
         
         st.pyplot(draw_contraction())
         
@@ -96,7 +96,7 @@ def main():
 
         r"""
         ************
-        ## Steps
+        ## 🪜 Steps
         """
         st.pyplot(draw_step())
         r"""
@@ -272,7 +272,54 @@ def main():
         """
 
     elif option == "Gradually varied flow":
-        r"### 🚧 Under construction 🚧"
+        r"""
+        ## Gradually Varied Flow (GVF)
+        
+        Changes in water depth occur over long distances.  The total energy of the
+        flow in a given section is
+
+        $$
+            H = z + y + \dfrac{Q^2}{2g\,A^2}
+        $$
+
+        Differentiating along the longitudinal distance $x$,
+
+        $$
+            \dfrac{dH}{dx} = \dfrac{dz}{dx} + \dfrac{dy}{dx} + \dfrac{-Q^2}{g\,A^3}\dfrac{dA}{dx}
+        $$
+
+        Rearanging for the water surface slope $dy/dx$,
+        
+        $$
+            \dfrac{dy}{dx} = \dfrac{\dfrac{dH}{dx} - \dfrac{dz}{dx}}{1 - \dfrac{Q^2\,T}{g\,A^3}}
+        $$ 
+
+        | Parameter | Description   | Units  |
+        |:---------:|:--------:|:------------------:|
+        |$dy/dx = S_w$  | Slope of the water surface  | - | 
+        |$dz/dx = S_0$  | Slope of the bottom channel | - | 
+        |$dH/dx = S_e$  | Slope of the EGL | - | 
+        |$Q$  | Discharge | Volume/Time | 
+        |$A$  | Cross-sectional area | Area | 
+        |$T$  | Top width | Length | 
+
+        &nbsp;
+
+        Or, 
+
+        $$
+            \dfrac{dy}{dx} = \dfrac{S_e - S_0}{1 - \dfrac{Q^2\,T}{g\,A^3}}
+        $$
+
+        &nbsp;
+
+        Since the changes in depth occur in short distances, it can be assumed that
+        $S_e$ could be calculated using a normal flow equation (i.e., Manning equation).
+        
+        ******
+        ## Standard step method (finite difference)
+
+        """
     elif option == "Water profiles":
         r"""
         ## Slope classification
