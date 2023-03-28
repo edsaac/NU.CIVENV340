@@ -561,7 +561,7 @@ def main():
         
         ## Energy conservation
         """
-        with st.expander("**Energy grade line (EGH)** and **hydraulic grade line (HGL)**"):
+        with st.expander("**Energy grade line (EGH)** and **hydraulic grade line (HGL)**", expanded=True):
             st.pyplot(gradelines_sketch())
             st.caption("*Source* [🤙🏻](https://edsaac.github.io)")
             # st.image("https://www.pipeflow.com/public/PipeFlowExpertSoftwareHelp/desktop/PipeFlowExpertUserGuide_files/image371.jpg", use_column_width=True)

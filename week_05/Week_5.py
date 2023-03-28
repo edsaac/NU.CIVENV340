@@ -435,8 +435,12 @@ def main():
             depth = np.geomspace(0.01, 10, 100)
             area = width * depth
             specific_energy = depth + np.power(discharge, 2)/(2 * 9.81 * np.power(area, 2))
-
+            
             critical_i = np.argmin(specific_energy)
+
+            all_discharges = np.linspace(0.5, 300, 100)
+            critical_state = np.cbrt(np.power(all_discharges, 2)/(9.81 * width**2))
+            all_specific_energy = critical_state + np.power(all_discharges, 2)/(2 * 9.81 * np.power(width * critical_state, 2))
 
         with cols[0]: ## Plotly plot
             fig = go.Figure()
@@ -458,7 +462,6 @@ def main():
                     y = [depth[critical_i]],
                     name = "Critical flow",
                     mode = "markers",
-                    visible = 'legendonly',
                     hovertemplate="<i><b>E<sub>min</sub></b></i> = %{x:.1f} m <br><i>y<sub>c</sub></i> = %{y:.1f} m",
                     marker=dict(
                         size=20,
@@ -469,6 +472,20 @@ def main():
                             width=2
                         )
                     ),
+                )
+            )
+
+            fig.add_trace( ## Critical state
+                go.Scatter(
+                    x = all_specific_energy,
+                    y = critical_state,
+                    name = "Critical state <br><i>changes in Q</i>",
+                    hovertemplate="<i><b>E<sub>min</sub></b></i> = %{x:.1f} m <br><i>y<sub>c</sub></i> = %{y:.1f} m",
+                    line=dict(
+                        dash="dot",
+                        color="orange"
+                    )
+                    
                 )
             )
             
