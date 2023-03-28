@@ -423,6 +423,10 @@ def main():
         *****
         ## Specific energy curve
 
+        For a given value of $E$, the discharge can go through either a supercritical depth or
+        a subcritical depth. This pair of depths are known as **alternate depths**.
+        
+        &nbsp;
         """
 
         cols = st.columns([2,1])
@@ -458,12 +462,11 @@ def main():
                     y = [depth[critical_i]],
                     name = "Critical flow",
                     mode = "markers",
-                    visible = 'legendonly',
                     hovertemplate="<i><b>E<sub>min</sub></b></i> = %{x:.1f} m <br><i>y<sub>c</sub></i> = %{y:.1f} m",
                     marker=dict(
                         size=20,
                         color="#ff8811",
-                        opacity=0.5,
+                        opacity=0.7,
                         line=dict(
                             color="MediumPurple",
                             width=2
@@ -472,6 +475,38 @@ def main():
                 )
             )
             
+            fig.add_trace( ## 45deg line
+                go.Scatter(
+                    x = [-10,10],
+                    y = [-10,10],
+                    name = "<i>E</i> > <i>y<i>",
+                    mode="lines",
+                    line=dict(
+                        width=2,
+                        color="pink",
+                        dash="dot"
+                    )
+                )
+            )
+
+            fig.add_hrect( ## Supercritical region
+                y0=0.0, y1=depth[critical_i], 
+                annotation_text="Supercritical", 
+                annotation_position="top right",
+                line_width=0, 
+                fillcolor="orange", 
+                opacity=0.1
+            )
+
+            fig.add_hrect( ## Subcritical region
+                y1=10, y0=depth[critical_i], 
+                annotation_text="Subcritical", 
+                annotation_position="bottom right",
+                line_width=0, 
+                fillcolor="blue", 
+                opacity=0.1
+            )
+
             fig.update_layout(
                     height=600,
                     margin=dict(t=40),
