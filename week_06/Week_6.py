@@ -1,10 +1,14 @@
 import streamlit as st
 import pickle
-import matplotlib.pyplot as plt
-import numpy as np
-from collections import namedtuple
 
+import matplotlib.pyplot as plt
+import matplotlib.patheffects as pe
+
+import numpy as np
+
+from collections import namedtuple
 Side = namedtuple("Side",["x","y"])
+Point = namedtuple("Point", ["x","y"])
 
 def main():
     
@@ -85,13 +89,6 @@ def main():
         The discharge is the same in the two sections, but the cross-sectional area
         will differ as the channel geometry differ. 
 
-        ************
-        What if the specific energy upstream is less than the minimum specific energy 
-        in the contracted region?
-
-        $$
-            E_1 < E_{2,\textsf{min}}
-        $$
         """
 
         r"""
@@ -117,17 +114,46 @@ def main():
         will differ as the depth changes. 
 
         ************
-        What if the specific energy upstream is less than the minimum specific energy 
-        in the elevated section?
+        
+        ### ⌛ Choking
 
-        $$
-            E_1 < E_{2,\textsf{min}} + \Delta Z
-        $$
+        If the specific energy upstream is less than the required to pass through
+        a given section, it will have to adjust itself by either:
+        
+        - Decreasing its discharge
+        - Increasing its specific energy
+
         """
 
 
     elif option == "Jumps and momentum conservation":
-        r"### 🚧 Under construction 🚧"
+        r"""
+        ## Hydraulic jumps
+        """
+        cols = st.columns(2)
+
+        with cols[0]:
+            url = "https://www.youtube.com/watch?v=xTXQKeSZbGE"
+            st.video(url)
+            st.caption(f"Source: [youtube.com/@a-thaksalawa2483]({url})")
+
+        with cols[1]:
+            
+            with st.expander("Experiment with dam:"):
+                url = "https://www.youtube.com/watch?v=VU7UEiO6ijA"
+                st.video(url)
+                st.caption(f"Source: [youtube.com/@WakaWakaWakaW]({url})")
+
+            with st.expander("Experiment in a flume:", expanded=True):
+                url = "https://www.youtube.com/watch?v=uz7d_1KnbPM"
+                st.video(url)
+                st.caption(f"Source: [youtube.com/@WakaWakaWakaW]({url})")
+                
+        r"""
+        Convert a high-velocity flow into a subcritical
+        # """
+        st.pyplot(draw_hydraulic_jump())
+
     elif option == "Uniform flow":
         r"""
         ## Uniform flow
@@ -403,10 +429,17 @@ def draw_contraction():
 
 
     # Channel bottom
-    ax.axhline(-2, lw=2, c="#00000040")
+    ax.axhline(y=-2, 
+        lw=1.5, c="gray", 
+        path_effects = [
+            pe.withTickedStroke(offset=(0,0), angle=-45 ,spacing=6, length=3)
+        ]
+    )
+
     ax.text(water_surface.x[-1], -2 + 0.1, r"Channel bottom", ha="right", fontdict=dict(size=8, color="0.2"))
-    ax.fill_between(water_surface.x, -2, -2 - 0.4,
-        hatch="////", ec="#00000030", fc="#ffffff")
+    
+    # ax.fill_between(water_surface.x, -2, -2 - 0.4,
+    #     hatch="////", ec="#00000030", fc="#ffffff")
 
     # Final touches
     ax.set_ylim(-3, 5.0)
@@ -416,13 +449,24 @@ def draw_contraction():
     ax.set_ylabel("Plan view", loc="center")
     
     ## Channel borders
-    ax.plot(side_down.x, side_down.y , lw=2, c="#00000080")
-    ax.fill_between(side_down.x, side_down.y, side_down.y - 0.4,
-        hatch="////", ec="#00000030", fc="#ffffff")
+    ax.plot(side_down.x, side_down.y , 
+        lw=1.5, c="gray",
+        path_effects = [
+            pe.withTickedStroke(offset=(0,0), angle=-45 ,spacing=6, length=3)
+        ]
+    )
+    
+    # ax.fill_between(side_down.x, side_down.y, side_down.y - 0.4,
+    #     hatch="////", ec="#00000030", fc="#ffffff")
 
-    ax.plot(side_up.x, side_up.y , lw=2, c="#00000080")
-    ax.fill_between(side_up.x, side_up.y, side_up.y + 0.4,
-        hatch="////", ec="#00000030", fc="#ffffff")
+    ax.plot(side_up.x, side_up.y , 
+        lw=1.5, c="gray",
+        path_effects = [
+            pe.withTickedStroke(offset=(0,0), angle=45 ,spacing=6, length=3)
+        ])
+    
+    # ax.fill_between(side_up.x, side_up.y, side_up.y + 0.4,
+    #     hatch="////", ec="#00000030", fc="#ffffff")
     
     ## Section annotations
     for i,x in enumerate(side_down.x[1:3], start=1):
@@ -536,7 +580,139 @@ def draw_step():
         ))
     return fig
 
+@st.cache_data
+def get_realistic_water():
+    import requests
+    from PIL import Image
+    from io import BytesIO
+    
+    url = "https://cdn4.iconfinder.com/data/icons/water-waves-design/1470/tornado_blue_water_wave_spiral_hurricane_logo-512.png"
+    r = requests.get(url, stream=True)
 
+    img = Image.open(BytesIO(r.content), formats=["png", "jpg"])
+
+    return img
+
+def realistic_water(ax:plt.Axes, p:Point, size:float):
+    
+    if "realistic_water" not in st.session_state:
+        img = get_realistic_water()
+        st.session_state.realistic_water = img
+    else:
+        img = st.session_state.realistic_water
+        
+    from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+
+    imagebox = OffsetImage(img, zoom=size, cmap="bone_r")
+
+    ax.add_artist(
+        AnnotationBbox(
+            imagebox, 
+            p,
+            frameon=False,
+            zorder=1
+        )
+    )
+
+@st.cache_data
+def draw_hydraulic_jump():
+    bottom = Side(
+        x= np.array([0,4,6,8,10,15]), 
+        y = np.array([-2,-2,-2,-2,-2,-2])
+    )
+
+    water_surface = Side(
+        x = bottom.x,
+        y = np.array([-1, -1, -1, 2, 2, 2])
+    )
+
+    energy_line = Side(
+        x = bottom.x,
+        y = np.array([5,5,5,4,4,4])
+    )
+
+    fig, ax = plt.subplots()
+    ax.set_ylabel("Profile view", loc="center")
+    
+    # Datum
+    ax.axhline(-2, lw=1, color='k', ls="dashed", zorder=2)
+    ax.text(bottom.x[-1], -2 + 0.1, r"Datum", ha="right", fontdict=dict(size=8))
+
+    ## Bottom
+    ax.plot(
+        bottom.x, bottom.y, 
+        c="0.50", lw=1.5, 
+        path_effects = [
+            pe.withTickedStroke(offset=(0,0), angle=-45 ,spacing=6, length=1.5)
+        ]
+    )
+    
+    ax.text(
+        bottom.x[0], bottom.y[0] + 0.1, 
+        r"Channel bottom", 
+        ha="left", 
+        fontdict=dict(
+            size=8, 
+            color="0.2"
+        )
+    )
+    
+    ## Water surface
+    ax.plot(water_surface.x, water_surface.y, lw=3, c="navy")
+    ax.text(
+        water_surface.x[0], water_surface.y[0]+0.1, r"HGL", 
+        ha="left", fontdict=dict(size=10, color="navy"))
+
+    n_eddies = 10
+    for x,y,s in zip(np.linspace(6,8,n_eddies), np.linspace(-1,2,n_eddies), np.random.random(n_eddies)):
+        realistic_water(ax, Point(x+.1,y-.2), 0.05*s)
+
+    # EGL
+    ax.plot(energy_line.x, energy_line.y, c="mediumseagreen", ls="dashed")
+    ax.text(energy_line.x[0], energy_line.y[0] + 0.1, r"EGL", ha="left", fontdict=dict(size=10, color="mediumseagreen"))
+    ax.axhline(energy_line.y[0], c="mediumseagreen", ls="dashed", lw=0.5, alpha=0.5)
+    
+
+    # Sections annotations
+    
+    ## Energy loss
+    ax.plot([energy_line.x[-2]]*2, [energy_line.y[-1], energy_line.y[0]], marker="o", ms=4 ,lw=1, c='darkslategray', ls=":")
+    ax.text(energy_line.x[-2] + 0.2, energy_line.y[2:4].mean(), rf"$h_L$", ha="left", va="center", fontdict=dict(color='darkslategray', size=12))
+    
+    for i,x in enumerate([4,10], start=2):
+        
+        ## Sections
+        ax.plot([x]*2, [-4,5.5], ls="dotted", lw=1, c="gray")
+        ax.text(x, 5.6, f"Section\n{i-1}", ha="center", fontdict=dict(size=10, color="gray"))
+
+        ## Depth
+        ax.plot([x]*2, [bottom.y[i], water_surface.y[i]], marker="o", ms=4 ,lw=2, c='darkslategray', ls=":")
+        ax.text(x+0.2, (bottom.y[i]+water_surface.y[i])/2, rf"$y_{i-1}$", ha="left", va="center", fontdict=dict(color='darkslategray', size=12))
+
+        ## Velocity head
+        ax.plot([x]*2, [water_surface.y[i], energy_line.y[i]], marker="o", ms=4 ,lw=2, c='darkslategray', ls=":")
+        ax.text(x+0.2, (water_surface.y[i] + energy_line.y[i])/2, rf"$\dfrac{{Q^2}}{{2gA^2_{i-1}}}$", ha="left", va="center", fontdict=dict(color='darkslategray', size=10))
+
+    # Flow direction
+    ax.text(bottom.x.max()-2, 0, r"$Q$", 
+        ha="right", va="center", size=12,
+        bbox=dict(
+            boxstyle="rarrow,pad=0.3",
+            fc="cornflowerblue",
+            alpha=0.5,
+            lw=0
+        )
+    )
+
+    # Final touches for all axes
+    ax.set_xlim(bottom.x[0], bottom.x[-1])
+    ax.set_ylim(-2.5,5.6)
+    ax.set_aspect('equal')
+    #ax.grid(True, color="lightgray")
+    for spine in ax.spines: ax.spines[spine].set_visible(False)
+    ax.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+
+    return fig
 
 if __name__ == "__main__":
     main()

@@ -38,8 +38,16 @@ def main():
 
         "## Week 1"
         "### Select a topic:"
-        option = st.radio("Select a topic:",
-            ["System of units", "Water properties", "Fluid classification", "Pressure and head", "Mass & energy"],
+        option = st.radio(
+            "Select a topic:",
+            [
+                "System of units", 
+                "Water properties", 
+                "Fluid classification", 
+                "Pressure and head", 
+                "Mass & energy",
+                "Problem types"
+            ],
             label_visibility="collapsed")
         
         "***"
@@ -605,6 +613,55 @@ def main():
         $$
 
         """
+
+    elif option == "Problem types":
+        r"""
+        ## Problem types
+
+        $$
+            h_1 + \dfrac{p_1}{\gamma} + \dfrac{V_1^2}{2g} = h_2 + \dfrac{p_2}{\gamma} + \dfrac{V_2^2}{2g} + h_L(V,D,L,e)
+        $$
+
+        |Parameter|Description|Units|
+        |:---:|:---|:---:|
+        |$h$| Elevation head | ${\rm m}$|
+        |$p/\gamma$| Pressure head | ${\rm m}$|
+        |$V^2/2g$| Velocity head | ${\rm m}$|
+        |$D$| Pipe diameter | ${\rm m}$|
+        |$L$| Pipe length| ${\rm m}$|
+        |$e$| Roughness height | ${\rm m}$|
+
+        *****
+        """
+
+        cols = st.columns(3)
+
+        with cols[0]:
+            r"""
+            ### Type I:
+            Solve for pressure
+            $$
+                \dfrac{p_2 - p_1}{\gamma}
+            $$
+            """
+
+        with cols[1]:
+            r"""
+            ### Type II:
+            Solve for discharge
+            $$
+                Q, V
+            $$
+            """
+
+        with cols[2]:
+            r"""
+            ### Type III:
+            Solve for diameter
+            $$
+                A, D
+            $$
+            """
 
     else: 
         st.error("You should not be here!")
