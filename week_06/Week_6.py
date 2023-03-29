@@ -4,6 +4,8 @@ import pickle
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as pe
 
+import plotly.graph_objects as go
+
 import numpy as np
 
 from collections import namedtuple
@@ -19,6 +21,16 @@ def main():
 
     with open("assets/style.css") as f:
         st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
+
+    axis_format = dict(title_font_size=20,
+        tickfont_size=16,
+        showline=True,
+        color="RGBA(1, 135, 73, 0.3)",
+        tickcolor="RGBA(1, 135, 73, 0.3)",
+        showgrid=True,
+        griddash="dash",
+        linewidth=1,
+        gridcolor="RGBA(1, 135, 73, 0.3)")
 
     #####################################################################
 
@@ -89,8 +101,148 @@ def main():
         The discharge is the same in the two sections, but the cross-sectional area
         will differ as the channel geometry differ. 
 
-        """
 
+        ************
+        
+        """
+    
+        cols = st.columns([2,1]
+        )
+        with cols[1]: ## Controls for plot
+
+            def E(y, Q, b):
+                A = y*b
+                g = 32.2
+                return y + np.power(Q, 2)/(2*g * np.power(A, 2))
+
+            discharge = st.slider("$Q$ [ft³/s]", 1.0, 100.0, 60.0, 0.1)
+            
+            "##### Section 1"
+            width_1 = st.slider("$b_1$ [ft]", 0.1, 15.0, 12.0, 0.1)
+            depth_1 = st.slider("$y_1$ [ft]", 0.1, 5.0, 2.5, 0.1)
+            
+            depth = np.geomspace(0.01, 10, 100)
+            specific_energy_1 = E(depth, discharge, width_1)
+            ic_1 = np.argmin(specific_energy_1)
+            E_1 = E(depth_1, discharge, width_1)
+
+            "##### Section 2"
+            width_2 =st.slider("$b_2$ [ft]", 0.1, 15.0, 6.0, 0.1)
+            specific_energy_2 = E(depth, discharge, width_2)
+            ic_2 = np.argmin(specific_energy_2)
+
+        with cols[0]:
+            
+            fig = go.Figure()
+
+            hovertemplate_eplot = "<i><b>E</b></i> = %{x:.1f} ft <br>y = %{y:.1f} ft"
+            fig.add_trace(
+                go.Scatter( ## Section 1
+                    x = specific_energy_1,
+                    y = depth,
+                    name="E<sub>1</sub>(y)",
+                    legendgroup="Section1",
+                    legendgrouptitle_text="Section 1",
+                    hovertemplate=hovertemplate_eplot,
+                    line=dict(
+                        width=5, 
+                        color="purple")
+                )
+            )
+
+            fig.add_trace( ## Critical point Section 1
+                go.Scatter(
+                    x = [specific_energy_1[ic_1]],
+                    y = [depth[ic_1]],
+                    name = "y<sub>c, 1</sub>",
+                    legendgroup="Section1",
+                    mode = "markers",
+                    hovertemplate=hovertemplate_eplot,
+                    marker=dict(
+                        size=20,
+                        color="purple",
+                        opacity=0.7,
+                        line=dict(
+                            color="MediumPurple",
+                            width=2
+                        )
+                    ),
+                )
+            )
+
+            fig.add_vline(
+                x = E_1,
+                annotation=dict(
+                    text = "<b>E<sub>1</sub></b>",
+                    font_size = 20
+                ),
+                line = dict(
+                    dash = "dot",
+                    width=1
+                )
+            )
+
+            fig.add_trace(
+                go.Scatter( ## Section 2
+                    x = specific_energy_2,
+                    y = depth,
+                    name="E<sub>2</sub>(y)",
+                    legendgroup="Section2",
+                    legendgrouptitle_text="Section 2",
+                    hovertemplate="<i><b>E</b></i> = %{x:.1f} m <br>y = %{y:.1f} m",
+                    line=dict(
+                        width=5, 
+                        color="green")
+                )
+            )
+
+            fig.add_trace( ## Critical point Section 2
+                go.Scatter(
+                    x = [specific_energy_2[ic_2]],
+                    y = [depth[ic_2]],
+                    name = "y<sub>c, 2</sub>",
+                    legendgroup="Section2",
+                    mode = "markers",
+                    hovertemplate="<i><b>E<sub>min</sub></b></i> = %{x:.1f} m <br><i>y<sub>c</sub></i> = %{y:.1f} m",
+                    marker=dict(
+                        size=20,
+                        color="green",
+                        opacity=0.7,
+                        line=dict(
+                            color="green",
+                            width=2
+                        )
+                    ),
+                )
+            )
+
+            fig.update_layout(
+                    height=600,
+                    margin=dict(t=40),
+                    title_text = '''Specific energy for a contraction''',
+                    yaxis=dict(
+                        title="Depth &nbsp; <i>y</i> [m]",
+                        range=[0,5],
+                        showspikes=True,
+                        **axis_format),
+                    xaxis=dict(
+                        title="Specific energy &nbsp; <i>E</i> [m]",
+                        range=[0,5],
+                        showspikes=True,
+                        **axis_format),
+                    legend=dict(
+                        # title="",
+                        font=dict(size=18),
+                        orientation="v",
+                        bordercolor="gainsboro",
+                        borderwidth=1,
+                        yanchor="top", y=0.96,
+                        xanchor="left", x=0.04
+                    ),
+                    hoverlabel=dict(font_size=18),
+                )
+            
+            st.plotly_chart(fig, use_container_width=True)
         r"""
         ************
         ## 🪜 Steps
