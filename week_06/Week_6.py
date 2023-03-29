@@ -103,17 +103,20 @@ def main():
 
 
         ************
-        
+
         """
-    
+
+        with st.echo():
+            def specific_energy_calc(y, Q, b, units="BG"):
+                A = y*b
+                g = 32.2 if units == "BG" else 9.81
+                return y + np.power(Q, 2)/(2*g * np.power(A, 2))
+
+        "***********"
+        
         cols = st.columns([2,1]
         )
         with cols[1]: ## Controls for plot
-
-            def E(y, Q, b):
-                A = y*b
-                g = 32.2
-                return y + np.power(Q, 2)/(2*g * np.power(A, 2))
 
             discharge = st.slider("$Q$ [ft³/s]", 1.0, 100.0, 60.0, 0.1)
             
@@ -122,13 +125,13 @@ def main():
             depth_1 = st.slider("$y_1$ [ft]", 0.1, 5.0, 2.5, 0.1)
             
             depth = np.geomspace(0.01, 10, 100)
-            specific_energy_1 = E(depth, discharge, width_1)
+            specific_energy_1 = specific_energy_calc(depth, discharge, width_1)
             ic_1 = np.argmin(specific_energy_1)
-            E_1 = E(depth_1, discharge, width_1)
+            E_1 = specific_energy_calc(depth_1, discharge, width_1)
 
             "##### Section 2"
             width_2 =st.slider("$b_2$ [ft]", 0.1, 15.0, 6.0, 0.1)
-            specific_energy_2 = E(depth, discharge, width_2)
+            specific_energy_2 = specific_energy_calc(depth, discharge, width_2)
             ic_2 = np.argmin(specific_energy_2)
 
         with cols[0]:
@@ -221,12 +224,12 @@ def main():
                     margin=dict(t=40),
                     title_text = '''Specific energy for a contraction''',
                     yaxis=dict(
-                        title="Depth &nbsp; <i>y</i> [m]",
+                        title="Depth &nbsp; <i>y</i> [ft]",
                         range=[0,5],
                         showspikes=True,
                         **axis_format),
                     xaxis=dict(
-                        title="Specific energy &nbsp; <i>E</i> [m]",
+                        title="Specific energy &nbsp; <i>E</i> [ft]",
                         range=[0,5],
                         showspikes=True,
                         **axis_format),
@@ -243,6 +246,7 @@ def main():
                 )
             
             st.plotly_chart(fig, use_container_width=True)
+        
         r"""
         ************
         ## 🪜 Steps
@@ -265,8 +269,140 @@ def main():
         The discharge is the same in the two sections, but the cross-sectional area
         will differ as the depth changes. 
 
+        """
+
+        cols = st.columns([2,1]
+        )
+        with cols[1]: ## Controls for plot
+
+            discharge = st.slider("$Q$ [ft³/s]", 1.0, 100.0, 60.0, 0.1, key="Q_step")
+            
+            "##### Section 1"
+            width_1 = st.slider("$b$ [ft]", 0.1, 15.0, 12.0, 0.1)
+            depth_1 = st.slider("$y_1$ [ft]", 0.1, 5.0, 2.5, 0.1, key="y_1(step)")
+            
+            depth = np.geomspace(0.01, 10, 100)
+            specific_energy_1 = specific_energy_calc(depth, discharge, width_1)
+            ic_1 = np.argmin(specific_energy_1)
+            E_1 = specific_energy_calc(depth_1, discharge, width_1)
+
+            "##### Section 2"
+            step_height =st.slider("$\Delta z$ [ft]", 0.0, 1.0, 0.1, 0.01)
+            specific_energy_2 = specific_energy_calc(depth, discharge, width_2)
+            ic_2 = np.argmin(specific_energy_2)
+
+        with cols[0]: ## Specific energy plot for steo
+            
+            fig = go.Figure()
+
+            hovertemplate_eplot = "<i><b>E</b></i> = %{x:.1f} ft <br>y = %{y:.1f} ft"
+            fig.add_trace(
+                go.Scatter( ## Section 1
+                    x = specific_energy_1,
+                    y = depth,
+                    name="E(y)",
+                    legendgroup="Section",
+                    legendgrouptitle_text="Section",
+                    hovertemplate=hovertemplate_eplot,
+                    line=dict(
+                        width=5, 
+                        color="purple")
+                )
+            )
+
+            fig.add_trace( ## Critical point Section 1
+                go.Scatter(
+                    x = [specific_energy_1[ic_1]],
+                    y = [depth[ic_1]],
+                    name = "y<sub>c, 1</sub>",
+                    legendgroup="Section",
+                    mode = "markers",
+                    hovertemplate=hovertemplate_eplot,
+                    marker=dict(
+                        size=20,
+                        color="purple",
+                        opacity=0.7,
+                        line=dict(
+                            color="MediumPurple",
+                            width=2
+                        )
+                    ),
+                )
+            )
+
+            fig.add_vline(
+                x = E_1,
+                y0 = 0, y1=0.75,
+                line = dict(
+                    dash = "dot",
+                    width=1
+                ),
+                annotation=dict(
+                    text = "<b>E</b>",
+                    font_size = 20,
+                ),
+                annotation_position="bottom right",
+
+            )
+
+            fig.add_hline(
+                y = depth_1,
+                line = dict(
+                    dash = "dot",
+                    width=1
+                ),
+                annotation=dict(
+                    text = "<b>y<sub>1</sub></b>",
+                    font_size = 20,
+                ),
+                annotation_position="top left",
+
+            )
+
+            fig.add_vline(
+                x = E_1 - step_height,
+                annotation=dict(
+                    text = "<b>E - Δz</b>",
+                    font_size = 20,
+                ),
+                annotation_position="top left",
+                line = dict(
+                    dash = "longdashdot",
+                    width = 2,
+                    color = "green"
+                ),
+            )
+
+            fig.update_layout(
+                    height=600,
+                    margin=dict(t=40),
+                    title_text = '''Specific energy for a contraction''',
+                    yaxis=dict(
+                        title="Depth &nbsp; <i>y</i> [ft]",
+                        range=[0,5],
+                        showspikes=True,
+                        **axis_format),
+                    xaxis=dict(
+                        title="Specific energy &nbsp; <i>E</i> [ft]",
+                        range=[0,5],
+                        showspikes=True,
+                        **axis_format),
+                    legend=dict(
+                        # title="",
+                        font=dict(size=18),
+                        orientation="v",
+                        bordercolor="gainsboro",
+                        borderwidth=1,
+                        yanchor="top", y=0.96,
+                        xanchor="left", x=0.04
+                    ),
+                    hoverlabel=dict(font_size=18),
+                )
+            
+            st.plotly_chart(fig, use_container_width=True)
+
+        r"""
         ************
-        
         ### ⌛ Choking
 
         If the specific energy upstream is less than the required to pass through
@@ -276,7 +412,6 @@ def main():
         - Increasing its specific energy
 
         """
-
 
     elif option == "Jumps and momentum conservation":
         r"""
@@ -676,10 +811,14 @@ def draw_step():
     ax.text(bottom.x[-1], -2 + 0.1, r"Datum", ha="right", fontdict=dict(size=8))
 
     ## Bottom
-    ax.plot(bottom.x, bottom.y, c="0.50", ls="dashed")
+    ax.plot(
+        bottom.x, bottom.y, 
+        c="0.50", lw=1.5,
+        path_effects = [
+            pe.withTickedStroke(offset=(0,0), angle=-45 ,spacing=6, length=1.3)
+        ])
     ax.text(bottom.x[0], bottom.y[0] + 0.1, r"Channel bottom", ha="left", fontdict=dict(size=8, color="0.2"))
-    ax.fill_between(bottom.x, bottom.y, bottom.y - 0.4,
-        hatch="////", ec="#00000030", fc="#ffffff")
+    
 
     ## Water surface
     ax.plot(water_surface.x, water_surface.y, lw=3, c="navy")
