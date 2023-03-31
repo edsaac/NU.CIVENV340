@@ -443,10 +443,102 @@ def main():
 
         r"""
         ******
-        ### Specific force (or specific momentum)
+        ### Momentum conservation
+
+        Linear momentum is defined as:
+        
+        $$
+            \mathbf{F} = \dfrac{d \mathbf{p}}{dt}
+        $$
+
+        |Parameter|Description|Units|
+        |:---:|:---|:---:|
+        |$\mathbf{F}$| Force | Mass · Acceleration |
+        |$\mathbf{p} = mV$| Linear momentum | Mass · Velocity  |
+        |$t$| Time | Time  |
+
+        &nbsp;
+
+        Momentum is conserved if:
+        $$
+            \begin{array}{rl}
+            \dfrac{d \mathbf{p}}{dt} = & 
+            \textsf{Momentum transfer} \\
+            & + \;
+            \textsf{External forces}
+            \end{array}
+        $$
+
+
+        In an open channel flow, momentum and external forces in the flow
+        direction come from:
+
+        |Source|Equation|
+        |:----||:-------|
+        |Mass flow rate |$m V = \rho \, Q \, V$ |
+        |Pressure distribution | $F_p = p \, A = \gamma \, Y_C \, A$ |
+        |Weight | $F = m g = \Delta x \, A \sin{\theta}$
+        |Friction with the channel walls |$F_f$|
+        |Obstacles |$F_e$|
+
+        &nbsp;
+
+        Between sections 1 (upstream) and 2 (downstream), momentum balance is
+        
+        $$
+            \dfrac{d \mathbf{p}}{dt} =
+            \rho \, Q \, \left(V_1 - V_2 \right)
+            +
+            \gamma \left(A_1\,Y_{C_1} - A_1\,Y_{C_1}\right)
+            +
+            \Delta x \, A \sin{\theta}
+            -
+            F_f - F_e
+        $$
+
+        |Parameter|Description|Units|
+        |:---:|:---|:---:|
+        |$Q$| Discharge | Volume/Time |
+        |$A$| Cross-sectional area | Area |
+        |$Y_C$| Depth to the centroid of the flow section | Length |
+        |$\gamma = \rho g$| Fluid specific weight | Force/Volume |
+
+        &nbsp;
+
+        For a permanent flow, $\dfrac{d \mathbf{p}}{dt} = 0$. Also, 
+        replacing $V = Q/A$, and dividing by $\gamma$
 
         $$
-            M = \left( \dfrac{Q^2}{gA} + A Y_C \right)
+            \dfrac{Q^2_1}{gA_1}
+            + \ A_1 \, Y_{C_1} 
+            =
+            \dfrac{Q^2_2}{gA_2}
+            + A_2 \, Y_{C_2}
+            - \dfrac{F_f}{\gamma}
+            - \dfrac{F_e}{\gamma}
+            + \Delta x \, S_w \, \dfrac{A_2 + A_1}{2}
+        $$
+        
+        If the longitudinal distance is short enough, the external force
+        due friction $F_f$ with the channel and the weight of the mass of water can be ignored.
+        Also, if there are no obstacles, the momentum equation conservation
+        can be reduced to
+
+        $$
+            \dfrac{Q^2_1}{gA_1}
+            + \ A_1 \, Y_{C_1} 
+            =
+            \dfrac{Q^2_2}{gA_2}
+            + A_2 \, Y_{C_2}
+        $$
+
+        ****
+        ### Specific force (or specific momentum)
+
+        It is defined in a section as
+
+        $$
+            M = \dfrac{Q^2}{gA} + A \, Y_C
         $$
 
         |Parameter|Description|Units|
@@ -464,12 +556,133 @@ def main():
             E_1 = E_2 + \Delta E
         $$
 
-        The specific momentum should,
-        
+        The specific momentum should be,
+
         $$
-            M_1 = M_2
+        \begin{array}{rcl}
+            M_1 &=& M_2 \\
+            \\
+            \dfrac{Q^2}{gA_1} + A_1 \, Y_{C_1} &=& \dfrac{Q^2}{gA_2} + A_2 \, Y_{C_2}
+        \end{array}
         $$
+
+        ****
+        ### Specific force diagram
+
         """
+
+        with st.echo():
+            def specific_force_calc(y, Q, b, units="SI"):
+                A = y*b
+                g = 32.2 if units == "BG" else 9.81
+                Y_c = y/2
+                return A * Y_c + np.power(Q, 2)/(g * A)
+
+        "***********"
+        
+        cols = st.columns([2,1])
+
+        with cols[1]: ## Controls for plot
+
+            "##### Diagram"
+            discharge = st.slider("$Q$ [m³/s]", 1.0, 100.0, 15.0, 0.1)
+            width = st.slider("$b$ [m]", 0.1, 15.0, 3.0, 0.1)
+            depth_1 = st.slider("$y_1$ [ft]", 0.1, 5.0, 1.08, 0.1)
+            
+            depth = np.geomspace(0.01, 10, 100)
+            specific_force_1 = specific_force_calc(depth, discharge, width)
+            ic_1 = np.argmin(specific_force_1)
+            
+            M_1 = specific_force_calc(depth_1, discharge, width)
+
+        with cols[0]:
+            
+            fig = go.Figure()
+
+            hovertemplate_Mplot = "<i><b>M</b></i> = %{x:.1f} m³ <br>y = %{y:.1f} m"
+            fig.add_trace(
+                go.Scatter( ## Section 1
+                    x = specific_force_1,
+                    y = depth,
+                    name="M(y)",
+                    hovertemplate=hovertemplate_Mplot,
+                    line=dict(
+                        width=5, 
+                        color="purple")
+                )
+            )
+
+            fig.add_trace( ## Critical point Section 1
+                go.Scatter(
+                    x = [specific_force_1[ic_1]],
+                    y = [depth[ic_1]],
+                    name = "Critical depth y",
+                    legendgroup="Section1",
+                    mode = "markers",
+                    hovertemplate=hovertemplate_Mplot,
+                    marker=dict(
+                        size=20,
+                        color="purple",
+                        opacity=0.7,
+                        line=dict(
+                            color="MediumPurple",
+                            width=2
+                        )
+                    ),
+                )
+            )
+
+            fig.add_vline(
+                x = M_1,
+                annotation=dict(
+                    text = "<b>M</b>",
+                    font_size = 20
+                ),
+                line = dict(
+                    dash = "dot",
+                    width=1
+                )
+            )
+
+            fig.add_hline(
+                y = depth_1,
+                annotation=dict(
+                    text = "<b>y<sub>1</sub></b>",
+                    font_size = 20
+                ),
+                line = dict(
+                    dash = "dot",
+                    width=1
+                )
+            )
+
+            fig.update_layout(
+                    height=600,
+                    margin=dict(t=40),
+                    title_text = '''Specific force diagram''',
+                    yaxis=dict(
+                        title="Depth &nbsp; <i>y</i> [m]",
+                        range=[0,5],
+                        showspikes=True,
+                        **axis_format),
+                    xaxis=dict(
+                        title="Specific force &nbsp; <i>M</i> [m³]",
+                        range=[0,50],
+                        showspikes=True,
+                        **axis_format),
+                    legend=dict(
+                        # title="",
+                        font=dict(size=18),
+                        orientation="v",
+                        bordercolor="gainsboro",
+                        borderwidth=1,
+                        yanchor="middle", y=0.50,
+                        xanchor="right", x=0.96
+                    ),
+                    hoverlabel=dict(font_size=18),
+                )
+            
+            st.plotly_chart(fig, use_container_width=True)
 
     elif option == "Uniform flow":
         r"""

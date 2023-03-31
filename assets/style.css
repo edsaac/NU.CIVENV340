@@ -3,11 +3,19 @@
 }
 
 tr .math {
-    font-size: 0.8rem;
+    font-size: 1.0rem;
 }
 
 [data-baseweb="accordion"] .math {
     font-size: 0.66rem;
+}
+
+[data-testid="stMarkdownContainer"] p {
+    font-size: 1.2rem;
+}
+
+[data-testid="stSidebar"] p {
+    font-size: 1.0rem;
 }
 
 div.glideDataEditor{

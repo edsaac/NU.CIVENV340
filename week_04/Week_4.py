@@ -658,6 +658,9 @@ def main():
         st.caption(f"Source: [xylem.com]({url})")
         st.image(url, use_column_width=True)
 
+        r"""
+        Check documentation and performance curves [here](https://www.xylem.com/en-us/brands/goulds-water-technology/products/all-products/45hb-70hb-high-pressure-centrifugal-booster-pumps/documentation/)
+        """
     else: 
         st.error("You should not be here!")
         r" ### 🚧 Under construction 🚧"
