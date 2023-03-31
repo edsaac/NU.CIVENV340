@@ -25,7 +25,12 @@ def main():
 
         "### Select a topic:"
         option = st.radio("Select a topic:",
-            [],
+            [
+                "Non-erodible channels",
+                "Unlined channel design",
+                "Flow measurement devices [Pipes]",
+                "Flow measurement devices [Channels]"
+            ],
             label_visibility="collapsed")
         
         "***"
@@ -47,12 +52,76 @@ def main():
     
     ####################################################################
     
-    if option == "":
-        r" ### 🚧 Under construction 🚧"
+    if option == "Non-erodible channels":
+        r""" 
+        ## Non-erodible channels
+
+        Factors to consider:
+        
+        ### Efficient hydraulic section
+            - Geometric conditions that minimize the wetter perimeter
+        
+        - Practicability
+        - Cost
+
+        ### Minimum permisible velocity:
+            - Lowest velocity that will not result in sedimentation or induce
+            vegetation growth
+
+        ### Channel Slopes
+        """
+
+    if option == "Unlined channel design":
+        r""" 
+        ## Non-erodible channels
+
+        Factors to consider:
+        
+        ### Efficient hydraulic section
+            - Geometric conditions that minimize the wetter perimeter
+        
+        - Practicability
+        - Cost
+
+        ### Minimum permisible velocity:
+            - Lowest velocity that will not result in sedimentation or induce
+            vegetation growth
+
+        ### Channel side slopes
+            - Maximum stable slope depending on the material
+
+        ### Freeboard
+        
+        $$
+            F = \sqrt{C\,y}
+        $$
+        """
 
     else: 
         st.error("You should not be here!")
-        r" ### 🚧 Under construction 🚧"
+        r"""
+        ## Unlined channel
+
+        ### Maximum permissible velocity
+        
+        1. Select material: ($n$, $m$ and $V_{\rm max})
+        2. Calculate the hydraulic radius 
+        3. Given a discharge, calculate the cross-sectional area
+        4. Calculate the wetted perimeter
+        5. Solve for depth $y$ and bottom width $b$
+        6. Adjust dimensions and add a freeboard 
+
+        ### Tractive force
+
+
+        *********
+        ### Grass channels
+
+        #### Design for stability
+
+        #### Modification for conveyance
+
+        """
 
 if __name__ == "__main__":
     main()

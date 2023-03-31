@@ -1,3 +1,4 @@
+import requests
 import streamlit as st
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, Circle
@@ -625,7 +626,37 @@ def main():
         """
 
     elif option == "Pumps in series/parallel":
-        r" ### 🚧 Under construction 🚧"
+        url = "https://engineeringlibrary.org/reference/centrifugal-pumps-fluid-flow-doe-handbook"
+        st.components.v1.iframe(url, height=800, scrolling=True)
+        
+        "*******"
+        
+        cols = st.columns(2)
+
+        with cols[0]:
+            r"""
+            ### Pumps in series
+
+            The head produced by two pumps in series is their sum 
+            and the volumetric flow is the same
+            """
+
+        with cols[1]:
+            r"""
+            ### Pumps in parallel
+
+            The head produced by two pumps in parallel is the same while
+            they contribute a higher flow rate.
+            """
+        
+        r"""
+        ****
+
+        #### Multistage pumps
+        """
+        url = "https://www.xylem.com/siteassets/brand/goulds-water-technology/product-images/45hb-70hb-high-pressure-centrifugal-booster-pumps.jpg?width=800&height=800&mode=boxpad&bgcolor=fff"
+        st.caption(f"Source: [xylem.com]({url})")
+        st.image(url, use_column_width=True)
 
     else: 
         st.error("You should not be here!")

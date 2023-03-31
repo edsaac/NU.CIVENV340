@@ -276,20 +276,18 @@ def main():
         with cols[1]: ## Controls for plot
 
             discharge = st.slider("$Q$ [ft³/s]", 1.0, 100.0, 60.0, 0.1, key="Q_step")
+            width = st.slider("$b$ [ft]", 0.1, 15.0, 6.0, 0.1)
             
             "##### Section 1"
-            width_1 = st.slider("$b$ [ft]", 0.1, 15.0, 12.0, 0.1)
             depth_1 = st.slider("$y_1$ [ft]", 0.1, 5.0, 2.5, 0.1, key="y_1(step)")
             
             depth = np.geomspace(0.01, 10, 100)
-            specific_energy_1 = specific_energy_calc(depth, discharge, width_1)
+            specific_energy_1 = specific_energy_calc(depth, discharge, width)
             ic_1 = np.argmin(specific_energy_1)
-            E_1 = specific_energy_calc(depth_1, discharge, width_1)
+            E_1 = specific_energy_calc(depth_1, discharge, width)
 
             "##### Section 2"
             step_height =st.slider("$\Delta z$ [ft]", 0.0, 1.0, 0.1, 0.01)
-            specific_energy_2 = specific_energy_calc(depth, discharge, width_2)
-            ic_2 = np.argmin(specific_energy_2)
 
         with cols[0]: ## Specific energy plot for steo
             
@@ -437,9 +435,41 @@ def main():
                 st.caption(f"Source: [youtube.com/@WakaWakaWakaW]({url})")
                 
         r"""
-        Convert a high-velocity flow into a subcritical
-        # """
+        *******
+        The goal of a hydraulic jump is to disipate energy
+        in a short lenght.
+        """
         st.pyplot(draw_hydraulic_jump())
+
+        r"""
+        ******
+        ### Specific force (or specific momentum)
+
+        $$
+            M = \left( \dfrac{Q^2}{gA} + A Y_C \right)
+        $$
+
+        |Parameter|Description|Units|
+        |:---:|:---|:---:|
+        |$M$| Specific momentum | Volume |
+        |$Q$| Discharge | Volume/Time |
+        |$A$| Cross-sectional area | Area |
+        |$Y_C$| Depth to the pressure distribution centroid | Length |
+        
+        &nbsp;
+
+        Even though specific energy is not conserved,
+
+        $$
+            E_1 = E_2 + \Delta E
+        $$
+
+        The specific momentum should,
+        
+        $$
+            M_1 = M_2
+        $$
+        """
 
     elif option == "Uniform flow":
         r"""
@@ -653,7 +683,29 @@ def main():
     elif option == "Sediments & rivers":
         r"### 🚧 Under construction 🚧"
     elif option == "Lane's diagram":
-        r"### 🚧 Under construction 🚧"
+        r"""
+        ## Lane principle
+        
+        $$
+            Q_s \, D_{50} = Q_w \, S_0
+        $$
+        
+        |Parameter|Description|Units|
+        |:---:|:---|:---:|
+        |$Q_s$| Sediment discharge | Volume/Time |
+        |$Q_w$| Water discharge | Volume/Time |
+        |$D_{50}$  | Sediment size | Length |
+        |$S_0$| Stream slope  | - |
+
+        &nbsp;
+
+        """
+
+        with st.expander("**⚖️ Lane's balance**"):
+            url = "https://www.researchgate.net/profile/Massimo-Rinaldi-2/publication/283538764/figure/fig14/AS:613448840929287@1523269009117/Lanes-balance-one-of-the-most-recognized-conceptual-models-and-graphics-in-Fluvial.png"
+            st.image(url, use_column_width=True)
+            st.caption(f"Source: [researchgate.net / *Rinaldi et al. 2015*]({url})")
+
     elif option == "Shear stress":
         r"### 🚧 Under construction 🚧"
 
