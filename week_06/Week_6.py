@@ -52,7 +52,6 @@ def main():
                 "Uniform flow",
                 "Gradually varied flow", 
                 "Water profiles",
-                "Free-surface calculation",
                 "Sediments & rivers",
                 "Lane's diagram",
                 "Shear stress"
@@ -566,6 +565,8 @@ def main():
         \end{array}
         $$
 
+        The pair of depths that satisfy this equation are called **conjugate** depths.
+
         ****
         ### Specific force diagram
 
@@ -585,15 +586,44 @@ def main():
         with cols[1]: ## Controls for plot
 
             "##### Diagram"
-            discharge = st.slider("$Q$ [m³/s]", 1.0, 100.0, 15.0, 0.1)
+            discharge = st.slider("$Q$ [m³/s]", 0.4, 40.0, 15.0, 0.1)
             width = st.slider("$b$ [m]", 0.1, 15.0, 3.0, 0.1)
-            depth_1 = st.slider("$y_1$ [ft]", 0.1, 5.0, 1.08, 0.1)
+            depth_1 = st.slider("$y_1$ [m]", 0.1, 5.0, 0.40, 0.1)
             
+            depth_2_guess = st.slider(r"$y_{2,\textsf{Guess}}$ [m]", 0.1, 5.0, 5.0, 0.1)
+
             depth = np.geomspace(0.01, 10, 100)
             specific_force_1 = specific_force_calc(depth, discharge, width)
             ic_1 = np.argmin(specific_force_1)
             
             M_1 = specific_force_calc(depth_1, discharge, width)
+
+            solver_container = st.empty()
+        
+        "#### 🧮 Calculate the conjugate depth using `scipy.root`"
+
+        with st.echo():
+            from scipy.optimize import root
+            
+            def conjugate_depth(y2, y1, Q, b):
+                M_1 = specific_force_calc(y1, Q, b)
+                M_2 = specific_force_calc(y2, Q, b)
+                return M_1 - M_2
+            
+            depth_2 = root(
+                conjugate_depth,
+                x0 = depth_2_guess,
+                args=(
+                    depth_1,
+                    discharge,
+                    width,
+                )
+            )
+            
+            if depth_2.success:
+                with solver_container.container():
+                    "Conjugated depth"
+                    st.metric(r"$y_2$ [m]", f"{depth_2.x[0]:.2f} m")
 
         with cols[0]:
             
@@ -604,7 +634,7 @@ def main():
                 go.Scatter( ## Section 1
                     x = specific_force_1,
                     y = depth,
-                    name="M(y)",
+                    name="<i>M(y)</i>",
                     hovertemplate=hovertemplate_Mplot,
                     line=dict(
                         width=5, 
@@ -616,7 +646,7 @@ def main():
                 go.Scatter(
                     x = [specific_force_1[ic_1]],
                     y = [depth[ic_1]],
-                    name = "Critical depth y",
+                    name = "Critical <br>depth <i>y<sub>c</sub><i>",
                     legendgroup="Section1",
                     mode = "markers",
                     hovertemplate=hovertemplate_Mplot,
@@ -644,7 +674,7 @@ def main():
                 )
             )
 
-            fig.add_hline(
+            fig.add_hline( ## Depth 1
                 y = depth_1,
                 annotation=dict(
                     text = "<b>y<sub>1</sub></b>",
@@ -656,10 +686,22 @@ def main():
                 )
             )
 
+            fig.add_hline( ## Depth 2
+                y = depth_2.x[0],
+                annotation=dict(
+                    text = "<b>y<sub>2</sub></b>",
+                    font_size = 20
+                ),
+                line = dict(
+                    dash = "dot",
+                    width=1
+                )
+            )
+
             fig.update_layout(
                     height=600,
-                    margin=dict(t=40),
-                    title_text = '''Specific force diagram''',
+                    margin=dict(t=70),
+                    title_text = '''Specific force diagram <br>Hydraulic jump in rectangular section''',
                     yaxis=dict(
                         title="Depth &nbsp; <i>y</i> [m]",
                         range=[0,5],
@@ -676,7 +718,7 @@ def main():
                         orientation="v",
                         bordercolor="gainsboro",
                         borderwidth=1,
-                        yanchor="middle", y=0.50,
+                        yanchor="bottom", y=depth[ic_1]/5.0 ,
                         xanchor="right", x=0.96
                     ),
                     hoverlabel=dict(font_size=18),
@@ -864,7 +906,7 @@ def main():
         Or, 
 
         $$
-            \dfrac{dy}{dx} = \dfrac{S_e - S_0}{1 - \dfrac{Q^2\,T}{g\,A^3}}
+            \dfrac{dy}{dx} = \dfrac{S_e - S_0}{1 - \mathsf{F_r}^2}
         $$
 
         &nbsp;
@@ -872,10 +914,94 @@ def main():
         Since the changes in depth occur in short distances, it can be assumed that
         $S_e$ could be calculated using a normal flow equation (i.e., Manning equation).
         
-        ******
-        ## Standard step method (finite difference)
+        :red[**$S_e$ is always negative** because energy is always lost.] 
+        
+        :orange[$S_0$ is usually negative, but there are cases of **adverse** slopes, 
+        i.e., $S_0 > 0$]
 
+        :blue[**Uniform flow** occur when $S_e = S_0$, thus the water depth remains
+         constant, i.e., $dy/dx = 0$]
+
+        *****
+
+        ## Surface water profiles
+
+        $$
+        \def\arraystretch{1.8}
+        \begin{array}{r|c:c}
+            & \textsf{🐢} & \textsf{🐇} \\
+            \textsf{Flow classification} & \textsf{Subcritical} & \textsf{Supercritical} \\
+        
+            \hdashline
+            \textsf{Froude number} & \mathsf{F_r} < 1.0 & \mathsf{F_r} > 1.0 \\
+             & \quad 1 - \mathsf{F_r}^2 > 0.0 \quad & \quad 1 - \mathsf{F_r}^2 < 0.0 \quad \\
+            \hline
+            S_0 > 0 & {dy}/{dx} < 0 & {dy}/{dx} > 0 \\
+            \hdashline
+            S_e - S_0 < 0 & {dy}/{dx} < 0 & {dy}/{dx} > 0 \\
+            \hdashline
+            S_e - S_0 > 0 & {dy}/{dx} > 0 & {dy}/{dx} < 0 \\
+            
+            \hline
+        \end{array}
+        $$
+        
+        ******
         """
+
+        cols = st.columns([1,2])
+
+        with cols[0]:
+            
+            container = st.empty()
+
+            S0 = st.slider(r"$S_0$", -0.10,  0.10, -0.01, 0.01, format="%.2f")
+            Se = st.slider(r"$S_e$", -0.10, -0.01, -0.10, 0.01, format="%.2f")
+            Fr = st.slider(r"$\mathsf{F_r}$", 0.1,  2.0, 0.1, 0.1, format="%.2f")
+
+            def sign_emoji(number):
+                if isinstance(number, float):
+                    if number > 0:
+                        emoji = "➕"
+                    elif number < 0:
+                        emoji = "➖"
+                    elif number == 0:
+                        emoji = "0"
+                    return emoji
+                
+                else:
+                    return None
+            
+            numerator =  sign_emoji(Se - S0)
+            denominator = sign_emoji(1.0 - Fr**2)
+
+            with container.container():
+                fr"""
+                $$
+                    \dfrac{{dy}}{{dx}} 
+                    = 
+                    \dfrac{{S_e - S_0}}{{1 - \mathsf{{F_r}}^2}} 
+                    = 
+                    \dfrac{{ {numerator} }}{{ \textbf{{{denominator}}} }}
+                $$
+                """
+        
+        with cols[1]:
+            if Fr == 1:
+                _, lilcol, _ = st.columns([1,2,1])
+                with lilcol:
+                    r"&nbsp;"
+                    st.error(r"""
+                        ## 🛑 **Critical flow**
+                        $$ 
+                            \mathsf{F_r} = 1.0 
+                        $$
+                        """
+                    )
+            
+            else:
+                st.pyplot(FGV_intuition(S0, Se, Fr))
+
     elif option == "Water profiles":
         r"""
         ## Slope classification
@@ -891,10 +1017,10 @@ def main():
         &nbsp;
         
         """
-    elif option == "Free-surface calculation":
-        r"### 🚧 Under construction 🚧"
+
     elif option == "Sediments & rivers":
         r"### 🚧 Under construction 🚧"
+    
     elif option == "Lane's diagram":
         r"""
         ## Lane principle
@@ -1268,6 +1394,82 @@ def draw_hydraulic_jump():
     for spine in ax.spines: ax.spines[spine].set_visible(False)
     ax.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
 
+    return fig
+
+def FGV_intuition(
+        S0:float ,
+        Se:float ,
+        Fr:float ,
+        ):
+    
+    fig, ax = plt.subplots()
+    
+    x = np.array([-10, 10])
+    
+    bottom = Side(
+        x = x, 
+        y = S0*(x-x.mean())
+    )
+    
+    energy = Side(
+        x = x,
+        y = 8 + Se*(x-x.mean())
+    )
+
+    Sw = (Se - S0)/(1-Fr**2)
+
+    water = Side(
+        x = x,
+        y = 4 + Sw*(x-x.mean()) + bottom.y
+    )
+
+    # Datum
+    ax.axhline(-3, lw=1, color='k', ls="dashed", zorder=0, alpha=0.5)
+    ax.text(bottom.x[-1], -3 + 0.1, r"Datum", ha="right", fontdict=dict(size=8))
+
+    ## Bottom
+    ax.plot(
+        bottom.x, bottom.y, 
+        c="0.50", lw=1.5,
+        path_effects = [
+            pe.withTickedStroke(offset=(0,0), angle=-45 ,spacing=6, length=1.3)
+        ],
+        label = "Channel bottom\n" + rf"$S_0 = {S0:+.2f}$"
+    )
+
+    ## EGL
+    ax.plot(
+        energy.x, energy.y, 
+        c="mediumseagreen", ls="dashed",
+        label="EGL\n" + rf"$Se = {Se:.2f}$"
+    )
+
+    
+    ## Water
+    ax.plot(
+        water.x, water.y, 
+        lw=3, c="navy", 
+        label="HGL\n" + rf"$dy/dx = {Sw:+.2f}$"
+    )
+
+    # Final touches for all axes
+    ax.legend(ncols=3, loc="upper center")
+    ax.set_xlim(bottom.x[0], bottom.x[-1])
+    ax.set_ylim(-3.1,12)
+    ax.set_aspect('equal')
+    #ax.grid(True, color="lightgray")
+    for spine in ax.spines: ax.spines[spine].set_visible(False)
+    ax.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+
+    ## Flow direction
+    ax.text(bottom.x.mean(), np.mean(np.concatenate([bottom.y, water.y])), r"$Q$", 
+        ha="left", va="center", size=12,
+        bbox=dict(
+            boxstyle="rarrow,pad=0.3",
+            fc="cornflowerblue",
+            alpha=0.5,
+            lw=0
+        ))
     return fig
 
 if __name__ == "__main__":
