@@ -1012,7 +1012,7 @@ def main():
         |$\mathtt{C}$| Critical | $S_0 = S_c$ | $y_n = y_c$ |
         |$\mathtt{S}$| Steep | $S_0 > S_c$ | $y_n < y_c$ |
         |$\mathtt{H}$| Horizontal | $S_0 = 0$ | No normal flow |
-        |$\mathtt{A}$| Adverse | $S_0 < 0$ | No normal flow |
+        |$\mathtt{A}$| Adverse | $S_0 > 0$ | No normal flow |
 
         &nbsp;
         
