@@ -48,7 +48,8 @@ def main():
     ## 3️⃣ Call `scipy.optimize.root`
     """
     
-    st.components.v1.iframe("https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html#scipy-optimize-root", height=500, width=500, scrolling=True)
+    url = "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html#scipy-optimize-root"
+    st.components.v1.iframe(url, height=500, width=500, scrolling=True)
     "*****"
 
     cols = st.columns(2)
@@ -92,7 +93,20 @@ def main():
             Something went wrong... 
             try changing the initial guess for $f$ or the root-finding method.
             """, icon="🧪")
-                
+    
+    r"""
+    ****
+    ## 👾 What about `scipy.optimize.fsolve`
+    """
+    
+    url = "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fsolve.html#scipy.optimize.fsolve"
+    st.components.v1.iframe(url, height=500, width=500, scrolling=True)
+
+    with st.expander("About the algorithm"):
+        url = "https://www.math.utah.edu/software/minpack/minpack/hybrd.html"
+        st.components.v1.iframe(url, height=500, width=550, scrolling=True)
+
+
 if __name__ == "__main__":
     main()
 
