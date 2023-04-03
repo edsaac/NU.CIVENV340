@@ -51,19 +51,22 @@ def main():
     ## 2️⃣ Define a function with the equation
     """
     with st.echo():
-        def swamme_jain(relative_roughness:float, reynolds_number:float):
+        def swamme_jain(
+            relative_roughness:float, 
+            reynolds_number:float
+            ):
+
             fcalc = 0.25 / np.power(np.log10(relative_roughness/3.7 + 5.74/np.power(reynolds_number, 0.9)), 2)
             return fcalc
 
-        def energy_balance(diameter:float, discharge:float, length:float, roughness:float, pressure_drop:float):
-            '''
-            Units:
-            - diameter [ft]
-            - discharge [ft³/s]
-            - length [ft]
-            - roughness [ft]
-            - pressure_drop [psi]
-            '''
+        def energy_balance(
+            diameter:float,         # [ft]
+            discharge:float,        # [ft³/s]
+            length:float,           # [ft]
+            roughness:float,        # [ft]
+            pressure_drop:float     # [psi]
+            ):
+            
             g = 32.2                    # ft/s²
             ν = 1.08e-5                 # ft²/s
             γ = 62.3                    # lb/ft³
@@ -77,7 +80,7 @@ def main():
             
             hL = f * (length/diameter) * np.power(velocity,2)/(2*g)
             
-            pressure_drop_head = pressure_drop * (12**2) / γ  # Convert pressure to head
+            pressure_drop_head = pressure_drop * (12**2) / γ  # Convert pressure [psi] to head [ft]
 
             return hL - pressure_drop_head
 

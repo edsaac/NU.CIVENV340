@@ -20,11 +20,13 @@ def main():
 
     #####################################################################
 
-    r"""
-    ## Adjacency matrix
+    url = "https://mathworld.wolfram.com/AdjacencyMatrix.html"
+    
+    fr"""
+    ## [:link:]({url}) Adjacency matrix
     &nbsp;
     """
-    st.components.v1.iframe("https://mathworld.wolfram.com/AdjacencyMatrix.html", width=600, height=700, scrolling=True)
+    st.components.v1.iframe(url, width=600, height=700, scrolling=True)
 
     ######## 
     r"""
