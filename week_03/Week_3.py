@@ -37,7 +37,7 @@ def main():
         
         r"""
         #### Class textbook:
-        [🌐](https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9980502032702441]) *Houghtalen, Akan & Hwang* (2017). **Fundamentals of hydraulic engineering systems** 5th ed.,
+        [🌐](https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9980502032702441) *Houghtalen, Akan & Hwang* (2017). **Fundamentals of hydraulic engineering systems** 5th ed.,
         Pearson Education Inc., Boston.
         
         *****
@@ -192,7 +192,6 @@ def main():
 
 
     elif option == "Newton method":
-        r" ### 🚧 Under construction 🚧"
 
         "## Root finding ft. Newton iteration method"
         st.image("https://upload.wikimedia.org/wikipedia/commons/8/8c/Newton_iteration.svg", width=500)
@@ -401,17 +400,106 @@ def main():
             🏁 A solution has been found!
             """            
 
+        r"""
+        *****
+        ### Other methods
+        """
+
+        with st.expander("**Hardy-Cross Method**"):
+            url = "https://en.m.wikipedia.org/wiki/Hardy_Cross_method"
+            st.components.v1.iframe(url, height=500, width=500, scrolling=True)
+
+        with st.expander("**Linear theory method**"):
+            _, col, _ = st.columns([1,3,1])
+            with col:
+                url = "https://doi.org/10.1061/JYCEAJ.0003348"
+                fr"""
+                Check:
+
+                Wood, D. J., & Charles, C. O. A. (1972). 
+                **Hydraulic Network Analysis Using Linear Theory**. 
+                *In Journal of the Hydraulics Division (Vol. 98, Issue 7, pp. 1157–1170).*
+                American Society of Civil Engineers (ASCE). DOI:[10.1061/jyceaj.0003348]({url})
+                """
+        
+        "****"
+        _, col, _ = st.columns([1,3,1])
+        with col:
+            url = "https://doi.org/10.1002/9780470225059"
+            fr"""
+            Also check:
+
+            Swamee, P. K., & Sharma, A. K. (2008). 
+            **Design of Water Supply Pipe Networks.**
+            *John Wiley & Sons, Inc.* 
+            DOI:[10.1002/9780470225059]({url})
+            """
     
     elif option == "Branched systems":
 
-        r" ### 🚧 Under construction 🚧"
         r"""
         ## Branched networks
+
+        Aka *tree networks*, these are systems without loops. 
+
+        ### Three-reservoir problem
+        """
+        
+        st.pyplot(three_reservoirs())
+
+        r"""
+        Determine the flow rates multiple connected reservoirs. Similar to network systems. 
+        in this type of problem each, whereas energy balances are written for each pipe connection.
+
+        $$
+        \begin{array}{rl}
+            H_\texttt{1} =& H_\texttt{J} + h_{f_\texttt{1-J}} \\
+            H_\texttt{2} =& H_\texttt{J} + h_{f_\texttt{2-J}} \\
+            H_\texttt{J} =& H_\texttt{3} + h_{f_\texttt{J-3}} \\
+        \end{array}
+        $$
+
+        At the junction $\texttt{J}$, mass must be conserved
+
+        $$
+            \sum{Q} = Q_1 + Q_2 - Q_3 = 0
+        $$
 
         """
 
     else: 
         r" ### 🚧 Under construction 🚧"
+
+def three_reservoirs():
+    from matplotlib.patches import Rectangle
+    from collections import namedtuple
+    Point = namedtuple("Point", ["x", "y"])
+
+    def tank(ax, p:Point, width:float, height:float):
+        ax.add_patch(Rectangle(p, width, height, fc="#0000aa10", zorder=0))
+        ax.plot(
+            [p.x, p.x, p.x + width, p.x + width],
+            [p.y + 1.1*height, p.y, p.y, p.y + 1.1*height],
+            lw=2, c="k", zorder=1)
+
+    fig, ax = plt.subplots()
+
+    tank(ax, tankxy:= Point(0,10), 3, 2) 
+
+    # Datum
+    ax.axhline(0.1, xmin=0.5, lw=1, color='k', ls="dashed", zorder=0)
+    ax.text(12.2, 0.3, r"Datum", ha="left", fontdict=dict(size=8))
+
+    # Final touches
+    #ax.legend(ncols=2, loc="upper right", bbox_to_anchor=(0.20, 0.95))
+    #ax.set_xlim(-2.5, 13.5)
+    #ax.set_ylim(-6, 6.0)
+    ax.set_aspect('equal')
+    #ax.grid(True)
+    for spine in ax.spines: ax.spines[spine].set_visible(False)
+    ax.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+
+    return fig
 
 @st.cache_data
 def pipes_in_series():

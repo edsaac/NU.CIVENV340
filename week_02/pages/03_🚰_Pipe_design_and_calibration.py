@@ -62,14 +62,20 @@ def main():
     """
     with st.echo():
         def swamme_jain(
+<<<<<<< HEAD
                 relative_roughness:float, 
                 reynolds_number:float
+=======
+            relative_roughness:float, 
+            reynolds_number:float
+>>>>>>> 764f36d88aea2335a880214bc4add638cc684c0f
             ):
 
             fcalc = 0.25 / np.power(np.log10(relative_roughness/3.7 + 5.74/np.power(reynolds_number, 0.9)), 2)
             return fcalc
 
         def energy_balance(
+<<<<<<< HEAD
                 diameter:float,     # [ft]
                 discharge:float,    # [ft³/s]
                 length:float,       # [ft]
@@ -78,6 +84,15 @@ def main():
                 ):
 
             # Constants
+=======
+            diameter:float,         # [ft]
+            discharge:float,        # [ft³/s]
+            length:float,           # [ft]
+            roughness:float,        # [ft]
+            pressure_drop:float     # [psi]
+            ):
+            
+>>>>>>> 764f36d88aea2335a880214bc4add638cc684c0f
             g = 32.2                    # ft/s²
             ν = 1.08e-5                 # ft²/s
             γ = 62.3                    # lb/ft³
@@ -96,6 +111,11 @@ def main():
             # Energy loss
             hL = f * (length/diameter) * np.power(velocity,2)/(2*g)
             
+<<<<<<< HEAD
+=======
+            pressure_drop_head = pressure_drop * (12**2) / γ  # Convert pressure [psi] to head [ft]
+
+>>>>>>> 764f36d88aea2335a880214bc4add638cc684c0f
             return hL - pressure_drop_head
 
     r"""
