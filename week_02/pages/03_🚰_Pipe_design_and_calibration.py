@@ -25,11 +25,15 @@ def main():
     $$
 
     Use Problem 3.5.11 as an example:
-    - $Q = 21.5 \textrm{ cfs}$
-    - $L = 2500 \textrm{ ft}$
-    - $\Delta z = 0 \textrm{ ft}$
-    - PVC pipe: $e = 0.000005 \textrm{ ft}$
-    - Maximum pressure drop: $\tfrac{\Delta p}{\gamma} < 40 \textrm{ ft}$
+    
+    |Parameter| Condition|
+    |:--------|--------:|
+    |Discharge| $Q = 21.5 \textrm{ cfs}$ |
+    |Pipe length| $L = 2500 \textrm{ ft}$ |
+    |Elevation change| $\Delta z = 0 \textrm{ ft}$ |
+    |Material: PVC | $e = 0.000005 \textrm{ ft}$ |
+    |Maximum pressure drop | $\Delta p < 40 \textrm{ psi}$ |
+
     """
 
     r"""
@@ -39,10 +43,16 @@ def main():
         h_L < \dfrac{\Delta p}{\gamma}
     $$
 
+    Which, in terms of head, 
+
+    $$
+        h_L < 92.3 \textrm{ ft}
+    $$
+
     Find $D$ such that,
 
     $$
-        f \dfrac{L}{D} \dfrac{V^2}{2g} = \dfrac{40 \textrm{psi}}{\gamma}
+        f \dfrac{L}{D} \dfrac{V^2}{2g} = 92.3 \textrm{ ft}
     $$
     """
 
@@ -51,34 +61,41 @@ def main():
     ## 2️⃣ Define a function with the equation
     """
     with st.echo():
-        def swamme_jain(relative_roughness:float, reynolds_number:float):
+        def swamme_jain(
+                relative_roughness:float, 
+                reynolds_number:float
+            ):
+
             fcalc = 0.25 / np.power(np.log10(relative_roughness/3.7 + 5.74/np.power(reynolds_number, 0.9)), 2)
             return fcalc
 
-        def energy_balance(diameter:float, discharge:float, length:float, roughness:float, pressure_drop:float):
-            '''
-            Units:
-            - diameter [ft]
-            - discharge [ft³/s]
-            - length [ft]
-            - roughness [ft]
-            - pressure_drop [psi]
-            '''
+        def energy_balance(
+                diameter:float,     # [ft]
+                discharge:float,    # [ft³/s]
+                length:float,       # [ft]
+                roughness:float,    # [ft]
+                pressure_drop:float # [psi]
+                ):
+
+            # Constants
             g = 32.2                    # ft/s²
             ν = 1.08e-5                 # ft²/s
             γ = 62.3                    # lb/ft³
 
+            # Convert pressure to head
+            pressure_drop_head = pressure_drop * (12**2) / γ  
+            
             area = np.pi/4.0 * np.power(diameter, 2)
             velocity = discharge/area
             
+            # Friction factor calculation
             rel_rough = roughness/diameter
             reynolds = velocity * diameter / ν
             f = swamme_jain(rel_rough, reynolds)
             
+            # Energy loss
             hL = f * (length/diameter) * np.power(velocity,2)/(2*g)
             
-            pressure_drop_head = pressure_drop * (12**2) / γ  # Convert pressure to head
-
             return hL - pressure_drop_head
 
     r"""
@@ -127,11 +144,11 @@ def main():
     cols = st.columns(2)
 
     with cols[0]: 
-        st.metric("*Initial guess* D", f"{initial_guess:.2f} ft")
-    
+        st.metric("*Initial guess* D", f"{initial_guess:.3f} ft = {initial_guess*12:.2f} in")
+        
     with cols[1]: 
         if diameter_design.success:
-            st.metric("*Solution*", f"{diameter_design.x[0]:.2f} ft")
+            st.metric("*Solution*", f"{diameter_design.x[0]:.3f} ft = {diameter_design.x[0]*12:.2f} in")
         else:
             st.error(r"""
             Something went wrong... 
@@ -142,22 +159,25 @@ def main():
     ****
     ## 🚰 Pick from a catalogue
     """
-    cols = st.columns(2)
 
+    st.caption("Source: [:link:](https://www.commercial-industrial-supply.com/)")
+    cols = st.columns(2)
     with cols[0]:
         st.image("https://www.commercial-industrial-supply.com/wordpress/wp-content/uploads/2020/11/sch40-pvc-piping-dim-chart.jpg", use_column_width=True)
 
     with cols[1]:
         st.image("https://www.commercial-industrial-supply.com/wordpress/wp-content/uploads/2020/11/sch80-pvc-piping-dim-chart.jpg", use_column_width=True)
 
-    "Check a [catalogue](https://www.charlottepipe.com/)!"
-    html = r"""
-    <div>
-        <object data="https://www.charlottepipe.com/Documents/PL_Tech_Man/Charlotte_Plastics_Tech_Manual.pdf" type="application/pdf" width="100%" height="800">
-        </object>
-    </div>
-    """
-    st.components.v1.html(html, height=800, scrolling=True)
+    # "For example, [charlottepipe.com](https://www.charlottepipe.com/Documents/PL_Tech_Man/Charlotte_Plastics_Tech_Manual.pdf)!"
+    
+    # html = r"""
+    # <div>
+    #     <object data="https://www.charlottepipe.com/Documents/PL_Tech_Man/Charlotte_Plastics_Tech_Manual.pdf" type="application/pdf" width="100%" height="800">
+    #     </object>
+    # </div>
+    # """
+    # st.components.v1.html(html, height=800, scrolling=True)
+
 
 if __name__ == "__main__":
     main()

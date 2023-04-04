@@ -521,7 +521,7 @@ def main():
 
         with cols[1]:
             r"""    
-            > **Extracted from [EPANET User Manual](https://epanet22.readthedocs.io/en/latest/3_network_model.html))**
+            > **Extracted from [EPANET User Manual](https://epanet22.readthedocs.io/en/latest/3_network_model.html)**
             >
             > *Emitters are devices associated with junctions that model the flow through a nozzle or orifice that discharges to the atmosphere.*
             > *The flow rate through the emitter varies as a function of the pressure available at the node:*
