@@ -29,8 +29,14 @@ def main():
         st.components.v1.html(lottie, width=200, height=200)
 
         "### Select a topic:"
-        option = st.radio("Select a topic:",
-            ["Pipes in series/parallel", "Looped networks", "Newton method", "Branched systems"],
+        option = st.radio(
+            "Select a topic:",
+            [
+                "Pipes in series/parallel", 
+                "Branched systems",
+                "Looped networks", 
+                "Newton method", 
+            ],
             label_visibility="collapsed")
         
         "***"
