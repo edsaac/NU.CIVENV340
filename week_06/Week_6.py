@@ -12,6 +12,8 @@ from collections import namedtuple
 Side = namedtuple("Side",["x","y"])
 Point = namedtuple("Point", ["x","y"])
 
+from pathlib import Path
+
 def main():
     
     with open("assets/page_config.pkl", 'rb') as f:
@@ -286,7 +288,7 @@ def main():
             E_1 = specific_energy_calc(depth_1, discharge, width)
 
             "##### Section 2"
-            step_height =st.slider("$\Delta z$ [ft]", 0.0, 1.0, 0.1, 0.01)
+            step_height =st.slider(r"$\Delta z$ [ft]", 0.0, 1.0, 0.1, 0.01)
 
         with cols[0]: ## Specific energy plot for steo
             
@@ -1019,8 +1021,73 @@ def main():
         """
 
     elif option == "Sediments & rivers":
-        r"### 🚧 Under construction 🚧"
-    
+
+        from urllib.parse import urlparse
+
+        r"### 🏞️ $\quad \textsf{Water} + \textsf{sediments} + \textsf{movement} = \textsf{river}$"
+
+        url = "https://upload.wikimedia.org/wikipedia/commons/a/ad/Missouri-River-Morning-Drone-Shot.webm"
+        st.caption("**Missouri River:**<br>" + f"*Source:* [*{urlparse(url).hostname}*]({url})", unsafe_allow_html=True)
+        st.video(url)
+
+        url = "https://upload.wikimedia.org/wikipedia/commons/e/ed/Framrusti_river_02.webm"
+        st.caption("**Steep-slope:**<br>" + f"*Source:* [*{urlparse(url).hostname}*]({url})", unsafe_allow_html=True)
+        st.video(url)
+        
+        url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/38confpigeoncynsnakegulch.073009_l.jpg"
+        st.caption("**Grand Canyon:** Erosion through layers of sedimentary rocks.<br>" + f"*Source:* [*{urlparse(url).hostname}*]({url})", unsafe_allow_html=True)
+        st.image(url, use_column_width=True)
+
+        url = "https://live.staticflickr.com/1567/23631659763_498c8ed16d_o_d.jpg"
+        st.caption("**Meandering river:** What is the direction of the flow?.<br>" + f"*Source:* [*{urlparse(url).hostname}*]({url})", unsafe_allow_html=True)
+        st.image(url, use_column_width=True)
+        
+        url = "https://www.publicdomainpictures.net/pictures/30000/velka/fast-flowing-river.jpg"
+        st.caption("**Fast flowing river:** Sediment size can vary substantially. <br>" + f"*Source:* [*{urlparse(url).hostname}*]({url})", unsafe_allow_html=True)
+        st.image(url, use_column_width=True)
+        
+        url = "https://live.staticflickr.com/1568/24232357896_9d9bc78f9c_o_d.jpg"
+        st.caption("**River faces into ocean:** What happened with the sediments? <br>" + f"*Source:* [*{urlparse(url).hostname}*]({url})", unsafe_allow_html=True)
+        st.image(url, use_column_width=True)
+        
+        url = "https://upload.wikimedia.org/wikipedia/commons/2/2b/120408_Pheriche_Pano_4k.jpg"
+        st.caption("**Rio Tamaya (Perú):** Constantly channel section and slope <br>" + f"*Source:* [*{urlparse(url).hostname}*]({url})", unsafe_allow_html=True)
+        st.image(url, use_column_width=True)
+
+        url = "https://upload.wikimedia.org/wikipedia/commons/4/49/Rio_Negro_meanders.JPG"
+        st.caption("**Khumbu Khola valley (Nepal):** Valley width v. flooding plain width v. channel width <br>" + f"*Source:* [*{urlparse(url).hostname}*]({url})", unsafe_allow_html=True)
+        st.image(url, use_column_width=True)
+
+        url = "https://upload.wikimedia.org/wikipedia/commons/3/31/Sandbar_on_the_Mississippi%2C_New_Orleans.jpg"
+        st.caption("**Mississippi River (New Orleans, LA):** Sandbar <br>" + f"*Source:* [*{urlparse(url).hostname}*]({url})", unsafe_allow_html=True)
+        st.image(url, use_column_width=True)
+
+        url = "https://upload.wikimedia.org/wikipedia/commons/e/eb/SantaremTejo.jpg"
+        st.caption("**Tejo River (Portugal):** More sandbars <br>" + f"*Source:* [*{urlparse(url).hostname}*]({url})", unsafe_allow_html=True)
+        st.image(url, use_column_width=True)
+
+        url = "https://upload.wikimedia.org/wikipedia/commons/3/35/Takato_Dam_discharge.jpg"
+        st.caption("**高遠ダム Takatō Dam (Japan):** Sediments are deposited behind the dam. Erosion exacerbates downstream <br>" + f"*Source:* [*{urlparse(url).hostname}*]({url})", unsafe_allow_html=True)
+        st.image(url, use_column_width=True)
+
+        url = "https://upload.wikimedia.org/wikipedia/commons/3/31/StauseeMooserboden.jpg"
+        st.caption("**Stausee Mooserboden**, seen from Hoher Tenn, Austria.<br>" + f"*Source:* [*{urlparse(url).hostname}*]({url})", unsafe_allow_html=True)
+        st.image(url, use_column_width=True)
+
+        "****"
+        _, col, _ = st.columns([1,3,1])
+        with col:
+            url = "https://ascelibrary.org/doi/book/10.1061/9780784408148"
+            st.markdown(
+                fr"""
+                Also check:
+
+                Garcia, Marcelo. (Ed.). (2008). <br>
+                **Sedimentation Engineering: Processes, Measurements, Modeling and Practice**. <br>
+                *American Society of Civil Engineers.* <br>
+                DOI: [10.1061/9780784408148]({url})
+                """, unsafe_allow_html=True)
+
     elif option == "Lane's diagram":
         r"""
         ## Lane principle
@@ -1046,13 +1113,36 @@ def main():
             st.caption(f"Source: [researchgate.net / *Rinaldi et al. 2015*]({url})")
 
     elif option == "Shear stress":
-        r"### 🚧 Under construction 🚧"
+        r"""
+        ## Shields parameter
+
+        Movement of bed sediments occur when the shear stress exerted by the water on the bed 
+        is greater than the resistance of the sediments to remain in place.
+
+        $$
+            \tau_* = \dfrac{\textsf{Flow stress}}{\textsf{Bed resistance}} = \dfrac{\tau}{(\gamma_s - \gamma) \, d}
+        $$
+        
+        |Parameter|Description|Units|
+        |:---|:-------|:----|
+        |$\tau_*$| Shields parameter | - |
+        |$\tau$| Tractive shear stress | Force/Area |
+        |$\gamma_s$| Specific weight of sediment | Force/Volume |
+        |$\gamma$| Specific weight of water | Force/Volume |
+        |$d$| Characteristic particle size | Length |
+        
+        &nbsp;
+
+        """
+
+        img = "assets/img/ShieldsDiagram.png"
+        st.caption("**Shields Diagram** <br> Source: [Shields, 1936](https://repository.tudelft.nl/islandora/object/uuid:a66ea380-ffa3-449b-b59f-38a35b2c6658?collection=research)", unsafe_allow_html=True)
+        st.image(img, use_column_width=True)
 
     else: 
         st.error("You should not be here!")
         r" ### 🚧 Under construction 🚧"
 
-@st.cache_data
 def draw_contraction():
 
     side_down = Side(
@@ -1226,7 +1316,7 @@ def draw_step():
     
     ## Depth
     ax.plot([bottom.x[-2]]*2, [-2, bottom.y[-2]], marker="o", ms=4 ,lw=2, c='darkslategray', ls=":")
-    ax.text(bottom.x[-2]+0.2, bottom.y.mean(), rf"$\Delta z$", ha="left", va="center", fontdict=dict(color='darkslategray', size=12))
+    ax.text(bottom.x[-2]+0.2, bottom.y.mean(), r"$\Delta z$", ha="left", va="center", fontdict=dict(color='darkslategray', size=12))
     
     for i,x in enumerate(bottom.x[1:3], start=1):
         
@@ -1296,7 +1386,6 @@ def realistic_water(ax:plt.Axes, p:Point, size:float):
         )
     )
 
-@st.cache_data
 def draw_hydraulic_jump():
     bottom = Side(
         x= np.array([0,4,6,8,10,15]), 
