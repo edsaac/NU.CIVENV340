@@ -1,6 +1,5 @@
 import streamlit as st
 import pickle
-
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as pe
 
@@ -13,6 +12,7 @@ Side = namedtuple("Side",["x","y"])
 Point = namedtuple("Point", ["x","y"])
 
 from pathlib import Path
+from urllib.parse import urlparse
 
 def main():
     
@@ -54,7 +54,8 @@ def main():
                 "Uniform flow",
                 "Gradually varied flow", 
                 "Water profiles",
-                "Sediments & rivers",
+                "Rivers",
+                "Sediments",
                 "Lane's diagram",
                 "Shear stress"
             ],
@@ -1020,9 +1021,7 @@ def main():
         
         """
 
-    elif option == "Sediments & rivers":
-
-        from urllib.parse import urlparse
+    elif option == "Rivers":
 
         r"### 🏞️ $\quad \textsf{Water} + \textsf{sediments} + \textsf{movement} = \textsf{river}$"
 
@@ -1082,37 +1081,137 @@ def main():
                 fr"""
                 Also check:
 
-                Garcia, Marcelo. (Ed.). (2008). <br>
+                ⏺ Garcia, Marcelo. (Ed.). (2008). <br>
                 **Sedimentation Engineering: Processes, Measurements, Modeling and Practice**. <br>
                 *American Society of Civil Engineers.* <br>
                 DOI: [10.1061/9780784408148]({url})
+                
                 """, unsafe_allow_html=True)
+
+            url = "https://ascelibrary.org/doi/book/10.1061/9780784408230"
+            st.markdown(
+                fr"""
+                ⏺ Vanoni, V.A. (Ed.). (2006). <br>
+                **Sedimentation Engineering**. <br>
+                *American Society of Civil Engineers.* <br>
+                DOI: [10.1061/9780784408230]({url})
+                
+                """, unsafe_allow_html=True)
+    
+    elif option == "Sediments":
+        r"""
+        ## Sediment classification
+
+        ### 📏 By size
+        """
+
+        tabs = st.tabs([
+            "Boulders",
+            "Gravel",
+            "Sand",
+            "Silt",
+            "Clay",])
+
+        with tabs[0]:  # Boulders
+            url = "https://upload.wikimedia.org/wikipedia/commons/0/00/A_large_boulder_in_the_river_-_geograph.org.uk_-_4027686.jpg"
+            source = "https://www.geograph.org.uk/photo/4027686"
+            st.caption("**Water of Tanar (Scotland)**. A large boulder in the river<br>" + f"*Source:* [*{urlparse(source).hostname}*]({source})", unsafe_allow_html=True)
+            st.image(url, use_column_width=True)
+
+        with tabs[1]:  # Gravel
+            url = "https://s0.geograph.org.uk/geophotos/01/06/64/1066461_89c35f88.jpg"
+            source = "https://www.geograph.org.uk/photo/1066461"
+            st.caption("**River Brent (England)**. A gravel bar<br>" + f"*Source:* [*{urlparse(source).hostname}*]({source})", unsafe_allow_html=True)
+            st.image(url, use_column_width=True)
+
+        with tabs[2]:  # Sand
+            url = "https://upload.wikimedia.org/wikipedia/commons/3/3b/Sand_at_the_banks_of_Arno_river.jpg"
+            source = "https://commons.wikimedia.org/wiki/File:Sand_at_the_banks_of_Arno_river.jpg"
+            st.caption("**Arno River (Italy)**. A sand bar<br>" + f"*Source:* [*{urlparse(source).hostname}*]({source})", unsafe_allow_html=True)
+            st.image(url, use_column_width=True)
+
+        with tabs[3]:  # Silt
+            url = "https://upload.wikimedia.org/wikipedia/commons/c/c3/Mossy_Cave_area_-_Bryce_Canyon_National_Park.jpg"
+            source = "https://commons.wikimedia.org/wiki/File:Mossy_Cave_area_-_Bryce_Canyon_National_Park.jpg?uselang=fr"
+            st.caption("**Bryce Canyon NP (USA)**. Mudflow <br>" + f"*Source:* [*{urlparse(source).hostname}*]({source})", unsafe_allow_html=True)
+            st.image(url, use_column_width=True)
+
+        with tabs[4]:  # Clay
+            url = "https://upload.wikimedia.org/wikipedia/commons/b/bb/Sediment_Spews_from_Connecticut_River.jpg"
+            source = "https://earthobservatory.nasa.gov/images/52059/sediment-spews-from-connecticut-river"
+            st.caption("**Conneticut River** [left], **Thames River** [right] **(USA)**. Suspended sediments<br>" + f"*Source:* [*{urlparse(source).hostname}*]({source})", unsafe_allow_html=True)
+            st.image(url, use_column_width=True)
+
+        r"""
+        ****
+        ### 🚚 By transport mechanism
+
+        $$
+            \textsf{Rouse number:} \quad \mathsf{P} = \dfrac{\textsf{Settling}}{\textsf{Resuspension}} = \dfrac{v_s}{\kappa u_*}
+        $$
+        
+        | Parameter | Description   | Units  |
+        |:---------:|:--------:|:------------------:|
+        |$ \mathsf{P} $  | Rouse number  | - | 
+        |$ v_s $  | Settling velocity  | Length/Time 
+        |$ \kappa = 0.41 $  | von Kármán constant  | Length/Time | 
+        |$ u_* $  | Shear velocity  | Length/Time | 
+         
+        &nbsp;
+
+        """
+
+        cols = st.columns(2)
+        
+        with cols[0]:
+            r"""
+            #### 🛏️ Bed load
+            """
+            url = "https://www.youtube.com/watch?v=EWRcyq6vnyc"
+            st.caption(f"Source: [youtube.com/@cuboulder]({url})")
+            st.video(url)
+
+        with cols[1]:
+            r"""
+            #### 🎈 Suspended load
+            """
+            url = "https://upload.wikimedia.org/wikipedia/commons/e/e3/Bl%C5%A1anka_Suspended_Load.jpg"
+            source = "https://en.wikipedia.org/wiki/Suspended_load#/media/File:Bl%C5%A1anka_Suspended_Load.jpg"
+            st.caption("**Suspended sediment in a river**. Suspended sediments<br>" + f"*Source:* [*{urlparse(source).hostname}*]({source})", unsafe_allow_html=True)
+            st.image(url, use_column_width=True)
 
     elif option == "Lane's diagram":
         r"""
         ## Lane principle
         
         $$
-            Q_s \, D_{50} = Q_w \, S_0
+            \underbrace{q_s \, d_{50}}_{\substack{\textsf{Sediment} \\ \textsf{transport} }}
+            \quad \propto \quad 
+            \underbrace{Q_w \, S_0}_{\textsf{Water flow}}
         $$
         
         |Parameter|Description|Units|
         |:---:|:---|:---:|
-        |$Q_s$| Sediment discharge | Volume/Time |
+        |$q_s$| Sediment transport rate | Area/Time |
         |$Q_w$| Water discharge | Volume/Time |
-        |$D_{50}$  | Sediment size | Length |
+        |$d_{50}$  | Sediment size | Length |
         |$S_0$| Stream slope  | - |
 
         &nbsp;
 
         """
 
-        with st.expander("**⚖️ Lane's balance**"):
+        with st.expander("**⚖️ Lane's balance**", expanded=True):
             url = "https://www.researchgate.net/profile/Massimo-Rinaldi-2/publication/283538764/figure/fig14/AS:613448840929287@1523269009117/Lanes-balance-one-of-the-most-recognized-conceptual-models-and-graphics-in-Fluvial.png"
             st.image(url, use_column_width=True)
             st.caption(f"Source: [researchgate.net / *Rinaldi et al. 2015*]({url})")
 
     elif option == "Shear stress":
+
+        img = "assets/img/ShieldsDiagram.png"
+        st.caption("**Shields Diagram** <br> Source: [Shields, 1936](https://repository.tudelft.nl/islandora/object/uuid:a66ea380-ffa3-449b-b59f-38a35b2c6658?collection=research)", unsafe_allow_html=True)
+        st.image(img, use_column_width=True)
+
         r"""
         ## Shields parameter
 
@@ -1120,24 +1219,49 @@ def main():
         is greater than the resistance of the sediments to remain in place.
 
         $$
-            \tau_* = \dfrac{\textsf{Flow stress}}{\textsf{Bed resistance}} = \dfrac{\tau}{(\gamma_s - \gamma) \, d}
+            \tau_* = \dfrac{\textsf{Flow stress}}{\textsf{Bed resistance}} = \dfrac{\tau_b}{(\gamma_s - \gamma) \, d}
         $$
         
         |Parameter|Description|Units|
         |:---|:-------|:----|
         |$\tau_*$| Shields parameter | - |
-        |$\tau$| Tractive shear stress | Force/Area |
+        |$\tau_b$| Tractive shear stress | Force/Area |
         |$\gamma_s$| Specific weight of sediment | Force/Volume |
         |$\gamma$| Specific weight of water | Force/Volume |
         |$d$| Characteristic particle size | Length |
         
         &nbsp;
 
-        """
+        $$
+            \tau_b = \gamma R_h S_0
+        $$
 
-        img = "assets/img/ShieldsDiagram.png"
-        st.caption("**Shields Diagram** <br> Source: [Shields, 1936](https://repository.tudelft.nl/islandora/object/uuid:a66ea380-ffa3-449b-b59f-38a35b2c6658?collection=research)", unsafe_allow_html=True)
-        st.image(img, use_column_width=True)
+        |Parameter|Description|Units|
+        |:---|:-------|:----|
+        |$R_h$| Hydraulic radius | Length |
+        |$S_0$| Channel slope | - |
+
+        &nbsp;
+
+        ## Sediment Reynolds number
+
+        $$
+            R_{e*} = \dfrac{u_* \, d}{\nu}
+        $$
+
+        |Parameter|Description|Units|
+        |:---|:-------|:----|
+        |$R_{e*}$| Sediment Reynolds number | - |
+        |$u_*$| Shear velocity | Length |
+        |$d$| Particle size | Length |
+        |$\nu$| Kinematic viscosity | Length²/Time |
+
+        &nbsp;
+        
+        $$
+            u_* = \sqrt{\dfrac{\tau_b}{\rho}}
+        $$
+        """
 
     else: 
         st.error("You should not be here!")
