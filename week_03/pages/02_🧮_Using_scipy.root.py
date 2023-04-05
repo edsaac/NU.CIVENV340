@@ -44,14 +44,18 @@ def main():
         ## 1️⃣ Organize information
         """
 
-        "#### 🔵 Nodes"
-        nodes_df = pd.DataFrame(nodes).transpose()
-        nodes_df = st.experimental_data_editor(nodes_df, num_rows="fixed", use_container_width=True)
+        cols = st.columns(2)
 
-        "#### 📐 Edges"
-        edges_df = pd.DataFrame(edges).transpose()
-        edges_df["Q_Guess"] = 0.005
-        edges_df = st.experimental_data_editor(edges_df, num_rows="fixed", use_container_width=True)
+        with cols[0]:
+            "#### 🔵 Nodes"
+            nodes_df = pd.DataFrame(nodes).transpose()
+            nodes_df = st.experimental_data_editor(nodes_df, num_rows="fixed", use_container_width=True)
+
+        with cols[1]:
+            "#### 📐 Edges"
+            edges_df = pd.DataFrame(edges).transpose()
+            edges_df["Q_Guess"] = 0.005
+            edges_df = st.experimental_data_editor(edges_df, num_rows="fixed", use_container_width=True)
         
         submit_btn = st.form_submit_button("🧱 Build!", use_container_width=True)
 
@@ -87,68 +91,86 @@ def main():
         swamme_jain = st.session_state.swamme_jain
         
         with st.echo():
-            def system_of_equations(Q, roughness, D, L):
-        
+            def system_of_equations(
+                Q,                  # Discharge [m] 
+                diameter_array,     # [m]          
+                length_array,       # [m]
+                roughness_array     # [m]
+                ):
+
+                ## Constants 
+
                 ## Array of equations
                 F = np.zeros_like(Q)
                 
                 ## Mass balances
-                F[0] = Q[0] + Q[3] - 0.50    #- Node A
-                F[1] = - Q[0] + Q[1] + Q[4]  #- Node B
-                F[2] = - Q[4] + Q[5]         #- Node C
+                F[0] =   Q[0] + Q[3] - 0.50         #- Node A
+                F[1] = - Q[0] + Q[1] + Q[4]         #- Node B
+                F[2] = - Q[4] + Q[5]                #- Node C
                 F[3] = - Q[1] - Q[2] + Q[6] + 0.20  #- Node E
-                F[4] = - Q[5] - Q[6] + 0.30  #- Node F
+                F[4] = - Q[5] - Q[6] + 0.30         #- Node F
 
                 ## Energy conservation
-                Reynolds = 4.0 * Q / (np.pi * D * ν)
-                rel_rough = roughness / D
-                f = swamme_jain(rel_rough, Reynolds)
-                K = 0.0826 * f * L / np.power(D, 5)
-                KQ = 2.0 * K * Q
+                reynolds_array = 4.0 * Q / (np.pi * diameter_array * ν)
+                rel_rough_array = roughness_array / diameter_array
+                f_array = swamme_jain(rel_rough_array, reynolds_array)
+                K_array = 0.0826 * f_array * length_array / np.power(diameter_array, 5)
+                hf = K_array * np.abs(Q) * Q
 
-                F[5] = KQ[0] + KQ[1] - KQ[2] - KQ[3]  #-Loop I
-                F[6] = KQ[4] + KQ[5] - KQ[6] - KQ[1]  #-Loop II
+                F[5] = hf[0] + hf[1] - hf[2] - hf[3]  #- Loop I
+                F[6] = hf[4] + hf[5] - hf[6] - hf[1]  #- Loop II
 
                 return F
         
         r"""
         ****
-        ## 5️⃣ Call `scipy.optimize.fsolve`
+        ## 5️⃣ Call [`scipy.optimize.root`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html)
         """
 
-        st.components.v1.iframe("https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fsolve.html#scipy-optimize-fsolve", height=500, width=500, scrolling=True)
+        st.components.v1.iframe("https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html", height=500, width=500, scrolling=True)
 
         with st.echo():
-            from scipy.optimize import fsolve
+            from scipy.optimize import root
             
-            solved_Q = fsolve(
+            solved_Q = root(
                 system_of_equations,     
                 x0 = edges_df["Q_Guess"],
                 args = (
                     edges_df["e"],
                     edges_df["diameter"],
                     edges_df["length"]
-                )
+                ),
+                method='lm'
             )
         
-        solved_edges_df = edges_df[["i", "j", "length", "diameter", "e"]]
+        cols = st.columns(2)
         
-        solved_edges_df["Q_Solved"] = solved_Q
-        solved_edges_df["Re"] = 4.0 * solved_edges_df["Q_Solved"] / (np.pi * solved_edges_df["diameter"] * ν)
-        solved_edges_df["e/D"] = solved_edges_df["e"] / solved_edges_df["diameter"]
-        solved_edges_df["f"] = st.session_state.swamme_jain(solved_edges_df["e/D"], solved_edges_df["Re"])
-        solved_edges_df["K"] = 0.0826 * solved_edges_df["f"] * solved_edges_df["length"] / np.power(solved_edges_df["diameter"], 5)
-        solved_edges_df["2KQ"] = 2.0 * solved_edges_df["K"] * solved_edges_df["Q_Solved"]
+        with cols[0]:
+            st.info(solved_Q.message)
+        
+        with cols[1]:
+            with st.expander("📜 log"):
+                st.write(solved_Q)
+
+        if solved_Q.success:
+            solved_edges_df = edges_df[["i", "j", "length", "diameter", "e"]]
+            
+            solved_edges_df["Q_Solved"] = solved_Q.x
+            solved_edges_df["Re"] = 4.0 * solved_edges_df["Q_Solved"] / (np.pi * solved_edges_df["diameter"] * ν)
+            solved_edges_df["e/D"] = solved_edges_df["e"] / solved_edges_df["diameter"]
+            solved_edges_df["f"] = st.session_state.swamme_jain(solved_edges_df["e/D"], solved_edges_df["Re"])
+            solved_edges_df["K"] = 0.0826 * solved_edges_df["f"] * solved_edges_df["length"] / np.power(solved_edges_df["diameter"], 5)
+            solved_edges_df["2KQ"] = 2.0 * solved_edges_df["K"] * solved_edges_df["Q_Solved"]
 
 
-        r"""
-        ****
-        ## 🏁 Print final results
-        """
-        st.dataframe(
-            solved_edges_df.style.format(format_dict, precision=2), 
-            use_container_width=True
-        )
+            r"""
+            ****
+            ## 🏁 Print final results
+            """
+            st.dataframe(
+                solved_edges_df.style.format(format_dict, precision=2), 
+                use_container_width=True
+            )
 
 
 if __name__ == "__main__":

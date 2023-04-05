@@ -1,5 +1,6 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 import networkx as nx
@@ -441,37 +442,166 @@ def main():
         ## Branched networks
 
         Aka *tree networks*, these are systems without loops. 
-
-        ### Three-reservoir problem
         """
-        
+
         st.pyplot(three_reservoirs())
 
         r"""
-        Determine the flow rates multiple connected reservoirs. Similar to network systems. 
-        in this type of problem each, whereas energy balances are written for each pipe connection.
+        ### Three-reservoir problem
+
+        Determine the flow rates between multiple connected reservoirs. 
+        For the problem in the figure, we can write energy balance of each of the pipes
 
         $$
         \begin{array}{rl}
-            H_\texttt{1} =& H_\texttt{J} + h_{f_\texttt{1-J}} \\
-            H_\texttt{2} =& H_\texttt{J} + h_{f_\texttt{2-J}} \\
-            H_\texttt{J} =& H_\texttt{3} + h_{f_\texttt{J-3}} \\
+            H_\texttt{A} =& H_\texttt{J} + h_{f_\texttt{A-J}} \\
+            H_\texttt{B} =& H_\texttt{J} + h_{f_\texttt{B-J}} \\
+            H_\texttt{J} =& H_\texttt{C} + h_{f_\texttt{J-C}} \\
         \end{array}
         $$
 
-        At the junction $\texttt{J}$, mass must be conserved
+        And at the junction $\texttt{J}$, mass must be conserved
 
         $$
-            \sum{Q} = Q_1 + Q_2 - Q_3 = 0
+            \sum{Q} = Q_\texttt{A-J} + Q_\texttt{B-J} - Q_\texttt{J-C} = 0
         $$
 
+        In this case, we obtain four equations to solve for four unknowns: the three flow rates
+        and the energy head on the junction. We can rewrite the problem to contain only the 
+        discharges as unknowns:
+
+        $$
+            \def\arraystretch{1.5}
+            \begin{cases}
+            \begin{array}{rl}
+                h_{f_\texttt{A-J}} + h_{f_\texttt{J-C}} =& H_\texttt{A} - H_\texttt{C} \\
+                h_{f_\texttt{B-J}} + h_{f_\texttt{J-C}} =& H_\texttt{B} - H_\texttt{C} \\
+                Q_\texttt{A-J} + Q_\texttt{B-J} - Q_\texttt{J-C} =& 0
+            \end{array}
+            \end{cases}
+        $$
+
+        Or,
+        
+        $$
+            \def\arraystretch{1.5}            
+            \begin{cases}
+            \begin{array}{rl}
+                K_\texttt{A-J}(Q_\texttt{A-J})^2 + K_\texttt{J-C}(Q_\texttt{J-C})^2 =& H_\texttt{A} - H_\texttt{C} \\
+                K_\texttt{B-J}(Q_\texttt{B-J})^2 + K_\texttt{J-C}(Q_\texttt{J-C})^2 =& H_\texttt{B} - H_\texttt{C} \\
+                Q_\texttt{A-J} + Q_\texttt{B-J} - Q_\texttt{J-C} =& 0
+            \end{array}            
+            \end{cases}
+        $$
+        ********
+
+        ## Solving example 4.6 with `scipy.root`:
         """
+        cols = st.columns(2)
 
+        with cols[0]:
+
+            "### 1️⃣ Pipe characteristics"
+            with st.echo():
+                pipes = pd.DataFrame({
+                    "Pipe" : ["A-J", "B-J", "J-C"],
+                    "Length (m)" : [1000.0, 4000.0, 2000.0],
+                    "Diameter (m)" : [0.30, 0.50, 0.40],
+                    "Roughness (m)" : [0.6e-6]*3,
+                    }
+                )
+
+            pipes.set_index("Pipe", inplace=True)
+
+            st.dataframe(
+                pipes.style.format(
+                    {"Roughness (m)" : "{:.2E}"}, 
+                    precision=2
+                ), 
+                use_container_width=True
+            )
+
+        with cols[1]:
+            "### 1️⃣ Node characteristics"
+
+            with st.echo():
+                nodes = pd.DataFrame({
+                    "Node" : ["A", "B", "C", "J"],
+                    "Elevation" : [120.0, 100.0, 80.0, 40.0],
+                    "Pressure head" : ["Atm", "Atm", "Atm", "?"]
+                    }
+                )
+            
+            nodes.set_index("Node", inplace=True)
+
+            st.dataframe(nodes.style.format(precision=1), use_container_width=True)
+
+        "### 2️⃣ Define the problem system of equations"
+        with st.echo():
+            from scipy.optimize import root
+
+            def three_reservoirs_problem(
+                    discharge_vector,   # [m³/s]
+                    diameter_array,
+                    length_array,
+                    roughness_array):
+                
+                error = np.zeros_like(discharge_vector)
+                KIN_VISCOSITY = 1.0e-6    # [m²/s]
+                
+                ## Calculations 
+                reynolds_array = 4.0 * np.abs(discharge_vector) / (np.pi * diameter_array * KIN_VISCOSITY)
+                rel_rough_array = roughness_array / diameter_array
+                f_array = swamme_jain(rel_rough_array, reynolds_array)
+                K_array = 0.0826 * f_array * length_array / np.power(diameter_array, 5)
+                hf_array = K_array * np.power(discharge_vector, 2)
+                
+                Q1, Q2, Q3 = discharge_vector
+                hf1, hf2, hf3 = hf_array
+
+                ## Balance equations
+                error[0] = Q1 + Q2 - Q3
+                error[1] = hf1 + hf3 - (120-80)
+                error[2] = hf2 + hf3 - (100-80)
+
+                return error
+        
+        "### 🍠 Find the root "
+        
+        with st.echo():
+            solution = root(
+                three_reservoirs_problem,   # Equation to solve
+                np.array([1,1,1]),          # Initial guess
+                args=(
+                    pipes["Diameter (m)"],     
+                    pipes["Length (m)"],       
+                    pipes["Roughness (m)"],
+                ),
+            )
+
+        "### 🏁 Print solution"       
+        if solution.success:
+            st.info(solution.message, icon="😎")
+            pipes["Discharge (m³/s)"] = solution.x
+        
+            st.dataframe(
+                pipes.style.format(
+                    {"Roughness (m)" : "{:.2E}",
+                     "Discharge (m³/s)" : "{:.4f}"
+                    }, 
+                    precision=2
+                ), 
+                use_container_width=True
+            )
+
+        "*****"
+        st.warning("What was the pressure in the junction?")
+ 
     else: 
         r" ### 🚧 Under construction 🚧"
 
 def three_reservoirs():
-    from matplotlib.patches import Rectangle
+    from matplotlib.patches import Rectangle, Circle
     from collections import namedtuple
     Point = namedtuple("Point", ["x", "y"])
 
@@ -484,7 +614,36 @@ def three_reservoirs():
 
     fig, ax = plt.subplots()
 
-    tank(ax, tankxy:= Point(0,10), 3, 2) 
+    # Junction
+    junction = Point(8,4)
+    ax.add_patch(
+        Circle(junction, 0.3, zorder=3),
+    )
+    ax.text(junction.x + 0.3, junction.y + 0.3, r"$\mathtt{J}$", ha='center')
+    
+    pjunc = 3.3
+    ax.plot([junction.x]*2, [junction.y, junction.y + pjunc])
+    ax.text(junction.x, junction.y + pjunc + 0.1, r"$H_\mathtt{J}$", ha='center', color='tab:blue', va='bottom')
+    ax.axhline(junction.y + pjunc, xmin=0.4, xmax=0.7, lw=1, color='tab:blue', ls="dashed", zorder=0)
+
+    # Tanks
+    tank(ax, tankxy:= Point(0,8), w:=2, h:=1.5)
+    ax.text(tankxy.x + w/2, tankxy.y + h, r"$H_\mathtt{A}$", ha='center')
+    ax.plot(
+        [tankxy.x + w, junction.x], [tankxy.y, junction.y],
+        c="k", lw=2)
+
+    tank(ax, tankxy:= Point(4,9), w:=2, h:=2)
+    ax.text(tankxy.x + w/2, tankxy.y + h, r"$H_\mathtt{B}$", ha='center')
+    ax.plot(
+        [tankxy.x + w/2, junction.x], [tankxy.y, junction.y],
+        c="k", lw=2)
+
+    tank(ax, tankxy:= Point(10,2), w:=4, h:=1.5)
+    ax.text(tankxy.x + w/2, tankxy.y + h, r"$H_\mathtt{C}$", ha='center')
+    ax.plot(
+        [tankxy.x, junction.x], [tankxy.y, junction.y],
+        c="k", lw=2)
 
     # Datum
     ax.axhline(0.1, xmin=0.5, lw=1, color='k', ls="dashed", zorder=0)
@@ -737,6 +896,27 @@ def build_graph(nodes_df, edges_df):
     return G, fig
 
 st.session_state.build_graph = build_graph
+
+# from dataclasses import dataclass
+# @dataclass
+# class Pipe():
+#     diameter:float          # [m]
+#     length:float            # [m]
+#     roughness:float         # [m]
+#     discharge:float = 1e-3  # [m³/s]
+
+#     def __post_init__(self):
+#         KIN_VISCOSITY = 1e-6    # [m²/s]
+
+#         self.rel_rough = self.roughness/self.diameter
+#         self.reynolds = (4.0 * self.discharge) / (np.pi * self.diameter * KIN_VISCOSITY)
+
+#         self.f = swamme_jain(self.rel_rough, self.reynolds)
+#         self.update_K()
+
+#     def update_K(self):
+#         self.K = 0.08263 * self.f * self.length / np.power(self.diameter, 5)
+
 
 if __name__ == "__main__":
     main()

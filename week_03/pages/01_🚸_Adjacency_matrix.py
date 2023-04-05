@@ -57,6 +57,7 @@ def main():
         st.session_state.submit_btn_pressed = False
     
     if submit_btn or st.session_state.submit_btn_pressed:
+        st.session_state.submit_btn_pressed = True
         
         G, fig = build_graph(nodes_df, edges_df)
         st.pyplot(fig)
