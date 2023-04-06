@@ -60,14 +60,14 @@ def main():
         ## Hydraulic efficiency
 
         $$
-            \textsf{Manning eq.} \quad Q = \dfrac{1}{n} A \, \, R_h^{2/3} \sqrt{S_0}
+            \textsf{Manning eq.} \quad Q = \dfrac{1}{n} \, A \, R_h^{2/3} \sqrt{S_0}
         $$
         
         For a given Manning coefficient and channel slope, the discharge can be maximized 
         if the hydraulic radius is maximized, which is achieved if the wetter perimeter is mimized.
 
         $$
-            Q = \dfrac{1}{n} \underbrace{A \, \, R_h^{2/3}}_{\substack{\\🆙}} \sqrt{S_0}
+            Q = \dfrac{1}{n} \, \underbrace{A \, R_h^{2/3}}_{\substack{\\🆙}} \sqrt{S_0}
         $$
 
         The product $A R_h^{2/3}$ is the *section factor for uniform-flow*. Discharge is maximized if this
@@ -102,6 +102,7 @@ def main():
         #     solve = sp.Eq(difficultdy, 0)
             
         r"""
+        *****
         ### Maximizing the section factor for uniform flow:
 
         For a trapezoidal section, the cross-section area and the wetter perimeter are given by:
@@ -358,10 +359,10 @@ def main():
             Dh = A/T
             Fr = V/np.sqrt(g*Dh)
 
-            with cols[0]: st.metric("$\; V$", f"{V:.2f} m")
+            with cols[0]: st.metric("$\; V$", f"{V:.2f} m/s")
             with cols[1]: st.metric("$\; T$", f"{T:.2f} m")
-            with cols[2]: st.metric("$\; D_h$", f"{Dh:.2f} m²")
-            with cols[3]: st.metric("$\; F_r$", f"{Fr:.2f} m")
+            with cols[2]: st.metric("$\; D_h$", f"{Dh:.2f} m")
+            with cols[3]: st.metric("$\; F_r$", f"{Fr:.2f}")
 
             st.warning("Don't forget to add a freeboard!")
 
@@ -505,7 +506,7 @@ def main():
         
         if geometry_calc.success:
             
-            st.info(geometry_calc.message)
+            st.info(geometry_calc.message, icon="🥳")
 
             cols = st.columns(4)
             y, b = geometry_calc.x
@@ -558,10 +559,94 @@ def main():
 
     elif option=="Flow measurement devices [Channels]":
         r"""
-        ## Channels
+        ## Weirs
+
+        ### Sharp-crested weir
         
+        $$
+            {\substack{\textsf{Uncontracted} \\ \textsf{horizontal weir}}}: \quad Q = CLH^{3/2}
+        $$
+        
+        |Parameter|Description|Units|
+        |--------:|:----|:----:|
+        |$ Q $| Discharge | Volume/Time |
+        |$ C $| Discharge coefficient | Length$^{0.5}$/Time |
+        |$ L $| Length of the weir crest| Length |
+        
+        &nbsp;
+
         """
 
+        url = "https://upload.wikimedia.org/wikipedia/commons/3/3e/Floodgate_drum.JPG"
+        source = "https://es.wikipedia.org/wiki/Vertedero_hidr%C3%A1ulico#/media/Archivo:Floodgate_drum.JPG"
+        st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+        st.image(url, use_column_width=True)
+
+        # url = "https://upload.wikimedia.org/wikipedia/commons/5/55/Dreieckswehr02.jpeg"
+        # source = "https://fr.wikipedia.org/wiki/Seuil_(barrage)#/media/Fichier:Dreieckswehr02.jpeg"
+        # st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+        # st.image(url, use_column_width=True)
+
+        url = "https://instrumentationtools.com/wp-content/uploads/2018/01/Weirs-and-flumes-flow-measurement.jpg?ezimgfmt=ng:webp/ngcb2"
+        source = "https://instrumentationtools.com/weirs-and-flumes/"
+        st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+        st.image(url, use_column_width=True)
+
+        r"""
+        Some important types:
+        
+        - Uncontracted
+        - Contracted
+            - Horizontal
+            - 90°  V-notch
+            - Cipolletti (trapezoidal)
+        
+        """
+        r"""
+        *****
+        ### Broad-crested weir
+        """
+        url = "https://wiki.tuflow.com/images/3/3d/Broad-crested_weir.jpg"
+        source = "https://wiki.tuflow.com/index.php?title=File:Broad-crested_weir.jpg"
+        st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+        st.image(url, use_column_width=True)
+
+        r"""
+        *****
+        ## Critical flow flume 
+        
+        ### Parshall flume
+        """
+
+        cols = st.columns(2)
+
+        with cols[0]:
+            url = "https://upload.wikimedia.org/wikipedia/commons/d/d8/Parshall_Flume.svg"
+            source = "https://en.wikipedia.org/wiki/Parshall_flume#/media/File:Parshall_Flume.svg"
+            st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.image(url, use_column_width=True)
+
+        with cols[1]:
+            url = "https://instrumentationtools.com/wp-content/uploads/2018/01/Parshall-flume-measuring-flow.jpg?ezimgfmt=ng:webp/ngcb2"
+            source = "https://instrumentationtools.com/weirs-and-flumes/"
+            st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.image(url, use_column_width=True)
+
+        "****"
+        _, col, _ = st.columns([1,3,1])
+        with col:
+            url = "https://usbr.gov/tsc/techreferences/mands/wmm/index.htm"
+            st.markdown(
+                fr"""
+                Also check:
+
+                ⏺ U.S. Bureau of Reclamation (2001). <br>
+                **Water Measurement Manual: A water resources technical publication**. <br>
+                *U.S. Department of the Interior.* <br>
+                Website: [usbr.gov]({url})
+                
+                """, unsafe_allow_html=True)
+        
     else: 
         st.error("You should not be here!")
         

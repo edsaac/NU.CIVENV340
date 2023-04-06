@@ -9,3 +9,4 @@ openpyxl
 array_to_latex
 networkx
 stpyvista
+sympy
