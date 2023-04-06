@@ -32,8 +32,9 @@ def main():
                 "Hydraulic efficiency",
                 "Non-erodible channels",
                 "Unlined channel design",
-                "Flow measurement devices [Pipes]",
-                "Flow measurement devices [Channels]"
+                "Weirs",
+                "Flumes",
+                "Gaging stations"
             ],
             label_visibility="collapsed")
         
@@ -551,18 +552,20 @@ def main():
         $$
 
         """
-    elif option=="Flow measurement devices [Pipes]":
-        r"""
-        ## Pipes
+    # elif option=="Flow measurement devices [Pipes]":
+    #     r"""
+    #     ## Pipes
         
-        """
+    #     """
 
-    elif option=="Flow measurement devices [Channels]":
+    elif option=="Weirs":
         r"""
         ## Weirs
 
         ### Sharp-crested weir
         
+        In general, 
+
         $$
             {\substack{\textsf{Uncontracted} \\ \textsf{horizontal weir}}}: \quad Q = CLH^{3/2}
         $$
@@ -593,44 +596,176 @@ def main():
         st.image(url, use_column_width=True)
 
         r"""
-        Some important types:
+        Some important types and equations:
         
-        - Uncontracted
-        - Contracted
-            - Horizontal
-            - 90°  V-notch
-            - Cipolletti (trapezoidal)
+        |USBR type|Equation|Notes|
+        |--------:|:----|:----:|
+        |**Standard contracted horizontal**| $$ Q = C(L - 0.2H)H^{3/2} $$ | $$ C = \begin{cases} 3.33 \quad \textsf{(BG)} \\ 1.84 \quad \textsf{(SI)} \end{cases}$$ |
+        |**Standard 90° V-notch**| $$ Q = CH^{2.48} $$ | $$ C = \begin{cases} 2.49 \quad \textsf{(BG)} \\ 1.34 \quad \textsf{(SI)} \end{cases}$$ |
+        |**Standard trapezoidal** (Cipolletti) | $$ Q = CLH^{3/2} $$ | $$ C = \begin{cases} 3.36 \quad \textsf{(BG)} \\ 1.858 \quad \textsf{(SI)} \end{cases}$$ |
         
         """
         r"""
         *****
         ### Broad-crested weir
+
+        It's an elevated obstruction that allows critical flow to develop. It can be analyzed as a balance
+        of momentum:
+
+        $$
+            \overbrace{\rho q \left( \dfrac{q}{y_2} - \dfrac{q}{y_1} \right)}^\textsf{Momentum flux}
+            = 
+            \dfrac{\gamma}{2} 
+            \left( 
+                \underbrace{y_1^2 }_{\substack{\textsf{Upstream} \\ \textsf{pressure}}}
+                - 
+                \underbrace{y_2^2 }_{\substack{\textsf{Downstream} \\ \textsf{pressure}}}
+                - 
+                \underbrace{h(2y_1 - h)}_{\substack{\textsf{Obstruction} \\ \textsf{force}}}
+            \right)
+        $$
+
+        &nbsp;
+
+        | Parameter | Description   | Units  |
+        |:---------:|:--------:|:------------------:|
+        |$ q = Q/b $  | Discharge per unit width  | Volume/Time/Length |
+        |$ y_1 $  | Upstream depth  | Length |
+        |$ y_2 $  | Downstream depth (over the weir)  | Length | 
+        |$ h $  | Weir height  | Length | 
+
+        &nbsp;
+
         """
         url = "https://wiki.tuflow.com/images/3/3d/Broad-crested_weir.jpg"
         source = "https://wiki.tuflow.com/index.php?title=File:Broad-crested_weir.jpg"
         st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
         st.image(url, use_column_width=True)
 
+        "*****"
+        _, col, _ = st.columns([1,3,1])
+        with col:
+            url = "https://usbr.gov/tsc/techreferences/mands/wmm/index.htm"
+            st.markdown(
+                fr"""
+                Also check:
+
+                ⏺ U.S. Bureau of Reclamation (2001). <br>
+                **Water Measurement Manual: A water resources technical publication**. <br>
+                *U.S. Department of the Interior.* <br>
+                Website: [usbr.gov]({url})
+                
+                """, unsafe_allow_html=True)
+
+    elif option=="Flumes":
+
         r"""
-        *****
         ## Critical flow flume 
         
         ### Parshall flume
         """
+        
+        url = "https://upload.wikimedia.org/wikipedia/commons/d/d8/Parshall_Flume.svg"
+        source = "https://en.wikipedia.org/wiki/Parshall_flume#/media/File:Parshall_Flume.svg"
+        st.image(url, use_column_width=True)
+        st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+    
+
+        r"""
+        $$
+            Q = CH_a^n
+        $$
+        """
+        
+        cols = st.columns(2)
+        with cols[0]:
+            r"""
+
+            | Parameter | Description   | Units  |
+            |:---------:|:--------:|:------------------:|
+            |$ Q $  | Discharge | $\mathrm{ft^3/s}$ |
+            |$ H_a $  | Measuring head  | $\mathrm{ft}$ |
+            |$ C $  | Empirical coefficient for Parshall flume | 🤔 |
+            |$ n $  | Empirical exponent for Parshall flume  | - |
+            
+            """
+        
+        "&nbsp;"
+
+        with cols[1]:
+
+            with st.expander("📋 Coefficients and exponents for Parshall flume"):
+                url = "https://usbr.gov/tsc/techreferences/mands/wmm/index.htm"
+                source = url
+                st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+
+                r"""
+                | Throat width ($W$) | Coefficient ($C$) | Exponent ($n$) |
+                | :----------: | :---------------: | :------------: |
+                | 1 in         | 0.338             | 1.55           |
+                | 2 in         | 0.676             | 1.55           |
+                | 3 in         | 0.992             | 1.55           |
+                | 6 in         | 2.06              | 1.58           |
+                | 9 in         | 3.07              | 1.53           |
+                | 1 ft         | 3.95              | 1.55           |
+                | 2 ft         | 8.00              | 1.55           |
+                | 3 ft         | 12.00             | 1.57           |
+                | 4 ft         | 16.00             | 1.58           |
+                | 5 ft         | 20.00             | 1.59           |
+                | 6 ft         | 24.00             | 1.59           |
+                | 7 ft         | 28.00             | 1.60           |
+                | 8 ft         | 32.00             | 1.61           |
+                | 10 ft        | 39.38             | 1.60           |
+                | 12 ft        | 46.75             | 1.60           |
+                | 15 ft        | 57.81             | 1.60           |
+                | 20 ft        | 76.25             | 1.60           |
+                | 25 ft        | 94.69             | 1.60           |
+                | 30 ft        | 113.13            | 1.60           |
+                | 40 ft        | 150.00            | 1.60           |
+                | 50 ft        | 186.88            | 1.60           |        
+                """
 
         cols = st.columns(2)
 
         with cols[0]:
-            url = "https://upload.wikimedia.org/wikipedia/commons/d/d8/Parshall_Flume.svg"
-            source = "https://en.wikipedia.org/wiki/Parshall_flume#/media/File:Parshall_Flume.svg"
+            # with st.expander("📏 Parshall flume dimensions"):
+            url = "https://usbr.gov/tsc/techreferences/mands/wmm/fig/F08_09AL.GIF"
+            source = "https://usbr.gov/tsc/techreferences/mands/wmm/index.htm"
             st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
             st.image(url, use_column_width=True)
+
+
 
         with cols[1]:
             url = "https://instrumentationtools.com/wp-content/uploads/2018/01/Parshall-flume-measuring-flow.jpg?ezimgfmt=ng:webp/ngcb2"
             source = "https://instrumentationtools.com/weirs-and-flumes/"
             st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
             st.image(url, use_column_width=True)
+
+        "&nbsp;"
+
+        cols = st.columns(2)
+
+        with cols[0]:
+            r"""
+            Depending on the flume width and the ratio $H_b/H_a$, a Parshall flume is either
+            operating under **submerged or free flow conditions** 
+            """
+
+        with cols[1]:
+            with st.expander("📋 Threshold for submergence"):
+                url = "https://usbr.gov/tsc/techreferences/mands/wmm/index.htm"
+                source = url
+                st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+                
+                r"""
+                |Flume width|Submerged if|
+                |-----:|:-----|
+                |1, 2 or 3in| $\cfrac{H_b}{H_a} > 0.50 $ |
+                |6 or 9in| $\cfrac{H_b}{H_a} > 0.60 $ | 
+                |1ft to 8ft| $\cfrac{H_b}{H_a} > 0.70 $ | 
+                |10ft to 50ft| $\cfrac{H_b}{H_a} > 0.80 $|
+                """
 
         "****"
         _, col, _ = st.columns([1,3,1])
@@ -646,7 +781,82 @@ def main():
                 Website: [usbr.gov]({url})
                 
                 """, unsafe_allow_html=True)
+    
+    elif option == "Gaging stations":
+        r"""
+        ## Gaging stations
         
+        $$
+            \textsf{Stage-discharge relation} \quad Q = C \, y^n
+        $$
+
+        | Parameter | Description   | Units  |
+        |:---------:|:--------:|:------------------:|
+        |$ Q $  | Discharge | Volume/Time |
+        |$ y $  | Measured stage (depth) | Length |
+        |$ C $  | Fitting coefficient | Volume/Time/Length$^n$ |
+        |$ n $  | Fitting exponent | - |
+
+        &nbsp;
+        """
+
+        with st.expander("📡 **USGS data example**:"):
+            url = "https://waterdata.usgs.gov/monitoring-location/04079000/#parameterCode=00065&period=P30D"
+            source = "https://waterdata.usgs.gov/monitoring-location/04079000/#parameterCode=00065&period=P30D"
+            st.components.v1.iframe(url, height=600, width=800, scrolling=True)
+            st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+
+        url = "https://www.usgs.gov/special-topics/water-science-school/science/how-streamflow-measured#overview"
+        st.caption(f"Also check: How Streamflow is Measured [usgs.gov]({url})")        
+        cols = st.columns(3)
+
+        with cols[0]:
+            r"""
+            ### 1. Measuring stream stage
+            """
+            url = "https://thebridge.agu.org/files/2018/05/CurrentRiverMissouri.jpg"
+            source = "https://thebridge.agu.org/2018/05/17/streamgages-infrastructure-to-protect-infrastructure/"
+            st.caption(f"**USGS streamgage on the Current River in Montauk State Park in Missouri**<br>Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.image(url, use_column_width=True)
+
+        with cols[1]:
+            r"""
+            ### 2. Measuring discharge
+            """
+            url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/Lowell_Alvin_ADCP4.JPG"
+            source = "https://www.usgs.gov/media/images/measuring-boise-river-streamflow-adcp-1"
+            st.caption(f"**Acoustic Doppler current profiler (ADCP) to measure streamflow on the Boise River**<br>Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.image(url, use_column_width=True)
+
+        with cols[2]:
+            r"""
+            ### 3. Finding $C$ and $n$
+            """
+            url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/discharge.jpg"
+            source = "https://www.usgs.gov/media/images/usgs-stage-discharge-relation-example"
+            st.caption(f"**Discharge relation example**<br>Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.image(url, use_column_width=True)
+
+            url = "https://ars.els-cdn.com/content/image/3-s2.0-B9780128193426000075-f02-09-9780128193426.jpg"
+            source = "https://doi.org/10.1016/B978-0-12-819342-6.00007-5"
+            st.caption(f"**Discharge relation example**<br>Soulis (2021): [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.image(url, use_column_width=True)
+
+        "******"
+        _, col, _ = st.columns([1,3,1])
+        with col:
+            url = "https://pubs.er.usgs.gov/publication/tm3A8"
+            st.markdown(
+                fr"""
+                Also check:
+
+                ⏺ Turnipseed & Sauer (2010). <br>
+                **Discharge Measurements at Gaging Stations**. <br>
+                *In Techniques and Methods. US Geological Survey.* <br>
+                DOI: [10.3133/tm3A8]({url})
+                
+                """, unsafe_allow_html=True)
+
     else: 
         st.error("You should not be here!")
         
