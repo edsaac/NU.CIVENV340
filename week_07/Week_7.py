@@ -22,7 +22,7 @@ def main():
     with st.sidebar:
         lottie = """
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        <lottie-player src="https://assets4.lottiefiles.com/private_files/lf30_nep75hmm.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 100px;"  loop  autoplay></lottie-player>
+        <lottie-player src="https://assets3.lottiefiles.com/packages/lf20_c3vfwjj1.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 100px;"  loop  autoplay></lottie-player>
         """
         st.components.v1.html(lottie, width=200, height=100)
 
@@ -82,27 +82,6 @@ def main():
 
         &nbsp;
 
-        """
-
-        # with st.echo():
-
-        #     import sympy as sp
-        #     A, Pw, b, m, y = sp.symbols("A P_w b m y")
-            
-        #     A = (b + m*y)*y
-        #     Pw = b + 2*y*sp.sqrt(1 + m**2)
-
-        #     Rh = A/Pw 
-            
-        #     difficult = A**sp.Rational(5, 3) / Pw**sp.Rational(2,3)
-
-        #     dAdy = sp.diff(A, y)
-
-        #     difficultdy = sp.diff(difficult, y)
-
-        #     solve = sp.Eq(difficultdy, 0)
-            
-        r"""
         *****
         ### Maximizing the section factor for uniform flow:
 
