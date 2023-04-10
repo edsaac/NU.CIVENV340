@@ -1,7 +1,10 @@
 pip
+numpy==1.23.5
 sympy
+shapely --no-binary shapely
+rasterio
+cartopy
 streamlit
-numpy
 matplotlib
 pandas
 scipy
