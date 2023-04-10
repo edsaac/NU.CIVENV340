@@ -3,6 +3,10 @@ import plotly.graph_objects as go
 from itertools import cycle
 import numpy as np
 import pickle
+import requests
+from PIL import Image
+from io import BytesIO
+from urllib.parse import urlparse
 
 def colebook_white(relative_roughness:float, reynolds_number:float, fguess:float=0.01):   
     fcalc = 1.0 / np.power(- 2.0 * np.log10(relative_roughness/3.7 + 2.51/(reynolds_number*np.sqrt(fguess))), 2)
@@ -557,23 +561,36 @@ def main():
 
         with cols[0]:
             "### Thrust blocks"
-            st.image("https://www.meyerfire.com/uploads/1/6/0/7/16072416/97-550-v2_orig.jpg", use_column_width=True)
-            st.caption("*Source* [🛸 meyerfire.com](https://www.meyerfire.com/blog/a-new-thrust-block-calculator-part-i)") 
+            url = "https://www.meyerfire.com/uploads/1/6/0/7/16072416/97-550-v2_orig.jpg"
+            source = "https://www.meyerfire.com/blog/a-new-thrust-block-calculator-part-i"
+            st.image(get_image(url), use_column_width=True)
+            st.caption(f"*Source* [🛸 {urlparse(source).hostname}]({source})") 
 
-            st.image("https://www.ausflowsydney.com.au/wp-content/uploads/2018/07/6.-MaW-water-bends-1-e1546557720956.jpg", use_column_width=True)
-            st.caption("*Source* [🛸 ausflowsydney.com.au](https://www.ausflowsydney.com.au/6-maw-water-bends/)") 
+            url = "https://www.ausflowsydney.com.au/wp-content/uploads/2018/07/6.-MaW-water-bends-1-e1546557720956.jpg"
+            source = "https://www.ausflowsydney.com.au/6-maw-water-bends/"
+            st.image(get_image(url), use_column_width=True)
+            st.caption(f"*Source* [🛸 {urlparse(source).hostname}]({source})") 
 
         with cols[1]:
             "### Pipe restraints"
-            st.image("https://kannsupply.ca/wp-content/uploads/2020/02/1300C-Pipe-Restraint-4-42-1-scaled.jpeg", use_column_width=True)
-            st.caption("*Source* [🛸 kannsypply.ca](https://kannsupply.ca/kann-products/1300c-pipe-restraint-4-42-2/)")
+            url = "https://kannsupply.ca/wp-content/uploads/2020/02/1300C-Pipe-Restraint-4-42-1-scaled.jpeg"
+            source = "https://kannsupply.ca/kann-products/1300c-pipe-restraint-4-42-2/"
+            st.image(get_image(url), use_column_width=True)
+            st.caption( f"*Source* [🛸 {urlparse(url).hostname}]({source})")
 
-            st.image("https://images.assetsdelivery.com/compings_v2/designbydx/designbydx1505/designbydx150500087.jpg", use_column_width=True)
-            st.caption("*Source* [🛸 stocklib.com](https://www.stocklib.com/media-40298637/failure-of-joint-restraint-ductile-water-pipe-600-mm-diameter.html)")
-
+            url = "https://images.assetsdelivery.com/compings_v2/designbydx/designbydx1505/designbydx150500087.jpg"
+            source = "https://www.stocklib.com/media-40298637/failure-of-joint-restraint-ductile-water-pipe-600-mm-diameter.html"
+            st.image(get_image(url), use_column_width=True)
+            st.caption(f"*Source* [🛸 {urlparse(url).hostname}]({source})")
 
     else: 
         st.error("You should not be here!")
+
+@st.cache_data
+def get_image(url:str):
+    r = requests.get(url, stream=True)
+    img = Image.open(BytesIO(r.content))
+    return img
 
 if __name__ == "__main__":
     main()

@@ -51,9 +51,15 @@ def main():
         """
         with st.expander("🧷 Recommended exercises:"):
             r"""
+            - Series/Parallel:
+                - 4.1.6
+                - 4.1.15
+            - Branched system:
+                - 4.3.3
             - Networks: (but using Newton method, a spreadsheet or `scipy.optimize.fsolve`)
                 - 4.4.2 
                 - 4.4.5
+                - 4.4.7
                 - 4.4.10
             - Design: 4.7.2
             """
