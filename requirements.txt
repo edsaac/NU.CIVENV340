@@ -5,6 +5,7 @@ sympy
 shapely --no-binary shapely
 rasterio
 cartopy
+pysheds
 streamlit
 matplotlib
 pandas
