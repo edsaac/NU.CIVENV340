@@ -1,2 +1,1 @@
-gdal
 libgeos-dev
