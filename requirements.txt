@@ -14,6 +14,6 @@ plotly
 openpyxl
 array_to_latex
 networkx
-folium
 stpyvista
+folium
 streamlit-folium

@@ -14,6 +14,8 @@ import folium
 from collections import namedtuple
 Point = namedtuple("Point", ['x','y'])
 
+DIRMAP = (64, 128, 1, 2, 4, 8, 16, 32) # (D8 for mapping) <- This should be a categorical map
+
 def main():
 
     with open("assets/page_config.pkl", 'rb') as f:
@@ -112,25 +114,31 @@ def main():
     # Specify pour point
     with st.sidebar:
         "******"
-        "**Pour point location**"
-        cols = st.columns(2)
-        with cols[0]: 
-            y = st.number_input(
-                "Latitude", 
-                bottom, top, 33.1032, 0.1, 
-                format="%.2f",
-                help="Latitude of the pour point for basin delimitation"
-            )
+        def reset_maps_catchment():
+            del st.session_state.maps_catchment
 
-        with cols[1]: 
-            x = st.number_input(
-                "Longitude", 
-                left, right, -83.7943, 0.1, 
-                format="%.2f",
-                help="Longitude of the pour point for basin delimitation"
-            )
-        
-        pour_point = (x,y)
+        with st.form("Pour point location"):
+            "### Pour point location"
+            cols = st.columns(2)
+            with cols[0]: 
+                y = st.number_input(
+                    "Latitude", 
+                    bottom, top, 33.1032, 0.1, 
+                    format="%.3f",
+                    help="Latitude of the pour point for basin delimitation, e.g., 33.805"
+                )
+
+            with cols[1]: 
+                x = st.number_input(
+                    "Longitude", 
+                    left, right, -83.7943, 0.1, 
+                    format="%.3f",
+                    help="Longitude of the pour point for basin delimitation, e.g., -84.500"
+                )
+            
+            pour_point = (x,y)
+
+            st.form_submit_button("Submit", use_container_width=True, on_click=reset_maps_catchment)
 
     if "maps" not in st.session_state:
         st.session_state.maps = dict()
@@ -151,51 +159,58 @@ def main():
         inflated_dem = grid.resolve_flats(flooded_dem)
 
         # Compute flow directions
-        dirmap = (64, 128, 1, 2, 4, 8, 16, 32) # (D8 for mapping) <- This should be a categorical map
-        fdir = grid.flowdir(inflated_dem, dirmap=dirmap)
+        fdir = grid.flowdir(inflated_dem, dirmap=DIRMAP)
+        st.session_state.maps["fdir"] = fdir
 
         # Calculate flow accumulation
-        acc = grid.accumulation(fdir, dirmap=dirmap)
+        acc = grid.accumulation(fdir, dirmap=DIRMAP)
         st.session_state.maps["acc"] = acc
 
+        
+    else: 
+        grid = st.session_state.maps["grid"]
+        dem = st.session_state.maps["dem"]
+        acc = st.session_state.maps["acc"]
+        fdir = st.session_state.maps["fdir"]
+
+    if "maps_catchment" not in st.session_state:
+        st.session_state.maps_catchment = dict()
+        
         # Snap pour point to high accumulation cell
-        x_snap, y_snap = grid.snap_to_mask(acc > 1000, (x, y))
+        x_snap, y_snap = grid.snap_to_mask(acc > 1000, pour_point)
 
         # Delineate the catchment
         catch = grid.catchment(
             x=x_snap, 
             y=y_snap, 
             fdir=fdir, 
-            dirmap=dirmap, 
+            dirmap=DIRMAP, 
             xytype='coordinate'
         )
 
         # Clip the bounding box to the catchment
         # grid.clip_to(catch)
         clipped_catch = grid.view(catch)
-        st.session_state.maps["clipped_catch"] = clipped_catch
+        st.session_state.maps_catchment["clipped_catch"] = clipped_catch
         
         # Extract river network
-        branches = grid.extract_river_network(fdir, acc > 1000, dirmap=dirmap)
-        st.session_state.maps["branches"] = branches
+        branches = grid.extract_river_network(fdir, acc > 1000, dirmap=DIRMAP)
+        st.session_state.maps_catchment["branches"] = branches
 
         # Calculate distance to outlet from each cell
         dist = grid.distance_to_outlet(
             x=x_snap, 
             y=y_snap, 
             fdir=fdir, 
-            dirmap=dirmap,
+            dirmap=DIRMAP,
             xytype='coordinate')
         
-        st.session_state.maps["dist"] = dist
-        
+        st.session_state.maps_catchment["dist"] = dist
+
     else: 
-        grid = st.session_state.maps["grid"]
-        dem = st.session_state.maps["dem"]
-        acc = st.session_state.maps["acc"]
-        clipped_catch = st.session_state.maps["clipped_catch"]
-        branches = st.session_state.maps["branches"]
-        dist = st.session_state.maps["dist"]
+        clipped_catch = st.session_state.maps_catchment["clipped_catch"]
+        branches = st.session_state.maps_catchment["branches"]
+        dist = st.session_state.maps_catchment["dist"]
 
 
     ####################################
