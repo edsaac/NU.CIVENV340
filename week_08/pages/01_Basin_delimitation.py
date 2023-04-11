@@ -165,13 +165,45 @@ def main():
         # Calculate flow accumulation
         acc = grid.accumulation(fdir, dirmap=DIRMAP)
         st.session_state.maps["acc"] = acc
-
         
     else: 
         grid = st.session_state.maps["grid"]
         dem = st.session_state.maps["dem"]
         acc = st.session_state.maps["acc"]
         fdir = st.session_state.maps["fdir"]
+
+    ####################################
+    ### Contents // Static
+    ####################################
+    with map_container.container():
+        "### General location"
+        midpoint = Point(mean([bottom, top]),mean([left,right]))
+        m = folium.Map(location=midpoint, zoom_start=8, tiles=tiles)
+        boundary = [(bottom, left), (bottom,right), (top, right), (top,left), (bottom,left)]
+        folium.Polygon(boundary, tooltip="DEM boundary").add_to(m)
+        folium.Marker((pour_point[1], pour_point[0]), tooltip="Pour point (Outlet)", icon=folium.Icon("purple")).add_to(m)
+        st_folium(m, width=600, height=500, returned_objects=[])
+        
+    with dem_container.container():
+        r"""
+        ****
+        ### DEM: Digital Elevation Model
+        """
+        tabs = st.tabs(["Heatmap", "Hillshade", "Contours"])
+        with tabs[0]: 
+            st.pyplot(plot_map(dem, grid))
+        with tabs[1]: 
+            st.pyplot(plot_hillshade(dem, grid))
+        with tabs[2]:
+            # st.pyplot(plot_contours(dem, grid))
+            st.pyplot(plot_contours(downscaled_data[0], grid))
+
+    with flow_container.container():
+        r"""
+        *****
+        ### Flow accumulation
+        """
+        st.pyplot(plot_accumulation(acc, grid))  
 
     if "maps_catchment" not in st.session_state:
         st.session_state.maps_catchment = dict()
@@ -212,32 +244,9 @@ def main():
         branches = st.session_state.maps_catchment["branches"]
         dist = st.session_state.maps_catchment["dist"]
 
-
     ####################################
-    ### Contents
+    ### Contents // Dynamic
     ####################################
-    with map_container.container():
-        "### General location"
-        midpoint = Point(mean([bottom, top]),mean([left,right]))
-        m = folium.Map(location=midpoint, zoom_start=8, tiles=tiles)
-        boundary = [(bottom, left), (bottom,right), (top, right), (top,left), (bottom,left)]
-        folium.Polygon(boundary, tooltip="DEM boundary").add_to(m)
-        folium.Marker((pour_point[1], pour_point[0]), tooltip="Pour point (Outlet)", icon=folium.Icon("purple")).add_to(m)
-        st_folium(m, width=600, height=500, returned_objects=[])
-        
-    with dem_container.container():
-        r"""
-        ****
-        ### DEM: Digital Elevation Model
-        """
-        tabs = st.tabs(["Heatmap", "Hillshade", "Contours"])
-        with tabs[0]: 
-            st.pyplot(plot_map(dem, grid))
-        with tabs[1]: 
-            st.pyplot(plot_hillshade(dem, grid))
-        with tabs[2]:
-            # st.pyplot(plot_contours(dem, grid))
-            st.pyplot(plot_contours(downscaled_data[0], grid))
 
     with network_container.container():
         r"""
@@ -325,13 +334,6 @@ def main():
         "&nbsp;"
 
         st.pyplot(plot_network(branches, grid, pour_point))
-
-    with flow_container.container():
-        r"""
-        *****
-        ### Flow accumulation
-        """
-        st.pyplot(plot_accumulation(acc, grid))    
 
     with delineated_container.container():
         rf"""
