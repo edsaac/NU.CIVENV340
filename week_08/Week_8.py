@@ -25,7 +25,16 @@ def main():
 
         "### Select a topic:"
         option = st.radio("Select a topic:",
-            [],
+            [
+                "Hydraulic structures",
+                "Water cycle",
+                "Watersheds and urbansheds",
+                "Hyetograph",
+                "Runoff",
+                "Infiltration",
+                "Design storm",
+                "IDF curve"
+            ],
             label_visibility="collapsed")
         
         "***"
