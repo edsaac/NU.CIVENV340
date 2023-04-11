@@ -32,6 +32,12 @@ def main():
     ****
     ### Crisis
     """
+
+    st.components.v1.html(
+        r""" <iframe src="https://commons.wikimedia.org/wiki/File:Lake_Oroville_Spillways_February_12,_2017.webm?embedplayer=yes" width="1024" height="576" frameborder="0" ></iframe>""",
+        height=600, width=1080, scrolling=True
+    )
+    
     url = "https://en.wikipedia.org/wiki/Oroville_Dam_crisis"
     st.caption(fr"""
         **Timeline of Oroville Dam crisis** <br>
@@ -59,10 +65,6 @@ def main():
     ****
     ### Spillway failure
     """
-
-    st.components.v1.html(
-        r""" <iframe src="https://commons.wikimedia.org/wiki/File:Lake_Oroville_Spillways_February_12,_2017.webm?embedplayer=yes" width="1024" height="576" frameborder="0" ></iframe>""",
-        height=600, width=1080, scrolling=True)
 
     imgs = [
         "https://upload.wikimedia.org/wikipedia/commons/b/b3/Oroville_Dam_main_spillway_30_March_2011.jpg",

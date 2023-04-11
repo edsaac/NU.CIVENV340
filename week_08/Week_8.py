@@ -129,7 +129,7 @@ def main():
 
         r"""
         *******
-        ## Culvert
+        ## Culverts
 
         |Inlet| Outlet| Notes |
         |:----|:------|:------|
