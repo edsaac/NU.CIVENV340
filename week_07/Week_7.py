@@ -352,7 +352,6 @@ def main():
             try changing the initial guess for $y$ or the root-finding method.
             """, icon="🧪")
             
-            
     elif option == "Unlined channel design":
 
         "## Unlined channels"

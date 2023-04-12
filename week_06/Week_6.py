@@ -1213,7 +1213,8 @@ def main():
         st.image(img, use_column_width=True)
 
         r"""
-        ## Shields parameter
+        *****
+        ### Shields parameter
 
         Movement of bed sediments occur when the shear stress exerted by the water on the bed 
         is greater than the resistance of the sediments to remain in place.
@@ -1223,7 +1224,7 @@ def main():
         $$
         
         |Parameter|Description|Units|
-        |:---|:-------|:----|
+        |:---:|:-------|:----|
         |$\tau_*$| Shields parameter | - |
         |$\tau_b$| Tractive shear stress | Force/Area |
         |$\gamma_s$| Specific weight of sediment | Force/Volume |
@@ -1233,24 +1234,41 @@ def main():
         &nbsp;
 
         $$
+        \begin{cases}
+        \begin{array}{rcl}
+            \textsf{Motion:} &\quad& \tau_* > \tau_{c*}
+            \\
+            \textsf{No motion:} &\quad&  \tau_* < \tau_{c*}
+        \end{array}
+        \end{cases}
+        $$
+
+        |Parameter|Description|Units|
+        |:---:|:-------|:----|
+        |$\tau_*$| Shields parameter | - |
+        |$\tau_{c*}$| Critical Shields parameter | - |
+        
+        &nbsp;
+
+        $$
             \tau_b = \gamma R_h S_0
         $$
 
         |Parameter|Description|Units|
-        |:---|:-------|:----|
+        |:---:|:-------|:----|
         |$R_h$| Hydraulic radius | Length |
         |$S_0$| Channel slope | - |
 
         &nbsp;
 
-        ## Sediment Reynolds number
+        ### Sediment Reynolds number
 
         $$
             R_{e*} = \dfrac{u_* \, d}{\nu}
         $$
 
         |Parameter|Description|Units|
-        |:---|:-------|:----|
+        |:---:|:-------|:----|
         |$R_{e*}$| Sediment Reynolds number | - |
         |$u_*$| Shear velocity | Length |
         |$d$| Particle size | Length |
@@ -1261,11 +1279,91 @@ def main():
         $$
             u_* = \sqrt{\dfrac{\tau_b}{\rho}}
         $$
+
+        ### Fitting Shields data to a curve
+         
+        $$
+            \tau_{c*} = 0.22 R_{e*}^{-0.6} + 0.06 \exp{\left( -17.77 R_{e*}^{-0.6} \right)}
+        $$ 
+
+
+        |Parameter|Description|Units|
+        |:---:|:-------|:----|
+        |$\tau_{c*}$| Critical Shields parameter | - |
+        |$R_{e*}$| Sediment Reynolds number | - |
+
+        &nbsp;
+
+        ### Stokes law & settling velocity 
+
+        $$
+            v_s = \dfrac{d^2}{18 \nu}\left(\dfrac{\gamma_s - \gamma}{\gamma}\right)
+        $$
+
+        |Parameter|Description|Units|
+        |:---:|:-------|:----|
+        |$d$| Characteristic particle size | Length |
+        |$\gamma_s$| Specific weight of sediment | Force/Volume |
+        |$\gamma$| Specific weight of water | Force/Volume |
+        |$\nu$| Kinematic viscosity | Length²/Time |
+
+        &nbsp;
+
+        $$
+        \begin{cases}
+        \begin{array}{rcl}
+            \textsf{Suspension:} &\quad& v_s < u_*
+            \\
+            \textsf{No suspension:} &\quad&  v_s > u_*
+        \end{array}
+        \end{cases}
+        $$
+
+        ****
         """
+
+        st.caption(r"""
+            **Parker's River sedimentation diagram** <br>
+            Adapted from: [García, M. (Ed.). (2008)](https://doi.org/10.1061/9780784408148). <br>
+            """, unsafe_allow_html=True
+        )
+        st.pyplot(draw_shields()) 
 
     else: 
         st.error("You should not be here!")
         r" ### 🚧 Under construction 🚧"
+
+def draw_shields():
+    fig,ax = plt.subplots()
+    Re_star = np.geomspace(1, 1_000, 100)
+    tau_crit = 0.22 * np.power(Re_star, -0.6) + 0.06 * np.exp(-17.77 * np.power(Re_star, -0.6))
+    tau_susp = np.exp(
+        -2.891394 
+        + 0.95296 * np.log(Re_star)
+        - 0.056835 * np.power(np.log(Re_star), 2)
+        - 0.002892 * np.power(np.log(Re_star), 3)    
+        + 0.000245 * np.power(np.log(Re_star), 4)    
+    )
+
+    ax.plot(Re_star, tau_crit, c="tab:blue")
+    ax.text(Re_star[-45], tau_crit[-45] + 5e-3, "Motion", ha="center", va="bottom", c="tab:blue")
+    ax.text(Re_star[-45], tau_crit[-45] - 5e-3, "No motion", ha="center", va="top", c="tab:blue")
+
+    ax.plot(Re_star, tau_susp, ls="dashed", c="darkorange")
+    ax.text(Re_star[-15], tau_susp[-15] + 2e-1, "Suspension", ha="center", va="bottom", c="darkorange", rotation=10)
+    ax.text(Re_star[-15], tau_susp[-15] - 2e-1, "No suspension", ha="center", va="top", c="darkorange", rotation=10)
+
+    
+    ax.set_xscale('log')
+    ax.set_xlim(1, 1_000)
+    ax.set_xlabel(r"$R_{e*} = \dfrac{u_{*} \, d}{\nu}$", fontsize=14)
+    
+    ax.set_yscale('log')
+    ax.set_ylim(1e-2, 8.0)
+    ax.set_ylabel(r"$\tau_{*} = \dfrac{\tau_b}{(\gamma_s - \gamma) \, d}$", fontsize=14)
+    ax.grid(True, which='both', alpha=0.6)
+
+    return fig
 
 def draw_contraction():
 
