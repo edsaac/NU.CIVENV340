@@ -4,6 +4,11 @@ import requests
 from PIL import Image
 from io import BytesIO
 from urllib.parse import urlparse
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+import plotly.graph_objects as go
 
 def main():
     
@@ -15,6 +20,17 @@ def main():
     with open("assets/style.css") as f:
         st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
 
+    axis_format = dict(
+        title_font_size=20,
+        tickfont_size=16,
+        showline=True,
+        color="RGBA(1, 135, 73, 0.3)",
+        tickcolor="RGBA(1, 135, 73, 0.3)",
+        showgrid=True,
+        griddash="dash",
+        linewidth=1,
+        gridcolor="RGBA(1, 135, 73, 0.3)"
+    )
     #####################################################################
 
     st.title("CIV-ENV 340: Hydraulics and hydrology")
@@ -232,17 +248,64 @@ def main():
     elif option == "Hyetograph":
         
         r"""
-        ## Hyetograph
+        ## Hyetograph ↦ plot of rainfall intensity over time
         """
         
-        cols = st.columns(2)
-
-        with cols[0]:
+        st.info(
             r"""
-            Plot of rainfall intensity over time
+            Gather data from the USGS database on:
+            - https://help.waterdata.usgs.gov/faq/automated-retrievals
+            - https://waterdata.usgs.gov/nwis/current/?type=precip&group_key=state_cd
             """
+        )
 
+        rain = get_hydrologic_data("Precipitation")
+        rain["per-hour"] = rain["value"].rolling(12, center=False).sum()
+            
+        figs = dict()
 
+        figs["raw"] = go.Figure([
+            go.Bar(
+                x=rain["dateTime"],
+                y=rain["value"]
+            )
+        ])
+
+        figs["per-hour"] = go.Figure([
+            go.Bar(
+                x=rain["dateTime"],
+                y=rain["per-hour"]
+            )
+        ])
+
+        titles = [
+            "Total rainfall in 5 min [in]",
+            "Rainfall intensity [in/hr]"
+        ]
+        for t,fig in zip(titles,figs.values()):
+            fig.update_layout(
+                title_text = '''Data from a USGS rain gauge. <br>Source <a href="https://waterdata.usgs.gov/monitoring-location/414542087380901/#parameterCode=00045&period=P30D">Waterdata - USGS</a>''',
+                height=500,
+                yaxis=dict(
+                    title=t,
+                    **axis_format),
+                xaxis=dict(
+                    title="Datetime",
+                    **axis_format),
+                hovermode='closest',
+                hoverlabel=dict(font_size=18),
+            )
+
+        tabs = st.tabs(["Raw data", "Aggregated per hour"])
+
+        for tab,fig in zip(tabs, figs.values()):
+            with tab:
+                st.plotly_chart(fig, use_container_width=True)
+
+        "*****"
+        cols = st.columns([1,2])
+        with cols[0]:
+            "&nbsp;\n\n&nbsp;\n\n"
             st.info("What is an inch of rain?")
 
         with cols[1]:
@@ -305,17 +368,41 @@ def main():
 
     elif option == "Runoff":
         r"""
-        ## Hydrograph
+        ## Hydrograph ↦ plot of discharge over time
         """
         
-        cols = st.columns(2)
+        flow = get_hydrologic_data("Streamflow")
+            
+        fig = go.Figure([
+            go.Scatter(
+                x=flow["dateTime"],
+                y=flow["value"]
+            )
+        ])
 
+        fig.update_layout(
+            title_text = '''Data from a USGS station. <br>Source <a href="https://waterdata.usgs.gov/monitoring-location/02223500/#parameterCode=00065&period=P30D">Waterdata - USGS</a>''',
+            height=500,
+            yaxis=dict(
+                title="Streamflow [ft³/s]",
+                **axis_format),
+            xaxis=dict(
+                title="Datetime",
+                **axis_format),
+            hovermode='closest',
+            hoverlabel=dict(font_size=18),
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        "*****"
+        cols = st.columns(2)
         with cols[0]:
             r"""
-            Plot of runoff volume over time
+            &nbsp;
+
+            &nbsp;
             """
-
-
             st.info("How are rain and runoff related?")
 
         with cols[1]:
@@ -329,55 +416,111 @@ def main():
             )
             st.image(img_url, use_column_width=True)
     
-    # elif option == "Infiltration":
-    #     r"""
-    #     ## Infiltration and groundwater recharge
-    #     """
-        
-    #     cols = st.columns(2)
+    elif option == "Design storm":
+        r"""
+        ## Design storms
 
-    #     with cols[0]:
-    #         r"""
-    #         Something
-    #         """
+        |Parameter|Description|Units|
+        |--------:|:----|:----:|
+        |**Return period**| Average time between occurences of a hydrological event | Years |
+        |**Rainfall intensity**| Rate of precipitation | Length/Time |
+        |**Total rainfall**| Depth of precipitation over the time of the event | Length |
+        |**Average intensity**| Total rainfall divided by the storm duration | Length |
 
-    #     with cols[1]:
-    #         img_url = "https://placekitten.com/400/400"
-    #         source = "https://placekitten.com/400/400"
-            
-    #         st.caption(rf"""
-    #             **Infiltration cat** <br>
-    #             Source: [{urlparse(source).hostname}]({source})
-    #             """, unsafe_allow_html=True
-    #         )
-    #         st.image(img_url, use_column_width=True)
 
-    # elif option == "Rainfall-runoff models":
-    #     r"""
-    #     ## Rainfall-runoff models
-    #     """
+        """
 
-    #     cols = st.columns(2)
-
-    #     with cols[0]:
-    #         r"""
-    #         Mass balance between evapotranspiration, rainfall, runoff and infiltration
-    #         """
-
-    #     with cols[1]:
-    #         img_url = "https://upload.wikimedia.org/wikipedia/commons/8/80/Surface_water_cycle.svg"
-    #         source = "https://en.wikipedia.org/wiki/Runoff_model_(reservoir)#/media/File:Surface_water_cycle.svg"
-            
-    #         st.caption(rf"""
-    #             **Runoff from the water balance** <br>
-    #             Source: [{urlparse(source).hostname}]({source})
-    #             """, unsafe_allow_html=True
-    #         )
-    #         st.image(img_url, use_column_width=True)
+    
 
     else: 
         st.error("You should not be here!")
         r" ### 🚧 Under construction 🚧"
 
+@st.cache_data
+def get_hydrologic_data(variable):
+    
+    if variable == "Precipitation": key = 0
+    elif variable ==  "Streamflow":  key = 1
+    elif variable ==  "Stage":  key = 2
+    else: st.error("No variable was specified")
+    
+    url = "https://waterservices.usgs.gov/nwis/iv/?sites=02223500&startDT=2023-03-13T18:16:05.289-04:00&endDT=2023-04-12T18:16:05.289-04:00&siteStatus=all&format=json"
+    r = requests.get(url, stream=True)
+    data = r.json()
+    df = pd.DataFrame(data["value"]["timeSeries"][key]["values"][-1]["value"])
+    # st.json(data)
+    # st.dataframe(df)
+    df["dateTime"] = pd.to_datetime(df["dateTime"], format=r"%Y-%m-%d %H:%M:%S", utc=True)
+    df["value"] = pd.to_numeric(df["value"])
+    
+    return df
+    
+
+# @st.cache_data
+# def get_rain_data():
+    
+#     from datetime import datetime, timezone
+
+#     url = "https://waterservices.usgs.gov/nwis/iv/?sites=414542087380901&period=P30D&format=json"
+#     r = requests.get(url, stream=True)
+#     data = r.json()
+    
+#     # Only extract the values for precipitation
+#     rain = pd.DataFrame(data["value"]["timeSeries"][1]["values"][0]["value"])
+#     rain["dateTime"] = pd.to_datetime(rain["dateTime"], format=r"%Y-%m-%d %H:%M:%S", utc=True)
+#     rain["value"] = pd.to_numeric(rain["value"])
+
+#     print(rain.dtypes)
+#     start_date = datetime(2023,3,22,18,00,00, tzinfo=timezone.utc)
+#     end_date   = datetime(2023,3,23,18,00,00, tzinfo=timezone.utc)
+
+#     return rain[np.logical_and(rain["dateTime"] > start_date, rain["dateTime"] < end_date)]
+
 if __name__ == "__main__":
     main()
+
+# elif option == "Infiltration":
+#     r"""
+#     ## Infiltration and groundwater recharge
+#     """
+    
+#     cols = st.columns(2)
+
+#     with cols[0]:
+#         r"""
+#         Something
+#         """
+
+#     with cols[1]:
+#         img_url = "https://placekitten.com/400/400"
+#         source = "https://placekitten.com/400/400"
+        
+#         st.caption(rf"""
+#             **Infiltration cat** <br>
+#             Source: [{urlparse(source).hostname}]({source})
+#             """, unsafe_allow_html=True
+#         )
+#         st.image(img_url, use_column_width=True)
+
+# elif option == "Rainfall-runoff models":
+#     r"""
+#     ## Rainfall-runoff models
+#     """
+
+#     cols = st.columns(2)
+
+#     with cols[0]:
+#         r"""
+#         Mass balance between evapotranspiration, rainfall, runoff and infiltration
+#         """
+
+#     with cols[1]:
+#         img_url = "https://upload.wikimedia.org/wikipedia/commons/8/80/Surface_water_cycle.svg"
+#         source = "https://en.wikipedia.org/wiki/Runoff_model_(reservoir)#/media/File:Surface_water_cycle.svg"
+        
+#         st.caption(rf"""
+#             **Runoff from the water balance** <br>
+#             Source: [{urlparse(source).hostname}]({source})
+#             """, unsafe_allow_html=True
+#         )
+#         st.image(img_url, use_column_width=True)
