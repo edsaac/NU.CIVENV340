@@ -194,6 +194,32 @@ def main():
         )
         st.image(img_url, use_column_width=True)
 
+        with st.expander("Check **Hydrosheds**, global hydrography derived from spaceborne elevation data"):
+            img_url = "https://uploads-ssl.webflow.com/602ebbdd5021f30e81efbad9/62536860d9d1c6fe627d42ce_HydroSHEDS_zoom-p-1080.jpeg"
+            source = "https://www.hydrosheds.org/products/hydrosheds"
+            st.caption(rf"""
+                **Amazon river basin** <br>
+                Source: [{urlparse(source).hostname}]({source})
+                """, unsafe_allow_html=True
+            )
+            st.image(img_url, use_column_width=True)
+            
+            "****"
+            _, col, _ = st.columns([1,10,1])
+            with col:
+                url = "https://doi.org/10.1029/2008eo100001"
+                st.markdown(
+                    fr"""
+                    Also check:
+
+                    ⏺ Lehner, B., Verdin, K., & Jarvis, A. (2008). <br>
+                    **New Global Hydrography Derived From Spaceborne Elevation Data**. <br>
+                    *In Eos, Transactions American Geophysical Union (Vol. 89, Issue 10, p. 93)* <br>
+                    DOI: [10.1029/2008eo100001]({url})
+                    
+                    """, unsafe_allow_html=True)
+
+
         img_url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/WBD_SubRegions_24x18.png"
         source = "https://www.usgs.gov/media/images/watershed-boundary-dataset-subregions-map"
         
@@ -426,15 +452,61 @@ def main():
         |**Rainfall intensity**| Rate of precipitation | Length/Time |
         |**Total rainfall**| Depth of precipitation over the time of the event | Length |
         |**Average intensity**| Total rainfall divided by the storm duration | Length |
+        |**Spatial distribution**| Total rainfall divided by the storm duration | - |
 
-
+        &nbsp;
         """
 
-    
+        url = "https://jeffskwang.github.io/"
+        st.button('Go to rain/runoff example', on_click=open_page, args=(url,), use_container_width=True)
+
+    elif option == "IDF curve":
+        r"""
+        ## IDF: Intensity-Duration-Frequency curves
+
+        $$
+            \textsf{Empirical:} \quad I(t) = \dfrac{a}{\left( t + c \right)^n}
+        $$
+        """
+
+        cols = st.columns([3,1])
+        with cols[0]:
+            st.image("https://hdsc.nws.noaa.gov/hdsc/pfds/plots/42.0660_-87.7332_ams_IDF_in_ari.png", use_column_width=True)
+        with cols[1]:
+            source = "https://hdsc.nws.noaa.gov/hdsc/pfds/pfds_map_cont.html"
+            st.caption(rf"""
+                &nbsp;
+
+                &nbsp;
+
+                Source: NOAA's National Weather Service <br>
+                [Precipitation Frequency Data Server (PFDS)]({source})""",
+                unsafe_allow_html=True
+            )
+            st.image("https://hdsc.nws.noaa.gov/hdsc/pfds/imgs/yrs_legend_pds.png")
+
+        # cols = st.columns([2,2])
+        # with cols[0]:
+        #     st.map({"LAT":[42.0660], "LON":[-87.7332]}, zoom=4, use_container_width=True)
+        # with cols[1]:
+        #     st.image("https://hdsc.nws.noaa.gov/hdsc/pfds/plots/42.0660_-87.7332_ams_IDF_in_ari.png", use_column_width=True)
+
+        url = "https://hdsc.nws.noaa.gov/hdsc/pfds/pfds_map_cont.html"
+        st.button('Go to NOAA Precipitation Frequency Data Server', on_click=open_page, args=(url,), use_container_width=True)
+        
 
     else: 
         st.error("You should not be here!")
         r" ### 🚧 Under construction 🚧"
+
+
+def open_page(url):
+    open_script= f"""
+        <script type="text/javascript">
+            window.open('{url}', '_blank').focus();
+        </script>
+    """
+    st.components.v1.html(open_script)
 
 @st.cache_data
 def get_hydrologic_data(variable):

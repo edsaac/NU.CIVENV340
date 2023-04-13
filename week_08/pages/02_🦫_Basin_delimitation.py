@@ -255,7 +255,7 @@ def main():
 
         **D8 algorithm:**
         """
-        cols = st.columns(2)
+        cols = st.columns(3)
         with cols[0]:
             st.markdown(
                 r"""
@@ -332,6 +332,10 @@ def main():
             )
 
         "&nbsp;"
+
+        with cols[2]:
+            st.image("https://jeffskwang.github.io/assets/rain/foutput.gif", use_column_width=True)
+            st.caption("Source: [J. Kwang](https://jeffskwang.github.io/)")
 
         st.pyplot(plot_network(branches, grid, pour_point))
 
