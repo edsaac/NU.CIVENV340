@@ -206,8 +206,84 @@ def main():
         r"""
         ## Hydrograph
         
+        $$
+            \textsf{Total runoff} = \textsf{Base flow} + \textsf{Direct runoff}
+        $$
         """
         st.pyplot(plot_hydrograph(), use_container_width=True)
+
+    elif option == "Time of concentration":
+        r"""
+        ## Time of concentration $T$
+
+        > *Time it takes runoff to reach the design point from the most hydrologically remote point in the watershed*
+
+        $$
+        \begin{array}{rl}
+            T =& \left(\substack{\textsf{Overland} \\ \textsf{flow}}\right)_t 
+              + \left(\substack{\textsf{Shallow} \\ \textsf{flow}}\right)_t 
+              + \left(\substack{\textsf{Open-channel} \\ \textsf{flow}}\right)_t  \\
+            \\
+            T =& T_{t_1} + T_{t_2} + T_{t_3}
+        \end{array}
+        $$
+
+        ****
+        ### Overland flow
+        $$
+            T_{t_1} = \dfrac{0.007\left( nL \right)^{0.8}}{P_2^{0.5} S^{0.4}}
+        $$
+        
+        |Parameter|Description|Units|
+        |:--------:|:----|:----:|
+        |$T_{t_1}$| Overland flow travel time | hr |
+        |$L$| Flow length | ft |
+        |$P_2$| 2-year, 24-hr rainfall | in |
+        |$n$| Manning's coefficient | - |
+        |$S$| Land slope | - |
+
+        ****
+        ### Shallow concentrated flow
+        $$
+            V = 16.1345 \sqrt{S}
+        $$
+        
+        |Parameter|Description|Units|
+        |:--------:|:----|:----:|
+        |$V$| Average velocity | ft/s |
+        |$S$| Land slope | - |
+
+        ****
+        ### Open-Channel flow
+        
+        $$
+            V = \dfrac{1.49}{n}R_h^{2/3}\sqrt{S_e}
+        $$
+        |Parameter|Description|Units|
+        |:--------:|:----|:----:|
+        |$V$| Average velocity | ft/s |
+        |$R_h$| Hydraulic radius | ft |
+        |$S_e$| Energy grade line slope | - |
+        |$n$| Manning's coefficient | - |
+
+        """
+    elif option == "Rational method":
+        r"""
+        ## Rational method
+
+        $$
+            Q_{\textsf{Peak}} = C \, I \, A
+        $$
+        
+        |Parameter|Description|Units|Notes|
+        |:--------:|:----|:----:|:----|
+        |$Q_\textsf{Peak}$| Peak discharge | acre-in/hr |  |
+        |$C$| Runoff coefficient | - | Measure of land *imperviousness* |
+        |$I$| Average rainfall intensity | in/hr | Obtained from an IDF curve |
+        |$A$| Basin area | acres | It should be small (less htan 200 acres) |
+        
+        
+        """
 
     else: 
         st.error("You should not be here!")
@@ -222,7 +298,10 @@ def plot_hydrograph():
     y = beta.pdf(x, α, β) + 0.5
 
 
-    fig,ax = plt.subplots()
+    fig,axs = plt.subplots(2,1, figsize=(8,8), gridspec_kw=dict(height_ratios=[1,10], hspace=0), sharex=False)
+
+    # Hidrograph    
+    ax = axs[1]
     time = np.concatenate([
         xsmol := np.linspace(0,0.2,10),
         x + 0.2
@@ -233,13 +312,88 @@ def plot_hydrograph():
         y
     ])
 
+    baseflow = (time-0.31)**2 + 0.5
+    baseflow = np.where(baseflow<discharge, baseflow, discharge)
     imax = np.argmax(discharge)
 
-    ax.plot(time, discharge)
-    ax.set_xlim(left=0)
-    ax.axvline(time[imax])
-    ax.set_ylim(bottom = 0)
+    ax.plot(time, baseflow, c='k', ls="dotted")
+    ax.plot(time, discharge, lw=3, c='k')
+
+    ax.fill_between(time, discharge, baseflow, hatch="/", fc="violet", alpha=0.2)
     
+    ax.text(0.43, 1.5, "Volume of \n direct \n surface \n runoff", 
+        fontsize=14,
+        ha='center', va='center', 
+        bbox=dict(
+            boxstyle="round4", 
+            fc="w", ec="k"
+        )
+    )
+
+
+    ## Annotations
+    ax.text(0.18, 1.5, "Rising limb", rotation=75)
+    ax.text(0.65, 1.5, "Recession", rotation=-55)
+
+    ax.text(
+        0.65, 0.60, 
+        "Base flow", 
+        rotation=10,
+        bbox=dict(
+            boxstyle="round4", 
+            fc="w", ec="k", ls="dotted",
+        )
+    )
+
+
+    ax.annotate(
+        "Peak", 
+        (time[imax], discharge.max()), 
+        (0.6, 3.0), 
+        fontsize=16,
+        # bbox=dict(boxstyle="round4", fc="w"),
+        arrowprops=dict(
+            arrowstyle="-|>",
+            connectionstyle="arc3,rad=0.2", 
+            fc="w"
+        )
+    )
+    
+
+    ax.set_xlabel("Time [hr]", fontsize=14)
+    ax.set_ylabel("Discharge [m³/s]", fontsize=14)
+    
+    ax.set_xlim(0, 1.0)
+    ax.set_ylim(0, 3.5)
+    
+    ax.yaxis.set_ticklabels([])
+    ax.xaxis.set_ticklabels([])
+
+    ax.spines.top.set_visible(False)
+    ax.spines.right.set_visible(False)
+    ax.spines.left.set_edgecolor("gray")
+    ax.set_facecolor("#ffff1100")
+
+    # Precipitation
+    ax = axs[0]
+    time_rain = [0.01, 0.06, 0.11, 0.16, 0.21]
+    rain = [1.5, 2.7, 4.0, 2.1, 0.7]
+
+    ax.bar(time_rain, rain, 0.048, align='edge', clip_on=False)
+
+    ax.spines.bottom.set_visible(False)
+    ax.spines.right.set_visible(False)
+    ax.spines.left.set_edgecolor("purple")
+
+    ax.set_ylabel("Rainfall [in]")
+    
+    ax.yaxis.set_ticklabels([])
+    ax.xaxis.set_ticklabels([])
+    ax.xaxis.set_ticks([])
+    
+    ax.set_ylim(2.0, 0)
+    ax.set_xlim(0, 1.0)
+
     return fig
 
 @st.cache_data
