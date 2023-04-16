@@ -1,0 +1,48 @@
+import streamlit as st
+import networkx as nx
+import gravis as gv
+import json
+from tempfile import NamedTemporaryFile
+
+with open("./week_03/networks/SJasgJGF.json") as f:
+    graph = json.load(f)
+
+"# d3"
+
+fig_d3 = gv.d3(graph, use_node_size_normalization=True, node_size_normalization_max=30,
+            use_edge_size_normalization=True, edge_size_data_source='weight', edge_curvature=0.3,
+            zoom_factor=0.6)
+
+
+with NamedTemporaryFile(suffix=".html", mode='r+') as f:
+    fig_d3.export_html(f.name, overwrite=True)
+    html = f.read()
+
+st.components.v1.html(html, height=700, width=700, scrolling=True)
+
+
+"# vis"
+
+fig_vis = gv.vis(graph, use_node_size_normalization=True, node_size_normalization_max=30,
+            use_edge_size_normalization=True, edge_size_data_source='weight', edge_curvature=0.3,
+            zoom_factor=0.6)
+
+
+with NamedTemporaryFile(suffix=".html", mode='r+') as f:
+    fig_vis.export_html(f.name, overwrite=True)
+    html = f.read()
+
+st.components.v1.html(html, height=700, width=700, scrolling=True)
+
+"# three"
+
+fig_three = gv.three(graph, use_node_size_normalization=True, node_size_normalization_max=30,
+            use_edge_size_normalization=True, edge_size_data_source='weight', edge_curvature=0.3,
+            zoom_factor=0.6)
+
+
+with NamedTemporaryFile(suffix=".html", mode='r+') as f:
+    fig_three.export_html(f.name, overwrite=True)
+    html = f.read()
+
+st.components.v1.html(html, height=700, width=700, scrolling=True)

@@ -17,3 +17,4 @@ networkx
 stpyvista
 folium
 streamlit-folium
+gravis
