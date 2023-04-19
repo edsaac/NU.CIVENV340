@@ -56,7 +56,7 @@ def main():
                 - 4.1.15
             - Branched system:
                 - 4.3.3
-            - Networks: (but using Newton method, a spreadsheet or `scipy.optimize.fsolve`)
+            - Networks: (but using Newton method, a spreadsheet or `scipy.optimize.root`)
                 - 4.4.2 
                 - 4.4.5
                 - 4.4.7
