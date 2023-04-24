@@ -1,6 +1,6 @@
 pip
 Pillow
-numpy==1.23.5
+numpy
 sympy
 streamlit
 matplotlib
