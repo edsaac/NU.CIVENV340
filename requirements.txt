@@ -2,10 +2,6 @@ pip
 Pillow
 numpy==1.23.5
 sympy
-shapely --no-binary shapely
-rasterio
-cartopy
-pysheds
 streamlit
 matplotlib
 pandas
