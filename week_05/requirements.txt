@@ -1,0 +1,17 @@
+pip
+Pillow
+numpy
+sympy
+streamlit
+matplotlib
+pandas
+scipy
+plotly
+openpyxl
+array_to_latex
+networkx
+stpyvista
+folium
+streamlit-folium
+gravis
+
