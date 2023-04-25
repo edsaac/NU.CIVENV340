@@ -22,7 +22,8 @@ def main():
     "****"
     
     "## Centifugal pump"
-
+    pv.start_xvfb()
+    
     file = Path("assets/3d/pump.STL")
     reader = pv.STLReader(file)
     mesh = reader.read()
