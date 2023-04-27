@@ -1,2 +1,4 @@
-libgl1
 libgeos-dev
+xvfb
+libgl1-mesa-glx
+libxrender1
