@@ -761,6 +761,13 @@ def main():
                 """, unsafe_allow_html=True)
     
     elif option == "Gaging stations":
+
+        url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/S_Fk_SpreadQm_2.jpg"
+        source = "https://www.usgs.gov/media/images/streamflow-measurement-s-fk-spread-creek-wy-13012475"
+        st.caption(f"**Streamflow measurement in S Fk Spread Creek, WY (13012475)**<br>Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+        st.image(url, use_column_width=True)
+
+
         r"""
         ## Gaging stations
         
