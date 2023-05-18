@@ -4,7 +4,7 @@ numpy
 sympy
 streamlit
 matplotlib
-pandas
+pandas<2.0
 scipy
 plotly
 openpyxl
