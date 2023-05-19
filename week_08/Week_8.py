@@ -516,7 +516,7 @@ def main():
 
         cols = st.columns([3,1])
         with cols[0]:
-            st.image("https://hdsc.nws.noaa.gov/hdsc/pfds/plots/42.0660_-87.7332_ams_IDF_in_ari.png", use_column_width=True)
+            st.image("assets/img/IDF curve Ohare IL.png", use_column_width=True)
         with cols[1]:
             source = "https://hdsc.nws.noaa.gov/hdsc/pfds/pfds_map_cont.html"
             st.caption(rf"""
