@@ -231,6 +231,16 @@ def main():
                     
                     """, unsafe_allow_html=True)
 
+        "****"
+        img_url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/WBD_Base_HUStructure_small.png"
+        source = "https://www.usgs.gov/media/images/watershed-boundary-dataset-structure-visualization"
+        st.caption(rf"""
+            **Watershed Boundary Structure** <br>
+            Source: [{urlparse(source).hostname}]({source})
+            """, unsafe_allow_html=True
+        )
+        st.image(img_url, use_column_width=True)
+
 
         img_url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/WBD_SubRegions_24x18.png"
         source = "https://www.usgs.gov/media/images/watershed-boundary-dataset-subregions-map"
