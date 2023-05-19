@@ -1,5 +1,6 @@
 import streamlit as st
 import pickle
+from urllib.parse import urlparse
 
 def main():
     
@@ -26,7 +27,7 @@ def main():
         "### Select a topic:"
         option = st.radio("Select a topic:",
             [
-                "Probability",
+                "Expected value",
                 "Return period",
                 "Hydrological risk"
             ],
@@ -51,9 +52,119 @@ def main():
     
     ####################################################################
     
-    if option == "Return period":
-        r" ### 🚧 Under construction 🚧"
-        "Check https://wires.onlinelibrary.wiley.com/doi/10.1002/wat2.1340"
+    if option == "Expected value":
+
+        r"""
+        ## Expected value
+
+        **For a discrete process:**
+        $$
+            \mathrm{E}[X] = \sum_{i=1}^{\infty}{x_i p_i}
+        $$ 
+
+        | Parameter | Symbol   | Units  |
+        |:---------|:--------:|:------------------:|
+        |Expected value   | $\mathrm{E}[.]$   | Same of $x_i$  | 
+        |Random variable   | $X$   | -        |
+        |Possible value   | $x_i$ | -        |
+        |Probability      | $p_i$ | -        |
+
+        """
+
+        img_url = "https://upload.wikimedia.org/wikipedia/commons/f/f9/Largenumbers.svg"
+        source = "https://en.wikipedia.org/wiki/Expected_value#/media/File:Largenumbers.svg"
+        
+        st.caption(rf"""
+            **Rolls of a die:** convergence of sequence averages of rolls of a die to the expected value of 3.5 as the number of rolls (trials) grows.<br>
+            Source: [{urlparse(source).hostname}]({source})
+            """, unsafe_allow_html=True
+        )
+        st.image(img_url, use_column_width=True)
+        
+        """
+        **For a continous process:**
+        $$
+            \mathrm{E}[X] = \int_{-\infty}^{\infty}{x f(x) dx}
+        $$
+        
+        | Parameter | Symbol   | Units  |
+        |:---------|:--------:|:------------------:|
+        |Expected value   | $\mathrm{E}[.]$   | Same of $x_i$  | 
+        |Random variable   | $X$   | -        |
+        |Possible value   | $x$ | -        |
+        |Probability density function (pdf)| $f_X$ | -        |
+        
+        &nbsp;
+        """
+
+        st.warning("""
+        
+        In hydrology, we are interested in determining how long it takes for a process to 
+        exceed a certain value $x_T$, not in the value itself. 
+
+        $$
+            E[X > x_T]
+        $$
+        """)
+        
+    elif option == "Return period":
+        r"""
+        ## Recurrence interval 
+
+        $$
+            \tau: \textsf{ Time between ocurrences of } X>x_T
+        $$ 
+
+        There exists a probability distribution of \tau that must have
+        an associated expected value. 
+
+        $$
+            \mathrm{E}[\tau] = \sum_{\tau=1}^{\infty}{\tau p_\tau} = E[X > x_T]
+        $$
+        """
+
+        img_url = "https://wires.onlinelibrary.wiley.com/cms/asset/4003beae-2074-4281-a8d9-60dce0cf0c1b/wat21340-fig-0001-m.jpg"
+        source = "https://wires.onlinelibrary.wiley.com/doi/10.1002/wat2.1340"
+        
+        st.caption(rf"""
+            **Time series of a stationary and independent process Z** (Volpi, 2019) <br>
+            Source: [{urlparse(source).hostname}]({source})
+            """, unsafe_allow_html=True
+        )
+        st.image(img_url, use_column_width=True)
+
+        "****"
+        r"""
+        ## Return period
+
+        $$
+            T = \dfrac{1}{p}
+        $$
+
+        $$
+            \mathrm{E}[X] = \dfrac{T}{\Delta \tau}
+        $$
+        
+        | Parameter | Symbol   | Units  |
+        |:---------|:--------:|:------------------:|
+        |Expected value   | $\mathrm{E}[.]$   | Same of $x_i$  | 
+        |Return period   | $T$   | Time |
+        |Sampling rate   | $\Delta \tau$ | Time |
+
+        &nbsp;
+        
+        """
+
+        img_url = "https://wires.onlinelibrary.wiley.com/cms/asset/c1a8e0cc-5f6c-4e53-9f7e-86cc0c0502cf/wat21340-toc-0001-m.jpg"
+        source = "https://wires.onlinelibrary.wiley.com/doi/10.1002/wat2.1340"
+        
+        st.caption(rf"""
+            **Return period and probability of failure** (Volpi, 2019) <br>
+            Source: [{urlparse(source).hostname}]({source})
+            """, unsafe_allow_html=True
+        )
+        st.image(img_url, use_column_width=True)
+
 
     else: 
         st.error("You should not be here!")
