@@ -51,8 +51,9 @@ def main():
     
     ####################################################################
     
-    if option == "":
+    if option == "Return period":
         r" ### 🚧 Under construction 🚧"
+        "Check https://wires.onlinelibrary.wiley.com/doi/10.1002/wat2.1340"
 
     else: 
         st.error("You should not be here!")
