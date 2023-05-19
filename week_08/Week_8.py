@@ -166,6 +166,7 @@ def main():
         )
         st.image(img_url, use_column_width=True)
 
+
     elif option == "Water cycle":
         r"""
         ## Water cycle
@@ -175,6 +176,17 @@ def main():
         source = "https://labs.waterdata.usgs.gov/visualizations/water-cycle/index.html#/"
         st.caption(rf"""
             **The Water Cycle** <br>
+            Source: [{urlparse(source).hostname}]({source})
+            """, unsafe_allow_html=True
+        )
+        st.image(img_url, use_column_width=True)
+
+        "*****"
+        img_url = "https://agupubs.onlinelibrary.wiley.com/cms/asset/1c96a142-6fc9-48ee-b1d1-6f5b41d77329/eft21123-fig-0001-m.jpg"
+        source = "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2021EF002613"
+
+        st.caption(rf"""
+            **A conceptual model** <br>
             Source: [{urlparse(source).hostname}]({source})
             """, unsafe_allow_html=True
         )
@@ -391,6 +403,39 @@ def main():
                 """, unsafe_allow_html=True
             )
             st.image(img_url, use_column_width=True)
+
+        "******"
+        
+        cols = st.columns([1,3])
+        with cols[0]:
+            "&nbsp;"
+            "&nbsp;"
+
+            year = st.select_slider("Year", range(2000,2023,1), 2022)
+            month = st.select_slider("Month", range(1,13,1), 12)
+            which = st.selectbox("Map", ["Monthly total", "Deviation from average"])
+        with cols[1]:
+            source = "https://www.climate.gov/maps-data/data-snapshots/snapshot?id=8701"
+            
+            if which == "Monthly total":
+                img_url = f"https://www.climate.gov/data/Precipitation--Monthly--Total--CONUS/02-large/Precipitation--Monthly--Total--CONUS--{year}-{month:02d}-00--large.png"
+            
+                st.caption(rf"""
+                    **Monthly total precipitation** <br>
+                    Source: [{urlparse(source).hostname}]({source})
+                    """, unsafe_allow_html=True
+                )
+            elif which == "Deviation from average":
+                img_url = f"https://www.climate.gov/data/Precipitation--Monthly--Difference-from-average--CONUS/02-large/Precipitation--Monthly--Difference-from-average--CONUS--{year}-{month:02d}-00--large.png"
+                
+                st.caption(rf"""
+                    **Monthly difference from average** <br>
+                    Source: [{urlparse(source).hostname}]({source})
+                    """, unsafe_allow_html=True
+                )
+            
+            st.image(img_url, use_column_width=True)
+
 
     elif option == "Runoff":
         r"""
