@@ -198,6 +198,11 @@ def main():
             # st.pyplot(plot_contours(dem, grid))
             st.pyplot(plot_contours(downscaled_data[0], grid))
 
+        st.info("""
+        Also check:
+        - USGS topographic maps at [ngmdb.usgs.gov/topoview/](https://ngmdb.usgs.gov/topoview/)
+        - Opentopography - High-Resolution Topography Data and Tools at [opentopography.org](https://opentopography.org/)
+        """)
     with flow_container.container():
         r"""
         *****
