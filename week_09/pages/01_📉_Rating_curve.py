@@ -185,7 +185,7 @@ def main():
     with cols[2]: st.metric("$c$", f"{c:.2E}")
 
     y_calc = np.linspace(-5, 30, 100)
-    Q_calc = my_power_law(y_calc, a, b, c)
+    Q_calc = my_power_law(y_calc, *popt)
 
     fig, ax = plt.subplots()
     ax.grid(True, which='both', axis='both', zorder=1)
@@ -220,7 +220,7 @@ def main():
     **Covariance matrix:**
 
     """
-    pd_cov = pd.DataFrame(pcov, index=["a", "b", "c"], columns=["a", "b", "c"])
+    pd_cov = pd.DataFrame(pcov, index=[*"abc"], columns=[*"abc"])
     st.table(pd_cov.style
                 .format('{:.3E}')
                 .background_gradient(axis=None, vmin=0, vmax=1e4, cmap="YlGnBu"))
@@ -229,7 +229,35 @@ def main():
     **Error on the parameters:**
     """
     perr = np.sqrt(np.diag(pcov))
-    st.table(perr.T)
+    pd_perr = pd.DataFrame(perr, index=[*"abc"])
+    st.table(pd_perr.style
+                .format('{:.3E}'))
+
+    r"""
+    ### Coefficient of determination
+    
+    How far are the predictions from the observations?
+    
+    $$
+        R^2 = 1 - \dfrac{\sum_i{(y_i - f_i)^2}}{\sum_i{(y_i - \bar{y})^2}}
+    $$
+
+    - If the predicted values exactly match the observations, $R^2 = 1$
+    - If the prediction is always the mean of the observations, $R^2 = 0$
+    - Worse predictions will have $R^2 < 0$
+
+    **In hydrological models**, this metric is called the Nash-Sutcliffe model efficiency
+    coefficient (NSE).
+
+    """
+    
+    Q_field_calc = my_power_law(y_field, *popt)
+    
+    residual_sum_squares = np.power(Q_field - Q_field_calc, 2)
+    variance = np.power(Q_field - np.average(Q_field), 2)
+    R2 = 1.0 - np.sum(residual_sum_squares)/np.sum(variance)
+
+    st.metric("$R^2$", f"{R2:.3}")
 
 def open_page(url):
     open_script= f"""

@@ -60,9 +60,77 @@ def main():
     if option == "Infiltration":
         r"""
         ## Infiltration
-        
         """
-    
+        img_url = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/images/4-9.png"
+        source = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/hydrograph_method.htm"
+        st.caption(rf"""
+            **Water mass balance** <br>
+            Source: [{urlparse(source).hostname}]({source})
+            """, unsafe_allow_html=True
+        )
+        st.image(img_url, use_column_width=True)
+
+        r"""
+        ### Horton's equation
+
+        $$
+            f(t) = f_c + (f_0 - f_c)\exp{(-kt)}
+        $$
+        
+        |Parameter|Description|Units|
+        |:--------:|:----|:----:|
+        |$f(t)$| Infiltration rate | Length/Time |
+        |$f_0$| Initial infiltration rate | Length/Time |
+        |$f_c$| End infiltration rate | Length/Time |
+        |$k$| Decay rate | 1/Time |
+        
+        &nbsp;
+        
+        **Infiltration capacity** refers to the maximum rate of infiltration. It decreases
+        as the soil moisture content increases. Runoff occurs with precipitation rate 
+        exceeds the infiltration rate. 
+
+        ### Accumulated infiltration
+
+        $$
+            F(t) = \int_0^t f(\tau) d\tau
+        $$
+        
+        |Parameter|Description|Units|
+        |:--------:|:----|:----:|
+        |$F(t)$| Total accumulation in a period of time | Length |
+
+        &nbsp;
+        
+        Horton's equation is a solution of the differential equation:
+
+        $$
+            \dfrac{\partial \theta}{\partial t} = D \dfrac{\partial^2 \theta}{\partial z^2}
+        $$
+        |Parameter|Description|Units|
+        |:--------:|:----|:----:|
+        |$\theta$| Soil water content | Volume/Volume |
+        |$z$| Depth | Length |
+        |$t$| Time | Time |
+        
+        &nbsp;
+
+        ****
+        ### Infiltrometer
+        """
+        
+        img_url = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Single_ring.JPG"
+        source = "https://en.wikipedia.org/wiki/Infiltrometer"
+        st.caption(rf"""
+            **Single ring infiltrometer** <br>
+            Source: [{urlparse(source).hostname}]({source})
+            """, unsafe_allow_html=True
+        )
+        st.image(img_url, use_column_width=True)
+
+        "****"
+        st.warning("Infiltration rate and hydraulic conductivity are similar, but distinct! ")
+
     elif option == "Green & Ampt model":
         r"""
         ## Green & Ampt model
@@ -281,10 +349,39 @@ def main():
         |$C$| Runoff coefficient | - | Measure of land *imperviousness* |
         |$I$| Average rainfall intensity | in/hr | Obtained from an IDF curve |
         |$A$| Basin area | acres | It should be small (less htan 200 acres) |
-        
+
+        &nbsp;
         
         """
 
+        img_url = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/images/4-8.png"
+        source = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/rational_method.htm"
+        st.caption(rf"""
+            **Rational method steps** <br>
+            Source: [{urlparse(source).hostname}]({source})
+            """, unsafe_allow_html=True
+        )
+        st.image(img_url, use_column_width=True)
+
+        r"""
+        #### Rainfall intensity
+        It is the average precipitation rate for a given duration
+        and frequency. The duration is usually related to the time of concentration.
+        
+        #### Runoff coeffcients
+        Depends on the land use and type of soil.
+        """
+
+        img_url = "assets/img/Runoff_coeffs.png"
+        source = "https://virginiadot.org/business/resources/LocDes/DrainageManual/chapter6.pdf"
+        st.caption(rf"""
+            **Runoff coefficients** <br>
+            Source: [{urlparse(source).hostname}]({source})
+            """, unsafe_allow_html=True
+        )
+        st.image(img_url, use_column_width=True)
+        
+        
     else: 
         st.error("You should not be here!")
         r" ### 🚧 Under construction 🚧"

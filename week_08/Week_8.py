@@ -515,6 +515,14 @@ def main():
         url = "https://jeffskwang.github.io/"
         st.button('Go to rain/runoff example', on_click=open_page, args=(url,), use_container_width=True)
 
+        """
+        *****
+        ### Synthetic Block design-storm hyetograph
+
+        From a IDF curve, 
+        
+        """
+
     elif option == "IDF curve":
         r"""
         ## IDF: Intensity-Duration-Frequency curves
