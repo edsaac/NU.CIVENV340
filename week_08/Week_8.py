@@ -519,9 +519,44 @@ def main():
         *****
         ### Synthetic Block design-storm hyetograph
 
-        From a IDF curve, 
+        - From a IDF curve, identify the return period and duration. The design
+        storm will contain the intensities related to all the durations less than
+        the duration design. 
         
+        - $\Delta t$ should not be greater than the time of concentration
+
+        - The peak intensity of the storm is usually placed between 1/3 and 1/2 the
+        duration of the storm. 
+        
+        *****
+        ### Soil Conservation Service hyetographs
+
+        Developed for 24-hr storms
+
         """
+        cols = st.columns([1,1.5])
+        
+        with cols[0]:
+            scs = pd.read_excel("assets/tables/SCS_24HR_RainfallDistribution.xlsx")
+            st.caption("SCS 24-HR Rainfall distributions")
+            st.dataframe(scs, use_container_width=True)
+        
+        with cols[1]:
+            from matplotlib.ticker import MultipleLocator
+            fig, ax = plt.subplots()
+            colors = ['#1b9e77','#d95f02','#7570b3','#e7298a']
+            for c, t in zip(colors, ["I", "IA", "II", "III"]):
+                ls = "dotted" if t == "III" else "-"
+                ax.plot("t(hr)", f"Type {t}", data=scs, c=c, lw=3, ls=ls)
+            
+            ax.legend()
+            ax.set_xlabel("Time [hr]")
+            ax.set_ylabel("Fraction of 24-hr rainfall $P/P_T$")
+            ax.grid(True)
+            ax.set_ylim(0,1)
+            ax.set_xlim(0,24)
+            ax.xaxis.set_major_locator(MultipleLocator(4))
+            st.pyplot(fig, use_container_width=True)
 
     elif option == "IDF curve":
         r"""
