@@ -546,12 +546,12 @@ def main():
         > *For more precise distribution boundaries in a state having more than*
         > *one type, contact the NRCS State Conservation Engineer*
         """
+
+        st.caption("SCS 24-HR Rainfall distributions")
         cols = st.columns([1,1.5])
-        
         with cols[0]:
             scs = pd.read_excel("assets/tables/SCS_24HR_RainfallDistribution.xlsx")
-            st.caption("SCS 24-HR Rainfall distributions")
-            st.dataframe(scs, use_container_width=True)
+            st.dataframe(scs, use_container_width=True, height=300)
         
         with cols[1]:
             from matplotlib.ticker import MultipleLocator
@@ -575,8 +575,7 @@ def main():
             rf"""
             Source: Urban Hydrology for Small Watersheds <br>
             USDA - Natural Resources Conservation Service <br>
-            Technical Release TR-55 (June 1986)
-            [Precipitation Frequency Data Server (PFDS)]({source})
+            [Technical Release TR-55 (June 1986)]({source})
             """,
             unsafe_allow_html=True
         )
