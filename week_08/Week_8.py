@@ -477,14 +477,19 @@ def main():
         st.plotly_chart(fig, use_container_width=True)
 
         "*****"
-        cols = st.columns(2)
+        st.info("How are rain and runoff related?")
+        cols = st.columns([1,2])
         with cols[0]:
-            r"""
-            &nbsp;
 
-            &nbsp;
-            """
-            st.info("How are rain and runoff related?")
+            img_url = "https://upload.wikimedia.org/wikipedia/commons/8/80/Surface_water_cycle.svg"
+            source = "https://en.wikipedia.org/wiki/Runoff_model_(reservoir)"
+            
+            st.caption(rf"""
+                **Runoff from the water balance** <br>
+                Source: [{urlparse(source).hostname}]({source})
+                """, unsafe_allow_html=True
+            )
+            st.image(img_url, use_column_width=True)
 
         with cols[1]:
             img_url = "https://upload.wikimedia.org/wikipedia/commons/9/95/Runoff_of_soil_%26_fertilizer.jpg"
