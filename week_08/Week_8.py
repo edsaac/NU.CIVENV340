@@ -537,6 +537,13 @@ def main():
         USDA - Natural Resources Conservation Service -
         TR-55 (June 1986): 
 
+        > The length of the most intense rainfall period contrib-
+        > uting to the peak runoff rate is related to the time of
+        > concentration for the watershed. In a hydrograph
+        > created with NRCS procedures, the duration of rainfall
+        > that directly contributes to the peak is about 170
+        > percent of the time of concentration. 
+
         > - Types I and IA represent the Pacific maritime climate
         > with wet winters and dry summers. 
         > - Type III represents Gulf of Mexico and Atlantic coastal 
@@ -545,6 +552,7 @@ def main():
         > 
         > *For more precise distribution boundaries in a state having more than*
         > *one type, contact the NRCS State Conservation Engineer*
+        
         """
 
         st.caption("SCS 24-HR Rainfall distributions")
@@ -581,6 +589,7 @@ def main():
         )
         st.image("assets/img/SCS_24hr_Map.png")
 
+        st.warning("The Soil Conservation Service is now called the Natural Resources Conservation Service (NRCS)")
 
     elif option == "IDF curve":
         r"""
