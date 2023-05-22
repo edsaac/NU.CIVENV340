@@ -533,6 +533,18 @@ def main():
 
         Developed for 24-hr storms
 
+        From the Urban Hydrology for Small Watersheds -
+        USDA - Natural Resources Conservation Service -
+        TR-55 (June 1986): 
+
+        > - Types I and IA represent the Pacific maritime climate
+        > with wet winters and dry summers. 
+        > - Type III represents Gulf of Mexico and Atlantic coastal 
+        > areas where tropical storms bring large 24-hour rainfall amounts. 
+        > - Type II represents the rest of the country. 
+        > 
+        > *For more precise distribution boundaries in a state having more than*
+        > *one type, contact the NRCS State Conservation Engineer*
         """
         cols = st.columns([1,1.5])
         
@@ -557,6 +569,19 @@ def main():
             ax.set_xlim(0,24)
             ax.xaxis.set_major_locator(MultipleLocator(4))
             st.pyplot(fig, use_container_width=True)
+
+        source = "https://directives.sc.egov.usda.gov/22162.wba"
+        st.caption(
+            rf"""
+            Source: Urban Hydrology for Small Watersheds <br>
+            USDA - Natural Resources Conservation Service <br>
+            Technical Release TR-55 (June 1986)
+            [Precipitation Frequency Data Server (PFDS)]({source})
+            """,
+            unsafe_allow_html=True
+        )
+        st.image("assets/img/SCS_24hr_Map.png")
+
 
     elif option == "IDF curve":
         r"""
