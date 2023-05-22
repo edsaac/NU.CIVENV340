@@ -546,7 +546,7 @@ def main():
                 [Precipitation Frequency Data Server (PFDS)]({source})""",
                 unsafe_allow_html=True
             )
-            st.image("https://hdsc.nws.noaa.gov/hdsc/pfds/imgs/yrs_legend_pds.png")
+            st.image("assets/img/yrs_legend_pds.png")
 
         # cols = st.columns([2,2])
         # with cols[0]:
