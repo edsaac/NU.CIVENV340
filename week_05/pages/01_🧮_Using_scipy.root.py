@@ -2,11 +2,11 @@ import streamlit as st
 import numpy as np
 import pickle
 
-def main():
 
-    with open("assets/page_config.pkl", 'rb') as f:
+def main():
+    with open("assets/page_config.pkl", "rb") as f:
         st.session_state.page_config = pickle.load(f)
-    
+
     st.set_page_config(**st.session_state.page_config)
 
     with open("assets/style.css") as f:
@@ -16,7 +16,7 @@ def main():
     "****"
 
     ############################
-    
+
     r"""
     ## Solving an implicit equation
     
@@ -27,15 +27,15 @@ def main():
     With, """
 
     cols = st.columns(2)
-    with cols[0]: ## Area equation
+    with cols[0]:  ## Area equation
         r"""
         $$
             A = (b+my)y
         $$
         """
-    with cols[1]: ## Hydraulic depth eq.
+    with cols[1]:  ## Hydraulic depth eq.
         r"""
-        $$  
+        $$
             D_h = \dfrac{(b+my)y}{b + 2my}
         $$
         """
@@ -53,65 +53,73 @@ def main():
     ## 2️⃣ Define a function with the equation
     """
     with st.echo():
-        g = 9.81  #- m/s²
+        g = 9.81  # - m/s²
+
         def critical_depth_trapezoid(yc, b, m, Q):
-            area = (b + m*yc) * yc
-            hyd_depth = area / (b + 2*m*yc)
-            return (Q**2)/g - (area**2 * hyd_depth)
-            
+            area = (b + m * yc) * yc
+            hyd_depth = area / (b + 2 * m * yc)
+            return (Q**2) / g - (area**2 * hyd_depth)
+
     r"""
     ****
     ## 3️⃣ Call `scipy.optimize.root`
     """
-    
-    st.components.v1.iframe("https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html#scipy-optimize-root", height=500, width=500, scrolling=True)
+
+    st.components.v1.iframe(
+        "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html#scipy-optimize-root",
+        height=500,
+        width=500,
+        scrolling=True,
+    )
     "*****"
 
     cols = st.columns(2)
     with cols[0]:
-        bottom_width = st.slider("Bottom width -- $b$", 0.5, 15.0, 5.0, 0.1, format="%.1f")
+        bottom_width = st.slider(
+            "Bottom width -- $b$", 0.5, 15.0, 5.0, 0.1, format="%.1f"
+        )
         side_slope = st.slider("Side slope -- $m$", 0.0, 10.0, 2.0, 0.1, format="%.1f")
         flow_rate = st.slider("Flow rate -- $Q$", 1.0, 100.0, 20.0, 0.1, format="%.1f")
-        method = st.selectbox("Root finding method:", ['hybr', 'lm'] )
-        initial_guess = st.number_input(r"Initial guess -- $y_{c, \textsf{ guess}}$", 0.0, 100.0, 1.0)
-    
+        method = st.selectbox("Root finding method:", ["hybr", "lm"])
+        initial_guess = st.number_input(
+            r"Initial guess -- $y_{c, \textsf{ guess}}$", 0.0, 100.0, 1.0
+        )
+
     with cols[1]:
-        
         "&nbsp;"
         "&nbsp;"
 
         with st.echo():
-            
             from scipy.optimize import root
-            
+
             y_c = root(
-                critical_depth_trapezoid,     
-                x0 = initial_guess,
-                args = (
-                    bottom_width,
-                    side_slope,
-                    flow_rate
-                ),
-                method = method
+                critical_depth_trapezoid,
+                x0=initial_guess,
+                args=(bottom_width, side_slope, flow_rate),
+                method=method,
             )
-            
+
     r"""
     ****
     ## 🏁 Print final results
     """
     cols = st.columns(2)
 
-    with cols[0]: 
+    with cols[0]:
         st.metric(r"$y_{c, \textsf{ guess}}$", f"{initial_guess:.2f} m")
-    
-    with cols[1]: 
+
+    with cols[1]:
         if y_c.success:
             st.metric("$y_c$", f"{y_c.x[0]:.2f} m")
         else:
-            st.error(r"""
+            st.error(
+                r"""
             Something went wrong... 
             try changing the initial guess for $f$ or the root-finding method.
-            """, icon="🧪")
-                
+            """,
+                icon="🧪",
+            )
+
+
 if __name__ == "__main__":
     main()

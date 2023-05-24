@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from urllib.parse import urlparse
 
+
 def main():
-    
-    with open("assets/page_config.pkl", 'rb') as f:
+    with open("assets/page_config.pkl", "rb") as f:
         st.session_state.page_config = pickle.load(f)
-    
+
     st.set_page_config(**st.session_state.page_config)
 
     with open("assets/style.css") as f:
@@ -27,34 +27,38 @@ def main():
         st.components.v1.html(lottie, width=200, height=100)
 
         "### Select a topic:"
-        option = st.radio("Select a topic:",
-            [   
+        option = st.radio(
+            "Select a topic:",
+            [
                 "Hydraulic efficiency",
                 "Non-erodible channels",
                 "Unlined channel design",
                 "Weirs",
                 "Flumes",
-                "Gaging stations"
+                "Gaging stations",
             ],
-            label_visibility="collapsed")
-        
+            label_visibility="collapsed",
+        )
+
         "***"
-        st.image("https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/syndetics.com/index.php?client=primo&isbn=9780134292380/sc.jpg")
-        
+        st.image(
+            "https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/syndetics.com/index.php?client=primo&isbn=9780134292380/sc.jpg"
+        )
+
         r"""
         #### Class textbook:
         [🌐](https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9980502032702441) *Houghtalen, Akan & Hwang* (2017). **Fundamentals of hydraulic engineering systems** 5th ed.,
         Pearson Education Inc., Boston.
         """
-    
+
         cols = st.columns(2)
         with cols[0]:
             r"""
             [![Github Repo](https://img.shields.io/static/v1?label=&message=Repository&color=black&logo=github)](https://github.com/edsaac/NU.CIVENV340)
             """
         with cols[1]:
-            r""" [![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
-    
+            r"""[![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
+
     ####################################################################
     if option == "Hydraulic efficiency":
         r"""
@@ -153,22 +157,21 @@ def main():
         with st.expander("➗ Doing math with sympy:"):
             with st.echo():
                 import sympy as sp
-                
+
                 # Define side slope and depth representations
-                m, y = sp.symbols("m y")     
+                m, y = sp.symbols("m y")
 
                 # Wetted perimeter
-                P_w = 2*y*(2*sp.root(1 + m**2, 2) - m )     
-                
+                P_w = 2 * y * (2 * sp.root(1 + m**2, 2) - m)
+
                 # Derivative of wetted perimeter by side slope
-                dPdm = sp.diff(P_w, m)                      
-                
+                dPdm = sp.diff(P_w, m)
+
                 # Make derivate equal to zero
-                eq = sp.Equality(dPdm, 0)      
-                
+                eq = sp.Equality(dPdm, 0)
+
                 # Solve for m
                 m_optimal = sp.solve(eq, m)
-
 
         with cont.container():
             rf"""
@@ -189,32 +192,39 @@ def main():
             $$
                m = {sp.latex(m_optimal[0])}
             $$
-            """        
+            """
 
     elif option == "Non-erodible channels":
-        
-        "## Non-erodible channels (rigid boundary)"        
-        
+        "## Non-erodible channels (rigid boundary)"
+
         cols = st.columns(3)
 
         with cols[0]:
             url = "https://upload.wikimedia.org/wikipedia/commons/2/2f/Trapezoidal_artificial_water_channel.png"
             source = "https://commons.wikimedia.org/wiki/File:Trapezoidal_artificial_water_channel.png"
             st.image(url, use_column_width=True)
-            st.caption(f"Trapezoidal section <br> Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.caption(
+                f"Trapezoidal section <br> Source: [{urlparse(source).hostname}]({source})",
+                unsafe_allow_html=True,
+            )
 
         with cols[1]:
             url = "https://upload.wikimedia.org/wikipedia/commons/8/81/V-Section_artificial_water_channel_02.png"
             source = "https://commons.wikimedia.org/wiki/File:V-Section_artificial_water_channel_02.png"
             st.image(url, use_column_width=True)
-            st.caption(f"Triangular section <br> Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.caption(
+                f"Triangular section <br> Source: [{urlparse(source).hostname}]({source})",
+                unsafe_allow_html=True,
+            )
 
         with cols[2]:
             url = "https://upload.wikimedia.org/wikipedia/commons/e/e7/Semi-circular_artificial_water_channel.png"
             source = "https://commons.wikimedia.org/wiki/File:Semi-circular_artificial_water_channel.png"
             st.image(url, use_column_width=True)
-            st.caption(f"Circular section <br> Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
-
+            st.caption(
+                f"Circular section <br> Source: [{urlparse(source).hostname}]({source})",
+                unsafe_allow_html=True,
+            )
 
         r""" 
         Factors to consider:
@@ -272,37 +282,52 @@ def main():
 
         """
 
-        cols = st.columns([2,1])
+        cols = st.columns([2, 1])
 
         with cols[1]:
-            discharge = st.number_input("Discharge $Q$ [m³/s]", 0.0, 100.0, 15.0, 0.1, format="%.1f")
-            n_manning = st.number_input("Mannning coef. -- $n$ [-]", 0.010, 0.070, 0.013, 0.001, format="%.3f")
-            long_slope = st.number_input("Bottom slope -- $S_0$ [-]", 0.00001, 0.10000, 0.00095, 0.0001, format="%.5f")
-            side_slope = st.number_input("Side slope -- $m$ [-]", 0.0, 10.0, 2.0, 0.1, format="%.1f")
-            initial_guess = st.number_input("Initial guess for $y$", 0.01, 50.0, 1.0, format="%.2f")
-            method = st.selectbox("Root finding method:", ['hybr', 'lm'] )
-
+            discharge = st.number_input(
+                "Discharge $Q$ [m³/s]", 0.0, 100.0, 15.0, 0.1, format="%.1f"
+            )
+            n_manning = st.number_input(
+                "Mannning coef. -- $n$ [-]", 0.010, 0.070, 0.013, 0.001, format="%.3f"
+            )
+            long_slope = st.number_input(
+                "Bottom slope -- $S_0$ [-]",
+                0.00001,
+                0.10000,
+                0.00095,
+                0.0001,
+                format="%.5f",
+            )
+            side_slope = st.number_input(
+                "Side slope -- $m$ [-]", 0.0, 10.0, 2.0, 0.1, format="%.1f"
+            )
+            initial_guess = st.number_input(
+                "Initial guess for $y$", 0.01, 50.0, 1.0, format="%.2f"
+            )
+            method = st.selectbox("Root finding method:", ["hybr", "lm"])
 
         with cols[0]:
             with st.echo():
                 from scipy.optimize import root
 
                 def optimal_trapz_section_error(
-                    y:float,    # Depth [m]
-                    Q:float,    # Discharge [m³/s]
-                    n:float,    # Mannint coefficient [-]
-                    S0:float,   # Long. slope [-]
-                    m:float,    # Side slope [-]
-                    ):
-                    
+                    y: float,  # Depth [m]
+                    Q: float,  # Discharge [m³/s]
+                    n: float,  # Mannint coefficient [-]
+                    S0: float,  # Long. slope [-]
+                    m: float,  # Side slope [-]
+                ):
                     ## Geometry of a hydraulically optimal section
                     auxm = np.sqrt(1 + m**2)
-                    A  = (2*y*(auxm - m) + m*y) * y
-                    Pw = 2*y * (2 * auxm - m)
+                    A = (2 * y * (auxm - m) + m * y) * y
+                    Pw = 2 * y * (2 * auxm - m)
 
-                    ## Manning equation 
-                    Qcalc = 1.0/n * np.power(A, 5/3)/np.power(Pw, 2/3) * np.sqrt(S0)
-                    
+                    ## Manning equation
+                    Qcalc = (
+                        1.0 / n * np.power(A, 5 / 3) / np.power(Pw, 2 / 3) * np.sqrt(S0)
+                    )
+
                     error = Q - Qcalc
                     return error
 
@@ -314,46 +339,56 @@ def main():
                         n_manning,
                         long_slope,
                         side_slope,
-                    )
+                    ),
                 )
 
         "****** \n\n### 🧩 Solution:"
 
-        
         if y_calc.success:
-            
             cols = st.columns(4)
             y = y_calc.x[0]
-            b = 2*y * (np.sqrt(side_slope**2 + 1) - side_slope)
-            A = (2*y*(np.sqrt(side_slope**2 + 1) - side_slope) + side_slope*y) * y
-            P_w = 2*y * (2 * np.sqrt(1 + side_slope**2) - side_slope)
-            
-            with cols[0]: st.metric("$\; y$", f"{y:.2f} m")
-            with cols[1]: st.metric("$\; b$", f"{b:.2f} m")
-            with cols[2]: st.metric("$\; A$", f"{A:.2f} m²")
-            with cols[3]: st.metric("$\; P_w$", f"{P_w:.2f} m")
+            b = 2 * y * (np.sqrt(side_slope**2 + 1) - side_slope)
+            A = (
+                2 * y * (np.sqrt(side_slope**2 + 1) - side_slope) + side_slope * y
+            ) * y
+            P_w = 2 * y * (2 * np.sqrt(1 + side_slope**2) - side_slope)
+
+            with cols[0]:
+                st.metric("$\; y$", f"{y:.2f} m")
+            with cols[1]:
+                st.metric("$\; b$", f"{b:.2f} m")
+            with cols[2]:
+                st.metric("$\; A$", f"{A:.2f} m²")
+            with cols[3]:
+                st.metric("$\; P_w$", f"{P_w:.2f} m")
 
             g = 9.81
-            V = discharge/A
-            T = b + 2*y*side_slope
-            Dh = A/T
-            Fr = V/np.sqrt(g*Dh)
+            V = discharge / A
+            T = b + 2 * y * side_slope
+            Dh = A / T
+            Fr = V / np.sqrt(g * Dh)
 
-            with cols[0]: st.metric("$\; V$", f"{V:.2f} m/s")
-            with cols[1]: st.metric("$\; T$", f"{T:.2f} m")
-            with cols[2]: st.metric("$\; D_h$", f"{Dh:.2f} m")
-            with cols[3]: st.metric("$\; F_r$", f"{Fr:.2f}")
+            with cols[0]:
+                st.metric("$\; V$", f"{V:.2f} m/s")
+            with cols[1]:
+                st.metric("$\; T$", f"{T:.2f} m")
+            with cols[2]:
+                st.metric("$\; D_h$", f"{Dh:.2f} m")
+            with cols[3]:
+                st.metric("$\; F_r$", f"{Fr:.2f}")
 
             st.warning("Don't forget to add a freeboard!")
 
         else:
-            st.error(r"""
+            st.error(
+                r"""
             Something went wrong... 
             try changing the initial guess for $y$ or the root-finding method.
-            """, icon="🧪")
-            
-    elif option == "Unlined channel design":
+            """,
+                icon="🧪",
+            )
 
+    elif option == "Unlined channel design":
         "## Unlined channels"
         r"""
         The principal consideration is that the channel is not eroded under the design
@@ -363,16 +398,19 @@ def main():
         url = "https://upload.wikimedia.org/wikipedia/commons/d/da/Water_Capture_Channel_-_geograph.org.uk_-_3833453.jpg"
         source = "https://commons.wikimedia.org/wiki/File:Water_Capture_Channel_-_geograph.org.uk_-_3833453.jpg"
         st.image(url, use_column_width=True)
-        st.caption(f"Unlined channel <br> Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+        st.caption(
+            f"Unlined channel <br> Source: [{urlparse(source).hostname}]({source})",
+            unsafe_allow_html=True,
+        )
 
         "*****"
 
-        cols = st.columns([1.5,1])
+        cols = st.columns([1.5, 1])
 
         with cols[0]:
             r"""
             ### 🏎️ Maximum permissible velocity
-            
+
             1. Select material
                 1. Roughness: $n$
                 2. Stable side slopes: $m$
@@ -391,13 +429,19 @@ def main():
                 $$
             5. This way, we obtain a system of two equations to solve for two unknowns, $y$ and $b$
             6. Adjust dimensions and add a freeboard
-  
+
             """
-        
+
         with cols[1]:
             url = "https://www.publications.usace.army.mil/LinkClick.aspx?fileticket=4uPtDjMGu64%3d&tabid=16439&portalid=76&mid=43544"
-            st.caption(f"**Suggested maximum permissible mean channel velocities** <br> Source: U.S. Army Corps of Engineers <br> *Hydraulic Design of Flood Control Channels*, <br> [Enginnering Manual EM 1110-2-1601]({url})", unsafe_allow_html=True)
-            st.image("assets/img/SuggestedMaxPermissibleMeanChannelVel.png", use_column_width=True)
+            st.caption(
+                f"**Suggested maximum permissible mean channel velocities** <br> Source: U.S. Army Corps of Engineers <br> *Hydraulic Design of Flood Control Channels*, <br> [Enginnering Manual EM 1110-2-1601]({url})",
+                unsafe_allow_html=True,
+            )
+            st.image(
+                "assets/img/SuggestedMaxPermissibleMeanChannelVel.png",
+                use_column_width=True,
+            )
 
         r"""
         *****
@@ -419,50 +463,72 @@ def main():
 
         """
 
-        cols = st.columns([2,1])
+        cols = st.columns([2, 1])
 
         with cols[1]:
-            discharge = st.number_input("Discharge $Q$ [m³/s]", 0.0, 100.0, 9.0, 0.1, format="%.1f")
-            n_manning = st.number_input("Mannning coef. -- $n$ [-]", 0.010, 0.070, 0.022, 0.001, format="%.3f")
-            long_slope = st.number_input("Bottom slope -- $S_0$ [-]", 0.00001, 0.10000, 0.0028, 0.0001, format="%.5f")
-            side_slope = st.number_input("Side slope -- $m$ [-]", 0.0, 10.0, 1.0, 0.1, format="%.1f")
-            permissible_vel = st.number_input(r"Permissible velocity -- $V_{\rm max}$ [m/s]", 0.0, 4.0, 1.83, 0.10, format="%.2f")
-            
-            initial_guess_y = st.number_input("Initial guess for $y$", 0.01, 50.0, 1.0, format="%.2f")
-            initial_guess_b = st.number_input("Initial guess for $b$", 0.01, 50.0, 1.0, format="%.2f")
-            
-            method = st.selectbox("Root finding method:", ['hybr', 'lm'] )
+            discharge = st.number_input(
+                "Discharge $Q$ [m³/s]", 0.0, 100.0, 9.0, 0.1, format="%.1f"
+            )
+            n_manning = st.number_input(
+                "Mannning coef. -- $n$ [-]", 0.010, 0.070, 0.022, 0.001, format="%.3f"
+            )
+            long_slope = st.number_input(
+                "Bottom slope -- $S_0$ [-]",
+                0.00001,
+                0.10000,
+                0.0028,
+                0.0001,
+                format="%.5f",
+            )
+            side_slope = st.number_input(
+                "Side slope -- $m$ [-]", 0.0, 10.0, 1.0, 0.1, format="%.1f"
+            )
+            permissible_vel = st.number_input(
+                r"Permissible velocity -- $V_{\rm max}$ [m/s]",
+                0.0,
+                4.0,
+                1.83,
+                0.10,
+                format="%.2f",
+            )
 
+            initial_guess_y = st.number_input(
+                "Initial guess for $y$", 0.01, 50.0, 1.0, format="%.2f"
+            )
+            initial_guess_b = st.number_input(
+                "Initial guess for $b$", 0.01, 50.0, 1.0, format="%.2f"
+            )
+
+            method = st.selectbox("Root finding method:", ["hybr", "lm"])
 
         with cols[0]:
             with st.echo():
                 from scipy.optimize import root
 
                 def unlined_channel_calculate(
-                    GEOMETRY:float,     # [ Depth [m], Base width [m] ]
-                    Q:float,            # Discharge [m³/s]
-                    Vmax:float,         # Max permissible vel [m/s]
-                    n:float,            # Mannint coefficient [-]
-                    S0:float,           # Long. slope [-]
-                    m:float,            # Side slope [-]
-                    ):
-
-                    y,b = GEOMETRY
+                    GEOMETRY: float,  # [ Depth [m], Base width [m] ]
+                    Q: float,  # Discharge [m³/s]
+                    Vmax: float,  # Max permissible vel [m/s]
+                    n: float,  # Mannint coefficient [-]
+                    S0: float,  # Long. slope [-]
+                    m: float,  # Side slope [-]
+                ):
+                    y, b = GEOMETRY
 
                     ## Manning equation
-                    hydr_radius = np.power((n*Vmax) / (np.sqrt(S0)), 3/2)
+                    hydr_radius = np.power((n * Vmax) / (np.sqrt(S0)), 3 / 2)
 
                     ## Required A and Pw
-                    required_area = Q/Vmax
-                    required_wetted_perimeter = required_area/hydr_radius
+                    required_area = Q / Vmax
+                    required_wetted_perimeter = required_area / hydr_radius
 
                     ## Actual A and Pw from b and y
-                    calc_area = (b + m*y) * y
-                    calc_wetted_perimeter = b + 2*y*np.sqrt(1 + m**2)
+                    calc_area = (b + m * y) * y
+                    calc_wetted_perimeter = b + 2 * y * np.sqrt(1 + m**2)
 
                     error = [
-                        calc_area - required_area, 
-                        calc_wetted_perimeter - required_wetted_perimeter
+                        calc_area - required_area,
+                        calc_wetted_perimeter - required_wetted_perimeter,
                     ]
 
                     return error
@@ -477,46 +543,55 @@ def main():
                         long_slope,
                         side_slope,
                     ),
-                    method=method
+                    method=method,
                 )
 
         "****** \n\n### 🧩 Solution:"
 
-        
         if geometry_calc.success:
-            
             st.info(geometry_calc.message, icon="🥳")
 
             cols = st.columns(4)
             y, b = geometry_calc.x
-            
-            A = (b + side_slope*y) * y
-            P_w = b + 2*y*np.sqrt(1 + side_slope**2)
-            
-            with cols[0]: st.metric("$\; y$", f"{y:.2f} m")
-            with cols[1]: st.metric("$\; b$", f"{b:.2f} m")
-            with cols[2]: st.metric("$\; A$", f"{A:.2f} m²")
-            with cols[3]: st.metric("$\; P_w$", f"{P_w:.2f} m")
 
-            g = 9.81 
-            Rh = A/P_w
-            T = b + 2*y*side_slope
-            Dh = A/T
-            V = discharge/A
-            Fr = V/np.sqrt(g*Dh)
+            A = (b + side_slope * y) * y
+            P_w = b + 2 * y * np.sqrt(1 + side_slope**2)
 
-            with cols[0]: st.metric("$\; R_h$", f"{Rh:.2f} m")
-            with cols[1]: st.metric("$\; T$", f"{T:.2f} m")
-            with cols[2]: st.metric("$\; D_h$", f"{Dh:.2f} m")
-            with cols[3]: st.metric("$\; F_r$", f"{Fr:.2f}")
+            with cols[0]:
+                st.metric("$\; y$", f"{y:.2f} m")
+            with cols[1]:
+                st.metric("$\; b$", f"{b:.2f} m")
+            with cols[2]:
+                st.metric("$\; A$", f"{A:.2f} m²")
+            with cols[3]:
+                st.metric("$\; P_w$", f"{P_w:.2f} m")
+
+            g = 9.81
+            Rh = A / P_w
+            T = b + 2 * y * side_slope
+            Dh = A / T
+            V = discharge / A
+            Fr = V / np.sqrt(g * Dh)
+
+            with cols[0]:
+                st.metric("$\; R_h$", f"{Rh:.2f} m")
+            with cols[1]:
+                st.metric("$\; T$", f"{T:.2f} m")
+            with cols[2]:
+                st.metric("$\; D_h$", f"{Dh:.2f} m")
+            with cols[3]:
+                st.metric("$\; F_r$", f"{Fr:.2f}")
 
             st.warning("Don't forget to add a freeboard!")
 
         else:
-            st.error(r"""
+            st.error(
+                r"""
             Something went wrong... 
             try changing the initial guess for $y$ or the root-finding method.
-            """, icon="🧪")
+            """,
+                icon="🧪",
+            )
 
         r"""
         ******
@@ -533,34 +608,36 @@ def main():
     # elif option=="Flow measurement devices [Pipes]":
     #     r"""
     #     ## Pipes
-        
+
     #     """
 
-    elif option=="Weirs":
+    elif option == "Weirs":
         r"""
         ## Weirs
 
         ### Sharp-crested weir
-        
-        In general, 
+
+        In general,
 
         $$
             {\substack{\textsf{Uncontracted} \\ \textsf{horizontal weir}}}: \quad Q = CLH^{3/2}
         $$
-        
+
         |Parameter|Description|Units|
         |--------:|:----|:----:|
         |$ Q $| Discharge | Volume/Time |
         |$ C $| Discharge coefficient | Length$^{0.5}$/Time |
         |$ L $| Length of the weir crest| Length |
-        
+
         &nbsp;
 
         """
 
         url = "https://upload.wikimedia.org/wikipedia/commons/3/3e/Floodgate_drum.JPG"
         source = "https://es.wikipedia.org/wiki/Vertedero_hidr%C3%A1ulico#/media/Archivo:Floodgate_drum.JPG"
-        st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+        st.caption(
+            f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True
+        )
         st.image(url, use_column_width=True)
 
         # url = "https://upload.wikimedia.org/wikipedia/commons/5/55/Dreieckswehr02.jpeg"
@@ -570,7 +647,9 @@ def main():
 
         url = "https://instrumentationtools.com/wp-content/uploads/2018/01/Weirs-and-flumes-flow-measurement.jpg?ezimgfmt=ng:webp/ngcb2"
         source = "https://instrumentationtools.com/weirs-and-flumes/"
-        st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+        st.caption(
+            f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True
+        )
         st.image(url, use_column_width=True)
 
         r"""
@@ -617,15 +696,17 @@ def main():
         """
         url = "https://wiki.tuflow.com/images/3/3d/Broad-crested_weir.jpg"
         source = "https://wiki.tuflow.com/index.php?title=File:Broad-crested_weir.jpg"
-        st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+        st.caption(
+            f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True
+        )
         st.image(url, use_column_width=True)
 
         "*****"
-        _, col, _ = st.columns([1,3,1])
+        _, col, _ = st.columns([1, 3, 1])
         with col:
             url = "https://usbr.gov/tsc/techreferences/mands/wmm/index.htm"
             st.markdown(
-                fr"""
+                rf"""
                 Also check:
 
                 ⏺ U.S. Bureau of Reclamation (2001). <br>
@@ -633,28 +714,30 @@ def main():
                 *U.S. Department of the Interior.* <br>
                 Website: [usbr.gov]({url})
                 
-                """, unsafe_allow_html=True)
+                """,
+                unsafe_allow_html=True,
+            )
 
-    elif option=="Flumes":
-
+    elif option == "Flumes":
         r"""
-        ## Critical flow flume 
-        
+        ## Critical flow flume
+
         ### Parshall flume
         """
-        
+
         url = "https://upload.wikimedia.org/wikipedia/commons/d/d8/Parshall_Flume.svg"
         source = "https://en.wikipedia.org/wiki/Parshall_flume#/media/File:Parshall_Flume.svg"
         st.image(url, use_column_width=True)
-        st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
-    
+        st.caption(
+            f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True
+        )
 
         r"""
         $$
             Q = CH_a^n
         $$
         """
-        
+
         cols = st.columns(2)
         with cols[0]:
             r"""
@@ -665,17 +748,19 @@ def main():
             |$ H_a $  | Measuring head  | $\mathrm{ft}$ |
             |$ C $  | Empirical coefficient for Parshall flume | 🤔 |
             |$ n $  | Empirical exponent for Parshall flume  | - |
-            
+
             """
-        
+
         "&nbsp;"
 
         with cols[1]:
-
             with st.expander("📋 Coefficients and exponents for Parshall flume"):
                 url = "https://usbr.gov/tsc/techreferences/mands/wmm/index.htm"
                 source = url
-                st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+                st.caption(
+                    f"Source: [{urlparse(source).hostname}]({source})",
+                    unsafe_allow_html=True,
+                )
 
                 r"""
                 | Throat width ($W$) | Coefficient ($C$) | Exponent ($n$) |
@@ -709,15 +794,19 @@ def main():
             # with st.expander("📏 Parshall flume dimensions"):
             url = "https://usbr.gov/tsc/techreferences/mands/wmm/fig/F08_09AL.GIF"
             source = "https://usbr.gov/tsc/techreferences/mands/wmm/index.htm"
-            st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.caption(
+                f"Source: [{urlparse(source).hostname}]({source})",
+                unsafe_allow_html=True,
+            )
             st.image(url, use_column_width=True)
-
-
 
         with cols[1]:
             url = "https://instrumentationtools.com/wp-content/uploads/2018/01/Parshall-flume-measuring-flow.jpg?ezimgfmt=ng:webp/ngcb2"
             source = "https://instrumentationtools.com/weirs-and-flumes/"
-            st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.caption(
+                f"Source: [{urlparse(source).hostname}]({source})",
+                unsafe_allow_html=True,
+            )
             st.image(url, use_column_width=True)
 
         "&nbsp;"
@@ -727,15 +816,18 @@ def main():
         with cols[0]:
             r"""
             Depending on the flume width and the ratio $H_b/H_a$, a Parshall flume is either
-            operating under **submerged or free flow conditions** 
+            operating under **submerged or free flow conditions**
             """
 
         with cols[1]:
             with st.expander("📋 Threshold for submergence"):
                 url = "https://usbr.gov/tsc/techreferences/mands/wmm/index.htm"
                 source = url
-                st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
-                
+                st.caption(
+                    f"Source: [{urlparse(source).hostname}]({source})",
+                    unsafe_allow_html=True,
+                )
+
                 r"""
                 |Flume width|Submerged if|
                 |-----:|:-----|
@@ -746,11 +838,11 @@ def main():
                 """
 
         "****"
-        _, col, _ = st.columns([1,3,1])
+        _, col, _ = st.columns([1, 3, 1])
         with col:
             url = "https://usbr.gov/tsc/techreferences/mands/wmm/index.htm"
             st.markdown(
-                fr"""
+                rf"""
                 Also check:
 
                 ⏺ U.S. Bureau of Reclamation (2001). <br>
@@ -758,15 +850,18 @@ def main():
                 *U.S. Department of the Interior.* <br>
                 Website: [usbr.gov]({url})
                 
-                """, unsafe_allow_html=True)
-    
-    elif option == "Gaging stations":
+                """,
+                unsafe_allow_html=True,
+            )
 
+    elif option == "Gaging stations":
         url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/S_Fk_SpreadQm_2.jpg"
         source = "https://www.usgs.gov/media/images/streamflow-measurement-s-fk-spread-creek-wy-13012475"
-        st.caption(f"**Streamflow measurement in S Fk Spread Creek, WY (13012475)**<br>Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+        st.caption(
+            f"**Streamflow measurement in S Fk Spread Creek, WY (13012475)**<br>Source: [{urlparse(source).hostname}]({source})",
+            unsafe_allow_html=True,
+        )
         st.image(url, use_column_width=True)
-
 
         r"""
         ## Gaging stations
@@ -789,10 +884,13 @@ def main():
             url = "https://waterdata.usgs.gov/monitoring-location/04079000/#parameterCode=00065&period=P30D"
             source = "https://waterdata.usgs.gov/monitoring-location/04079000/#parameterCode=00065&period=P30D"
             st.components.v1.iframe(url, height=600, width=800, scrolling=True)
-            st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.caption(
+                f"Source: [{urlparse(source).hostname}]({source})",
+                unsafe_allow_html=True,
+            )
 
         url = "https://www.usgs.gov/special-topics/water-science-school/science/how-streamflow-measured#overview"
-        st.caption(f"Also check: How Streamflow is Measured [usgs.gov]({url})")        
+        st.caption(f"Also check: How Streamflow is Measured [usgs.gov]({url})")
         cols = st.columns(3)
 
         with cols[0]:
@@ -801,7 +899,10 @@ def main():
             """
             url = "https://thebridge.agu.org/files/2018/05/CurrentRiverMissouri.jpg"
             source = "https://thebridge.agu.org/2018/05/17/streamgages-infrastructure-to-protect-infrastructure/"
-            st.caption(f"**USGS streamgage on the Current River in Montauk State Park in Missouri**<br>Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.caption(
+                f"**USGS streamgage on the Current River in Montauk State Park in Missouri**<br>Source: [{urlparse(source).hostname}]({source})",
+                unsafe_allow_html=True,
+            )
             st.image(url, use_column_width=True)
 
         with cols[1]:
@@ -810,7 +911,10 @@ def main():
             """
             url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/Lowell_Alvin_ADCP4.JPG"
             source = "https://www.usgs.gov/media/images/measuring-boise-river-streamflow-adcp-1"
-            st.caption(f"**Acoustic Doppler current profiler (ADCP) to measure streamflow on the Boise River**<br>Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.caption(
+                f"**Acoustic Doppler current profiler (ADCP) to measure streamflow on the Boise River**<br>Source: [{urlparse(source).hostname}]({source})",
+                unsafe_allow_html=True,
+            )
             st.image(url, use_column_width=True)
 
         with cols[2]:
@@ -819,20 +923,26 @@ def main():
             """
             url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/discharge.jpg"
             source = "https://www.usgs.gov/media/images/usgs-stage-discharge-relation-example"
-            st.caption(f"**Discharge relation example**<br>Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.caption(
+                f"**Discharge relation example**<br>Source: [{urlparse(source).hostname}]({source})",
+                unsafe_allow_html=True,
+            )
             st.image(url, use_column_width=True)
 
             url = "https://ars.els-cdn.com/content/image/3-s2.0-B9780128193426000075-f02-09-9780128193426.jpg"
             source = "https://doi.org/10.1016/B978-0-12-819342-6.00007-5"
-            st.caption(f"**Discharge relation example**<br>Soulis (2021): [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+            st.caption(
+                f"**Discharge relation example**<br>Soulis (2021): [{urlparse(source).hostname}]({source})",
+                unsafe_allow_html=True,
+            )
             st.image(url, use_column_width=True)
 
         "******"
-        _, col, _ = st.columns([1,3,1])
+        _, col, _ = st.columns([1, 3, 1])
         with col:
             url = "https://pubs.er.usgs.gov/publication/tm3A8"
             st.markdown(
-                fr"""
+                rf"""
                 Also check:
 
                 ⏺ Turnipseed & Sauer (2010). <br>
@@ -840,46 +950,45 @@ def main():
                 *In Techniques and Methods. US Geological Survey.* <br>
                 DOI: [10.3133/tm3A8]({url})
                 
-                """, unsafe_allow_html=True)
+                """,
+                unsafe_allow_html=True,
+            )
 
-    else: 
+    else:
         st.error("You should not be here!")
-        
+
 
 def wetted_perimeter_v_side_slope_plot():
     y = 1
-    m = np.linspace(0,3,50)
+    m = np.linspace(0, 3, 50)
 
-    b =  2*y * ( -m + np.sqrt(1 + np.power(m,2)) )
-    A = (b + m*y)*y
-    Pw = b + 2*y*np.sqrt(1 + m**2)
-    Rh = A/Pw
-    
+    b = 2 * y * (-m + np.sqrt(1 + np.power(m, 2)))
+    A = (b + m * y) * y
+    Pw = b + 2 * y * np.sqrt(1 + m**2)
+    Rh = A / Pw
+
     fig, ax = plt.subplots()
     ax.plot(m, Pw, c="seagreen", lw=5)
     ax.set_ylabel("Wetted perimeter $\quad \dfrac{P_w}{y}$ [-]", fontdict=dict(size=14))
     ax.set_xlabel("Side slope $\quad m$ [-]", fontdict=dict(size=14))
     ax.set_xlim(0, 3.0)
     ax.set_ylim(bottom=0)
-    
+
     annot = r"""
     Hydraulically efficient section:
     $\dfrac{b}{y} = 2( -m +\sqrt{1 + m^2} )$
     """
-    ax.text(
-        0.95, 0.2,
-        annot, ha="right", va="bottom",
-        transform=ax.transAxes)
+    ax.text(0.95, 0.2, annot, ha="right", va="bottom", transform=ax.transAxes)
 
-    m_optimal = np.sqrt(3)/3
+    m_optimal = np.sqrt(3) / 3
     ax.axvline(m_optimal, ls=":", c="gray")
-    
+
     ax.text(
-        m_optimal, 0.2,
-        "There is a $m$ value \n that minimizes $P_w$",
-        color="gray")
+        m_optimal, 0.2, "There is a $m$ value \n that minimizes $P_w$", color="gray"
+    )
 
     return fig
+
 
 if __name__ == "__main__":
     main()

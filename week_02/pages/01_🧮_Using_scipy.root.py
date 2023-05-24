@@ -2,11 +2,11 @@ import streamlit as st
 import numpy as np
 import pickle
 
-def main():
 
-    with open("assets/page_config.pkl", 'rb') as f:
+def main():
+    with open("assets/page_config.pkl", "rb") as f:
         st.session_state.page_config = pickle.load(f)
-    
+
     st.set_page_config(**st.session_state.page_config)
 
     with open("assets/style.css") as f:
@@ -16,7 +16,7 @@ def main():
     "****"
 
     ############################
-    
+
     r"""
     ## Solving an implicit equation
     
@@ -39,66 +39,75 @@ def main():
     ## 2️⃣ Define a function with the equation
     """
     with st.echo():
+
         def colebrook_white_equation(fguess, rel_rough, reynolds):
-            return (-2 * np.log10(rel_rough/3.7 + 2.51/(reynolds * np.sqrt(fguess)))) - (1.0/np.sqrt(fguess))
-            
+            return (
+                -2 * np.log10(rel_rough / 3.7 + 2.51 / (reynolds * np.sqrt(fguess)))
+            ) - (1.0 / np.sqrt(fguess))
 
     r"""
     ****
     ## 3️⃣ Call `scipy.optimize.root`
     """
-    
+
     url = "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html#scipy-optimize-root"
     st.components.v1.iframe(url, height=500, width=500, scrolling=True)
     "*****"
 
     cols = st.columns(2)
     with cols[0]:
-        relative_roughness = st.number_input("Relative roughness -- $e/D$", 1e-6, 0.05, 1e-5, format="%.2e", key="cw_eD")
-        Reynolds = st.number_input("Reynolds number -- $R_e$", 1e3, 1e9, 1e6, format="%.2e",  key="cw_Re")
-        initial_guess = st.number_input("Initial guess for $f$", 0.004, 0.10, 0.05, format="%.4f")
-        method = st.selectbox("Root finding method:", ['hybr', 'lm'] )
+        relative_roughness = st.number_input(
+            "Relative roughness -- $e/D$", 1e-6, 0.05, 1e-5, format="%.2e", key="cw_eD"
+        )
+        Reynolds = st.number_input(
+            "Reynolds number -- $R_e$", 1e3, 1e9, 1e6, format="%.2e", key="cw_Re"
+        )
+        initial_guess = st.number_input(
+            "Initial guess for $f$", 0.004, 0.10, 0.05, format="%.4f"
+        )
+        method = st.selectbox("Root finding method:", ["hybr", "lm"])
     with cols[1]:
-        
         "&nbsp;"
 
         with st.echo():
-            
             from scipy.optimize import root
-            
+
             friction_factor = root(
-                colebrook_white_equation,     
-                x0 = initial_guess,
-                args = (
+                colebrook_white_equation,
+                x0=initial_guess,
+                args=(
                     relative_roughness,
                     Reynolds,
                 ),
-                method = method
+                method=method,
             )
-            
+
     r"""
     ****
     ## 🏁 Print final results
     """
     cols = st.columns(2)
 
-    with cols[0]: 
+    with cols[0]:
         st.metric("*Initial guess* f", f"{initial_guess:.5f}")
-    
-    with cols[1]: 
+
+    with cols[1]:
         if friction_factor.success:
             st.metric("*Solution*", f"{friction_factor.x[0]:.5f}")
         else:
-            st.error(r"""
+            st.error(
+                r"""
             Something went wrong... 
             try changing the initial guess for $f$ or the root-finding method.
-            """, icon="🧪")
-    
+            """,
+                icon="🧪",
+            )
+
     r"""
     ****
     ## 👾 What about `scipy.optimize.fsolve`
     """
-    
+
     url = "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fsolve.html#scipy.optimize.fsolve"
     st.components.v1.iframe(url, height=500, width=500, scrolling=True)
 
@@ -146,10 +155,10 @@ if __name__ == "__main__":
 #         "e(m)" : "{:.2E}",
 #         "e/D" : "{:.2E}",
 #         "Re" : "{:.0f}",
-#         "f" : "{:.4f}", 
+#         "f" : "{:.4f}",
 #         "2KQ (s/m²)" : "{:.1f}"
 #         }, precision=2
-#     ), 
+#     ),
 # use_container_width=True)
 
 # with st.expander("Math"):
@@ -165,7 +174,7 @@ if __name__ == "__main__":
 #         =
 #         {F_q_ltx}
 
-#     """  
+#     """
 
 #     invjacobian = np.linalg.inv(jacobian)
 #     invjacobian_ltx = a2l.to_ltx(invjacobian, frmt='{:.2f}', print_out=False)
@@ -177,11 +186,11 @@ if __name__ == "__main__":
 #     $$
 #         \Delta Q
 #         =
-#         {invjacobian_ltx} 
+#         {invjacobian_ltx}
 #         {F_q_ltx}
 #         =
 #         {deltaQ_ltx}
-#     """  
+#     """
 
 # def my_network(Q):
 #     Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q10 = Q
@@ -192,6 +201,5 @@ if __name__ == "__main__":
 #     F4 = Q4 - Q6 - Q7 - 0.10
 #     F5 = Q5 + Q6 - Q8
 #     F6 = Q3 - Q9
-#     F7 = Q9 + Q7 - Q10 
+#     F7 = Q9 + Q7 - Q10
 #     F8 = Q1
-

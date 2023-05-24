@@ -4,11 +4,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from urllib.parse import urlparse
 
+
 def main():
-    
-    with open("assets/page_config.pkl", 'rb') as f:
+    with open("assets/page_config.pkl", "rb") as f:
         st.session_state.page_config = pickle.load(f)
-    
+
     st.set_page_config(**st.session_state.page_config)
 
     with open("assets/style.css") as f:
@@ -27,46 +27,52 @@ def main():
         st.components.v1.html(lottie, width=200, height=200)
 
         "### Select a topic:"
-        option = st.radio("Select a topic:",
+        option = st.radio(
+            "Select a topic:",
             [
                 "Infiltration",
                 "Green & Ampt model",
                 "SCS Curve Number",
                 "Design runoff",
                 "Time of concentration",
-                "Rational method"
+                "Rational method",
             ],
-            label_visibility="collapsed")
-        
+            label_visibility="collapsed",
+        )
+
         "***"
-        st.image("https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/syndetics.com/index.php?client=primo&isbn=9780134292380/sc.jpg")
-        
+        st.image(
+            "https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/syndetics.com/index.php?client=primo&isbn=9780134292380/sc.jpg"
+        )
+
         r"""
         #### Class textbook:
         [🌐](https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9980502032702441) *Houghtalen, Akan & Hwang* (2017). **Fundamentals of hydraulic engineering systems** 5th ed.,
         Pearson Education Inc., Boston.
         """
-    
+
         cols = st.columns(2)
         with cols[0]:
             r"""
             [![Github Repo](https://img.shields.io/static/v1?label=&message=Repository&color=black&logo=github)](https://github.com/edsaac/NU.CIVENV340)
             """
         with cols[1]:
-            r""" [![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
-    
+            r"""[![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
+
     ####################################################################
-    
+
     if option == "Infiltration":
         r"""
         ## Infiltration
         """
         img_url = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/images/4-9.png"
         source = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/hydrograph_method.htm"
-        st.caption(rf"""
+        st.caption(
+            rf"""
             **Water mass balance** <br>
             Source: [{urlparse(source).hostname}]({source})
-            """, unsafe_allow_html=True
+            """,
+            unsafe_allow_html=True,
         )
         st.image(img_url, use_column_width=True)
 
@@ -118,30 +124,36 @@ def main():
         ****
         ### Infiltrometer
         """
-        
+
         img_url = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Single_ring.JPG"
         source = "https://en.wikipedia.org/wiki/Infiltrometer"
-        st.caption(rf"""
+        st.caption(
+            rf"""
             **Single ring infiltrometer** <br>
             Source: [{urlparse(source).hostname}]({source})
-            """, unsafe_allow_html=True
+            """,
+            unsafe_allow_html=True,
         )
         st.image(img_url, use_column_width=True)
 
         "****"
-        st.warning("Infiltration rate and hydraulic conductivity are similar, but distinct! ")
+        st.warning(
+            "Infiltration rate and hydraulic conductivity are similar, but distinct! "
+        )
 
     elif option == "Green & Ampt model":
         r"""
         ## Green & Ampt model
         """
-        
+
         img_url = "https://www.hec.usace.army.mil/confluence/hmsdocs/hmstrm/files/19695384/138249905/1/1680200741692/image-2023-3-30_11-25-41.png"
         source = "https://www.hec.usace.army.mil/confluence/hmsdocs/hmstrm/infiltration-and-runoff-volume/green-and-ampt-loss-model"
-        st.caption(rf"""
+        st.caption(
+            rf"""
             **Green and Ampt Infiltration Model** <br>
             Source: [{urlparse(source).hostname}]({source})
-            """, unsafe_allow_html=True
+            """,
+            unsafe_allow_html=True,
         )
         st.image(img_url, use_column_width=True)
 
@@ -226,9 +238,6 @@ def main():
 
         """
 
-
-
-
     elif option == "SCS Curve Number":
         r"""
         ## Soil Conservation Service Method
@@ -267,7 +276,7 @@ def main():
 
         with open("assets/tables/SCS_curve_number.html") as f:
             cn_table = f.read()
-        
+
         st.markdown(cn_table, unsafe_allow_html=True)
 
         "*****"
@@ -278,7 +287,7 @@ def main():
             USDA - Natural Resources Conservation Service <br>
             [Technical Release TR-55 (June 1986)]({source})
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
         r"""
@@ -308,7 +317,7 @@ def main():
             Global curve number maps for dry, average and wet ARC <br>
             [*Jaafar et al. (2019)*]({source})
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
         st.image(img_url, use_column_width=True)
 
@@ -320,14 +329,14 @@ def main():
             CN map for selected river basins around the world <br>
             [*Jaafar et al. (2019)*]({source})
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
         st.image(img_url, use_column_width=True)
 
     elif option == "Design runoff":
         r"""
         ## Hydrograph
-        
+
         $$
             \textsf{Total runoff} = \textsf{Base flow} + \textsf{Direct runoff}
         $$
@@ -396,7 +405,7 @@ def main():
         $$
             Q_{\textsf{Peak}} = C \, I \, A
         $$
-        
+
         |Parameter|Description|Units|Notes|
         |:--------:|:----|:----:|:----|
         |$Q_\textsf{Peak}$| Peak discharge | acre-in/hr |  |
@@ -405,15 +414,17 @@ def main():
         |$A$| Basin area | acres | It should be small (less htan 200 acres) |
 
         &nbsp;
-        
+
         """
 
         img_url = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/images/4-8.png"
         source = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/rational_method.htm"
-        st.caption(rf"""
+        st.caption(
+            rf"""
             **Rational method steps** <br>
             Source: [{urlparse(source).hostname}]({source})
-            """, unsafe_allow_html=True
+            """,
+            unsafe_allow_html=True,
         )
         st.image(img_url, use_column_width=True)
 
@@ -428,95 +439,93 @@ def main():
 
         img_url = "assets/img/Runoff_coeffs.png"
         source = "https://virginiadot.org/business/resources/LocDes/DrainageManual/chapter6.pdf"
-        st.caption(rf"""
+        st.caption(
+            rf"""
             **Runoff coefficients** <br>
             Source: [{urlparse(source).hostname}]({source})
-            """, unsafe_allow_html=True
+            """,
+            unsafe_allow_html=True,
         )
         st.image(img_url, use_column_width=True)
-        
-        
-    else: 
+
+    else:
         st.error("You should not be here!")
         r" ### 🚧 Under construction 🚧"
 
+
 def plot_hydrograph():
     from scipy.stats import beta
-    
+
     α, β = 2.0, 5.0
-    mean, var = beta.stats(α, β, moments='mv')
+    mean, var = beta.stats(α, β, moments="mv")
     x = np.linspace(beta.ppf(0.01, α, β), beta.ppf(0.999, α, β), 100)
     y = beta.pdf(x, α, β) + 0.5
 
-
-    fig,axs = plt.subplots(2,1, figsize=(8,8), gridspec_kw=dict(height_ratios=[1,10], hspace=0), sharex=False)
-
-    # Hidrograph    
-    ax = axs[1]
-    time = np.concatenate([
-        xsmol := np.linspace(0,0.2,10),
-        x + 0.2
-    ])
-
-    discharge = np.concatenate([
-        (xsmol-0.31)**2 + 0.5,
-        y
-    ])
-
-    baseflow = (time-0.31)**2 + 0.5
-    baseflow = np.where(baseflow<discharge, baseflow, discharge)
-    imax = np.argmax(discharge)
-
-    ax.plot(time, baseflow, c='k', ls="dotted")
-    ax.plot(time, discharge, lw=3, c='k')
-
-    ax.fill_between(time, discharge, baseflow, hatch="/", fc="violet", alpha=0.2)
-    
-    ax.text(0.43, 1.5, "Volume of \n direct \n surface \n runoff", 
-        fontsize=14,
-        ha='center', va='center', 
-        bbox=dict(
-            boxstyle="round4", 
-            fc="w", ec="k"
-        )
+    fig, axs = plt.subplots(
+        2,
+        1,
+        figsize=(8, 8),
+        gridspec_kw=dict(height_ratios=[1, 10], hspace=0),
+        sharex=False,
     )
 
+    # Hidrograph
+    ax = axs[1]
+    time = np.concatenate([xsmol := np.linspace(0, 0.2, 10), x + 0.2])
+
+    discharge = np.concatenate([(xsmol - 0.31) ** 2 + 0.5, y])
+
+    baseflow = (time - 0.31) ** 2 + 0.5
+    baseflow = np.where(baseflow < discharge, baseflow, discharge)
+    imax = np.argmax(discharge)
+
+    ax.plot(time, baseflow, c="k", ls="dotted")
+    ax.plot(time, discharge, lw=3, c="k")
+
+    ax.fill_between(time, discharge, baseflow, hatch="/", fc="violet", alpha=0.2)
+
+    ax.text(
+        0.43,
+        1.5,
+        "Volume of \n direct \n surface \n runoff",
+        fontsize=14,
+        ha="center",
+        va="center",
+        bbox=dict(boxstyle="round4", fc="w", ec="k"),
+    )
 
     ## Annotations
     ax.text(0.18, 1.5, "Rising limb", rotation=75)
     ax.text(0.65, 1.5, "Recession", rotation=-55)
 
     ax.text(
-        0.65, 0.60, 
-        "Base flow", 
+        0.65,
+        0.60,
+        "Base flow",
         rotation=10,
         bbox=dict(
-            boxstyle="round4", 
-            fc="w", ec="k", ls="dotted",
-        )
+            boxstyle="round4",
+            fc="w",
+            ec="k",
+            ls="dotted",
+        ),
     )
-
 
     ax.annotate(
-        "Peak", 
-        (time[imax], discharge.max()), 
-        (0.6, 3.0), 
+        "Peak",
+        (time[imax], discharge.max()),
+        (0.6, 3.0),
         fontsize=16,
         # bbox=dict(boxstyle="round4", fc="w"),
-        arrowprops=dict(
-            arrowstyle="-|>",
-            connectionstyle="arc3,rad=0.2", 
-            fc="w"
-        )
+        arrowprops=dict(arrowstyle="-|>", connectionstyle="arc3,rad=0.2", fc="w"),
     )
-    
 
     ax.set_xlabel("Time [hr]", fontsize=14)
     ax.set_ylabel("Discharge [m³/s]", fontsize=14)
-    
+
     ax.set_xlim(0, 1.0)
     ax.set_ylim(0, 3.5)
-    
+
     ax.yaxis.set_ticklabels([])
     ax.xaxis.set_ticklabels([])
 
@@ -530,60 +539,59 @@ def plot_hydrograph():
     time_rain = [0.01, 0.06, 0.11, 0.16, 0.21]
     rain = [1.5, 2.7, 4.0, 2.1, 0.7]
 
-    ax.bar(time_rain, rain, 0.048, align='edge', clip_on=False)
+    ax.bar(time_rain, rain, 0.048, align="edge", clip_on=False)
 
     ax.spines.bottom.set_visible(False)
     ax.spines.right.set_visible(False)
     ax.spines.left.set_edgecolor("purple")
 
     ax.set_ylabel("Rainfall [in]")
-    
+
     ax.yaxis.set_ticklabels([])
     ax.xaxis.set_ticklabels([])
     ax.xaxis.set_ticks([])
-    
+
     ax.set_ylim(2.0, 0)
     ax.set_xlim(0, 1.0)
 
     return fig
 
+
 @st.cache_data
 def plot_curve_number():
     curve_numbers = np.arange(100, 19, -10)
-    rainfall = np.linspace(0,12,128)
+    rainfall = np.linspace(0, 12, 128)
     from matplotlib.ticker import MaxNLocator
-    fig,ax = plt.subplots(figsize=[8,6])
+
+    fig, ax = plt.subplots(figsize=[8, 6])
 
     ax.set_prop_cycle(
-        plt.cycler(
-            "color", 
-            plt.cm.cividis(
-                np.linspace(0,1,len(curve_numbers))
-            )
-        )
-    )    
+        plt.cycler("color", plt.cm.cividis(np.linspace(0, 1, len(curve_numbers))))
+    )
 
     for cn in curve_numbers:
-        storage_deficit = 1000./cn - 10
+        storage_deficit = 1000.0 / cn - 10
         initial_abstraction = 0.2 * storage_deficit
         runoff = np.where(
             rainfall >= initial_abstraction,
-            np.power(rainfall - initial_abstraction, 2) / (rainfall - initial_abstraction + storage_deficit),
-            0
+            np.power(rainfall - initial_abstraction, 2)
+            / (rainfall - initial_abstraction + storage_deficit),
+            0,
         )
         ax.plot(rainfall, runoff, label=f"{cn}", lw=2)
 
     ax.legend(title="Curve Number", loc="center left", bbox_to_anchor=(1.0, 0.5))
-    
+
     ax.yaxis.set_major_locator(MaxNLocator(4))
-    ax.set_ylim(0,8)
-    ax.set_xlim(0,12)
-    ax.set_aspect('equal')
+    ax.set_ylim(0, 8)
+    ax.set_xlim(0, 12)
+    ax.set_aspect("equal")
     ax.grid(True, alpha=0.5)
     ax.set_ylabel("Runoff \t $R$ [in]", fontsize=14)
     ax.set_xlabel("Rainfall \t $P$ [in]", fontsize=14)
 
     return fig
+
 
 if __name__ == "__main__":
     main()

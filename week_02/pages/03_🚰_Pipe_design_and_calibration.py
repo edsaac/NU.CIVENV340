@@ -2,11 +2,11 @@ import streamlit as st
 import numpy as np
 import pickle
 
-def main():
 
-    with open("assets/page_config.pkl", 'rb') as f:
+def main():
+    with open("assets/page_config.pkl", "rb") as f:
         st.session_state.page_config = pickle.load(f)
-    
+
     st.set_page_config(**st.session_state.page_config)
 
     with open("assets/style.css") as f:
@@ -16,7 +16,7 @@ def main():
     "****"
 
     ############################
-    
+
     r"""
     ## Solving an implicit equation
     
@@ -61,100 +61,115 @@ def main():
     ## 2️⃣ Define a function with the equation
     """
     with st.echo():
-        def swamme_jain(
-                relative_roughness:float, 
-                reynolds_number:float
-            ):
 
-            fcalc = 0.25 / np.power(np.log10(relative_roughness/3.7 + 5.74/np.power(reynolds_number, 0.9)), 2)
+        def swamme_jain(relative_roughness: float, reynolds_number: float):
+            fcalc = 0.25 / np.power(
+                np.log10(
+                    relative_roughness / 3.7 + 5.74 / np.power(reynolds_number, 0.9)
+                ),
+                2,
+            )
             return fcalc
 
         def energy_balance(
-                diameter:float,     # [ft]
-                discharge:float,    # [ft³/s]
-                length:float,       # [ft]
-                roughness:float,    # [ft]
-                pressure_drop:float # [psi]
-                ):
-
+            diameter: float,  # [ft]
+            discharge: float,  # [ft³/s]
+            length: float,  # [ft]
+            roughness: float,  # [ft]
+            pressure_drop: float,  # [psi]
+        ):
             # Constants
-            g = 32.2                    # ft/s²
-            ν = 1.08e-5                 # ft²/s
-            γ = 62.3                    # lb/ft³
+            g = 32.2  # ft/s²
+            ν = 1.08e-5  # ft²/s
+            γ = 62.3  # lb/ft³
 
             # Convert pressure to head
-            pressure_drop_head = pressure_drop * (12**2) / γ  
-            
-            area = np.pi/4.0 * np.power(diameter, 2)
-            velocity = discharge/area
-            
+            pressure_drop_head = pressure_drop * (12**2) / γ
+
+            area = np.pi / 4.0 * np.power(diameter, 2)
+            velocity = discharge / area
+
             # Friction factor calculation
-            rel_rough = roughness/diameter
+            rel_rough = roughness / diameter
             reynolds = velocity * diameter / ν
             f = swamme_jain(rel_rough, reynolds)
-            
+
             # Energy loss
-            hL = f * (length/diameter) * np.power(velocity,2)/(2*g)
-            
+            hL = f * (length / diameter) * np.power(velocity, 2) / (2 * g)
+
             return hL - pressure_drop_head
 
     r"""
     ****
     ## 3️⃣ Call `scipy.optimize.root`
     """
-    
+
     st.components.v1.iframe(
-        "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html#scipy-optimize-root", 
-        height=500, width=500, scrolling=True)
+        "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html#scipy-optimize-root",
+        height=500,
+        width=500,
+        scrolling=True,
+    )
 
     "*****"
 
     cols = st.columns(2)
     with cols[0]:
-        length = st.number_input("Pipe length -- $L$ [ft]", 0.0, 5000.0, 2500.0, 1.0, format="%.0f")
-        discharge = st.number_input("Discharge -- $Q$ [ft³/s]", 0.0, 50.0, 21.5, 0.1, format="%.1f",  key="cw_Re")
-        roughness = st.number_input("Roughness height -- $e$ [ft]", 1e-5, 0.15, 5e-5, format="%.6f")
-        pressure_drop = st.number_input("Pressure drop -- $\Delta p$ [psi]", 0.1, 100.0, 40.0, 0.1, format="%.1f")
-        initial_guess = st.number_input("Initial guess for $D$", 0.01, 10.0, 1.0, format="%.2f")
-        method = st.selectbox("Root finding method:", ['hybr', 'lm'] )
+        length = st.number_input(
+            "Pipe length -- $L$ [ft]", 0.0, 5000.0, 2500.0, 1.0, format="%.0f"
+        )
+        discharge = st.number_input(
+            "Discharge -- $Q$ [ft³/s]", 0.0, 50.0, 21.5, 0.1, format="%.1f", key="cw_Re"
+        )
+        roughness = st.number_input(
+            "Roughness height -- $e$ [ft]", 1e-5, 0.15, 5e-5, format="%.6f"
+        )
+        pressure_drop = st.number_input(
+            "Pressure drop -- $\Delta p$ [psi]", 0.1, 100.0, 40.0, 0.1, format="%.1f"
+        )
+        initial_guess = st.number_input(
+            "Initial guess for $D$", 0.01, 10.0, 1.0, format="%.2f"
+        )
+        method = st.selectbox("Root finding method:", ["hybr", "lm"])
     with cols[1]:
-        
         "&nbsp;"
 
         with st.echo():
-            
             from scipy.optimize import root
-            
+
             diameter_design = root(
-                energy_balance,     
-                x0 = initial_guess,
-                args = (
-                    discharge,
-                    length,
-                    roughness,
-                    pressure_drop
-                ),
-                method = method
+                energy_balance,
+                x0=initial_guess,
+                args=(discharge, length, roughness, pressure_drop),
+                method=method,
             )
-            
+
     r"""
     ****
     ## 🏁 Print final results
     """
     cols = st.columns(2)
 
-    with cols[0]: 
-        st.metric("*Initial guess* D", f"{initial_guess:.3f} ft = {initial_guess*12:.2f} in")
-        
-    with cols[1]: 
+    with cols[0]:
+        st.metric(
+            "*Initial guess* D", f"{initial_guess:.3f} ft = {initial_guess*12:.2f} in"
+        )
+
+    with cols[1]:
         if diameter_design.success:
-            st.metric("*Solution*", f"{diameter_design.x[0]:.3f} ft = {diameter_design.x[0]*12:.2f} in")
+            st.metric(
+                "*Solution*",
+                f"{diameter_design.x[0]:.3f} ft = {diameter_design.x[0]*12:.2f} in",
+            )
         else:
-            st.error(r"""
+            st.error(
+                r"""
             Something went wrong... 
             try changing the initial guess for $f$ or the root-finding method.
-            """, icon="🧪")
-    
+            """,
+                icon="🧪",
+            )
+
     r"""    
     ****
     ## 🚰 Pick from a catalogue
@@ -163,13 +178,19 @@ def main():
     st.caption("Source: [:link:](https://www.commercial-industrial-supply.com/)")
     cols = st.columns(2)
     with cols[0]:
-        st.image("https://www.commercial-industrial-supply.com/wordpress/wp-content/uploads/2020/11/sch40-pvc-piping-dim-chart.jpg", use_column_width=True)
+        st.image(
+            "https://www.commercial-industrial-supply.com/wordpress/wp-content/uploads/2020/11/sch40-pvc-piping-dim-chart.jpg",
+            use_column_width=True,
+        )
 
     with cols[1]:
-        st.image("https://www.commercial-industrial-supply.com/wordpress/wp-content/uploads/2020/11/sch80-pvc-piping-dim-chart.jpg", use_column_width=True)
+        st.image(
+            "https://www.commercial-industrial-supply.com/wordpress/wp-content/uploads/2020/11/sch80-pvc-piping-dim-chart.jpg",
+            use_column_width=True,
+        )
 
     # "For example, [charlottepipe.com](https://www.charlottepipe.com/Documents/PL_Tech_Man/Charlotte_Plastics_Tech_Manual.pdf)!"
-    
+
     # html = r"""
     # <div>
     #     <object data="https://www.charlottepipe.com/Documents/PL_Tech_Man/Charlotte_Plastics_Tech_Manual.pdf" type="application/pdf" width="100%" height="800">
@@ -218,10 +239,10 @@ if __name__ == "__main__":
 #         "e(m)" : "{:.2E}",
 #         "e/D" : "{:.2E}",
 #         "Re" : "{:.0f}",
-#         "f" : "{:.4f}", 
+#         "f" : "{:.4f}",
 #         "2KQ (s/m²)" : "{:.1f}"
 #         }, precision=2
-#     ), 
+#     ),
 # use_container_width=True)
 
 # with st.expander("Math"):
@@ -237,7 +258,7 @@ if __name__ == "__main__":
 #         =
 #         {F_q_ltx}
 
-#     """  
+#     """
 
 #     invjacobian = np.linalg.inv(jacobian)
 #     invjacobian_ltx = a2l.to_ltx(invjacobian, frmt='{:.2f}', print_out=False)
@@ -249,11 +270,11 @@ if __name__ == "__main__":
 #     $$
 #         \Delta Q
 #         =
-#         {invjacobian_ltx} 
+#         {invjacobian_ltx}
 #         {F_q_ltx}
 #         =
 #         {deltaQ_ltx}
-#     """  
+#     """
 
 # def my_network(Q):
 #     Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q10 = Q
@@ -264,6 +285,5 @@ if __name__ == "__main__":
 #     F4 = Q4 - Q6 - Q7 - 0.10
 #     F5 = Q5 + Q6 - Q8
 #     F6 = Q3 - Q9
-#     F7 = Q9 + Q7 - Q10 
+#     F7 = Q9 + Q7 - Q10
 #     F8 = Q1
-
