@@ -270,8 +270,18 @@ def main():
         
         st.markdown(cn_table, unsafe_allow_html=True)
 
+        "*****"
+        source = "https://directives.sc.egov.usda.gov/22162.wba"
+        st.caption(
+            rf"""
+            Source: Urban Hydrology for Small Watersheds <br>
+            USDA - Natural Resources Conservation Service <br>
+            [Technical Release TR-55 (June 1986)]({source})
+            """,
+            unsafe_allow_html=True
+        )
+
         r"""
-        *****
         ### Factors to consider in determining CN
 
         - Hydrologic soil groups (HSG)
@@ -289,15 +299,30 @@ def main():
         - Impervious areas conectedness 
         """
 
-        source = "https://directives.sc.egov.usda.gov/22162.wba"
+        "****"
+        img_url = "https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41597-019-0155-x/MediaObjects/41597_2019_155_Fig2_HTML.png"
+        source = "https://www.nature.com/articles/s41597-019-0155-x"
         st.caption(
             rf"""
-            Source: Urban Hydrology for Small Watersheds <br>
-            USDA - Natural Resources Conservation Service <br>
-            [Technical Release TR-55 (June 1986)]({source})
+            Source: GCN250, new global gridded curve numbers for hydrologic modeling and design <br>
+            Global curve number maps for dry, average and wet ARC <br>
+            [*Jaafar et al. (2019)*]({source})
             """,
             unsafe_allow_html=True
         )
+        st.image(img_url, use_column_width=True)
+
+        img_url = "https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41597-019-0155-x/MediaObjects/41597_2019_155_Fig3_HTML.png"
+        source = "https://www.nature.com/articles/s41597-019-0155-x"
+        st.caption(
+            rf"""
+            Source: GCN250, new global gridded curve numbers for hydrologic modeling and design <br>
+            CN map for selected river basins around the world <br>
+            [*Jaafar et al. (2019)*]({source})
+            """,
+            unsafe_allow_html=True
+        )
+        st.image(img_url, use_column_width=True)
 
     elif option == "Design runoff":
         r"""
