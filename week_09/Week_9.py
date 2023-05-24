@@ -270,6 +270,35 @@ def main():
         
         st.markdown(cn_table, unsafe_allow_html=True)
 
+        r"""
+        *****
+        ### Factors to consider in determining CN
+
+        - Hydrologic soil groups (HSG)
+            - A, B, C or D
+            - According to the minimum infiltration rate obtained from bare soil after prolonged wetting
+        - Cover type
+            - Vegetation, bare soil or impervious
+        - Treatment
+            - Management of cultivated areas
+        - Hydrologic condition
+            - Effects of cover type on infiltration and runoff
+            - Estimated from density of vegetation and residue cover
+        - Antecedent runoff condition (ARC)
+            - Attempts to account for CN variation from storm to storm
+        - Impervious areas conectedness 
+        """
+
+        source = "https://directives.sc.egov.usda.gov/22162.wba"
+        st.caption(
+            rf"""
+            Source: Urban Hydrology for Small Watersheds <br>
+            USDA - Natural Resources Conservation Service <br>
+            [Technical Release TR-55 (June 1986)]({source})
+            """,
+            unsafe_allow_html=True
+        )
+
     elif option == "Design runoff":
         r"""
         ## Hydrograph
