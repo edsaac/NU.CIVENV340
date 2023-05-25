@@ -120,7 +120,7 @@ def main():
             \tau: \textsf{ Time between ocurrences of } X>x_T
         $$
 
-        There exists a probability distribution of \tau that must have
+        There exists a probability distribution of $\tau$ that must have
         an associated expected value.
 
         $$
