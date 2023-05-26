@@ -20,9 +20,9 @@ def main():
     with st.sidebar:
         lottie = """
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        <lottie-player src="https://assets4.lottiefiles.com/private_files/lf30_nep75hmm.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 100px;"  loop  autoplay></lottie-player>
+        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_Wy80jjKz4n.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 250px;"  loop  autoplay></lottie-player>
         """
-        st.components.v1.html(lottie, width=200, height=100)
+        st.components.v1.html(lottie, width=200, height=250)
 
         "### Select a topic:"
         option = st.radio(

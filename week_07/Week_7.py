@@ -389,7 +389,7 @@ def main():
             )
 
     elif option == "Unlined channel design":
-        "## Unlined channels"
+        "## Unlined channels"   
         r"""
         The principal consideration is that the channel is not eroded under the design
         flow conditions. 
