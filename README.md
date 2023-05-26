@@ -11,7 +11,7 @@
 - Week 4: [cee340-wk4.streamlit.app](https://cee340-wk4.streamlit.app/)
 - Week 5: [cee340-wk5.streamlit.app](https://cee340-wk5.streamlit.app/)
 - Week 6: [cee340-wk6.streamlit.app](https://cee340-wk6.streamlit.app/)
-- Week 7:
-- Week 8:
-- Week 9:
-- Week 10:
+- Week 7: [cee340-wk7.streamlit.app](https://cee340-wk7.streamlit.app/)
+- Week 8: [cee340-wk8.streamlit.app](https://cee340-wk8.streamlit.app/)
+- Week 9: [cee340-wk9.streamlit.app](https://cee340-wk9.streamlit.app/)
+- Week 10: [cee340-wk10.streamlit.app](https://cee340-wk10.streamlit.app/)
