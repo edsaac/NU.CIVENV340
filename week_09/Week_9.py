@@ -343,31 +343,108 @@ def main():
         """
         st.pyplot(plot_hydrograph(), use_container_width=True)
 
+        st.info(
+            """
+            Some definitions:
+            - **TRH**: Total runoff hydrograph
+            - **DRH**: Direct runoff hydrograph
+                - The volume of direct surface runoff is equal to the excess rainfall
+                times the area of the catchment.
+                - That is, assuming rainfall has a uniform spatial distribution. 
+            - **BF**: Base flow
+            """
+        )
+
+        r"""
+        **********
+        ## Unit hydrograph
+
+        It is the conceptual direct runoff hydrograph (DRH) resulting form a rainfall *excess* of
+        unit depth and a given duration.
+        
+        $$
+            \textsf{UH}_{\Delta D}: \textsf{Unit Hydrogram}_{\textsf{Duration of rainfall excess}}
+        $$
+
+        A $\textsf{UH}$ can be constructed from rainfall and discharge measurements, if there
+        is available data for rainfall events of the duration of interest and the intensity was
+        constant over that period of time. 
+        """
+
+        _, col, _ = st.columns(3)
+        with col:
+            st.warning(
+                r"""
+                Assuming:
+                - Linearity
+                - Superposition
+                """
+            )
+
+        r"""
+        ### Synthetic unit hydrograph (SCS Method)
+
+        - **Time to peak:** Elapsed time between the start of the effective rainfall and
+        the peak discharge
+
+        $$
+            T_p = \dfrac{\Delta D}{2} + T_L
+        $$
+
+        $$
+            \Delta D = 0.133 T_c
+        $$
+
+        $$
+            T_L = 0.6 T_c
+        $$
+        
+        |Parameter|Description|Units|
+        |:--------:|:----|:----:|
+        |$T_p$| Time to peak | hr |
+        |$\Delta D$| Duration of the **effective rainfall** | hr |
+        |$T_L$| Lag time | hr |
+        |$T_c$| Time of concentration | hr |
+
+        &nbsp;
+
+        $$
+            q_p = \dfrac{K_p A}{T_p}
+        $$
+
+        |Parameter|Description|Units|
+        |:--------:|:----|:----:|
+        |$q_p$| Peak discharge | cfs/in |
+        |$A$| Drainage area | mi² |
+        |$K_p = 484$| An empirical constant | hehe |
+
+        """
+
     elif option == "Time of concentration":
         r"""
-        ## Time of concentration $T$
+        ## Time of concentration $T_c$
 
         > *Time it takes runoff to reach the design point from the most hydrologically remote point in the watershed*
 
         $$
         \begin{array}{rl}
-            T =& \left(\substack{\textsf{Overland} \\ \textsf{flow}}\right)_t 
+            T_c =& \left(\substack{\textsf{Overland} \\ \textsf{flow}}\right)_t 
               + \left(\substack{\textsf{Shallow} \\ \textsf{flow}}\right)_t 
               + \left(\substack{\textsf{Open-channel} \\ \textsf{flow}}\right)_t  \\
             \\
-            T =& T_{t_1} + T_{t_2} + T_{t_3}
+            T_c =& T_{c_1} + T_{c_2} + T_{c_3}
         \end{array}
         $$
 
         ****
         ### Overland flow
         $$
-            T_{t_1} = \dfrac{0.007\left( nL \right)^{0.8}}{P_2^{0.5} S^{0.4}}
+            T_{c_1} = \dfrac{0.007\left( nL \right)^{0.8}}{P_2^{0.5} S^{0.4}}
         $$
         
         |Parameter|Description|Units|
         |:--------:|:----|:----:|
-        |$T_{t_1}$| Overland flow travel time | hr |
+        |$T_{c_1}$| Overland flow travel time | hr |
         |$L$| Flow length | ft |
         |$P_2$| 2-year, 24-hr rainfall | in |
         |$n$| Manning's coefficient | - |
@@ -397,43 +474,70 @@ def main():
         |$S_e$| Energy grade line slope | - |
         |$n$| Manning's coefficient | - |
 
+        ******
+
+        ### SCS empirical equation
+
+        $$
+            T_c = \dfrac{2.586L^{0.8} \left[ \dfrac{S}{25.4} + 1 \right]^{0.7}}{1140 \sqrt{Y}}
+        $$
+        |Parameter|Description|Units|
+        |:--------:|:----|:----:|
+        |$T_c$| Time of concentration| hr |
+        |$L$| Length of the longest flow path in the watershed| ft |
+        |$S$| Soil-moisture deficit at the time runoff begins $\dag$| in |
+        |$Y$| Average watershed slope| percentage |
+        |$\mathrm{CN}$| Curve Number| - |
+
+        $$
+            ^\dag \quad S = \dfrac{1000 - 10\mathrm{CN}}{\mathrm{CN}}
+        $$
+        
         """
     elif option == "Rational method":
         r"""
         ## Rational method
-
-        $$
-            Q_{\textsf{Peak}} = C \, I \, A
-        $$
-
-        |Parameter|Description|Units|Notes|
-        |:--------:|:----|:----:|:----|
-        |$Q_\textsf{Peak}$| Peak discharge | acre-in/hr |  |
-        |$C$| Runoff coefficient | - | Measure of land *imperviousness* |
-        |$I$| Average rainfall intensity | in/hr | Obtained from an IDF curve |
-        |$A$| Basin area | acres | It should be small (less htan 200 acres) |
-
-        &nbsp;
-
         """
+        cols = st.columns([2, 1])
 
-        img_url = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/images/4-8.png"
-        source = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/rational_method.htm"
-        st.caption(
-            rf"""
-            **Rational method steps** <br>
-            Source: [{urlparse(source).hostname}]({source})
-            """,
-            unsafe_allow_html=True,
-        )
-        st.image(img_url, use_column_width=True)
+        with cols[0]:
+            r"""
+            $$
+                Q_{\textsf{Peak}} = C \, I \, A
+            $$
+
+            |Parameter|Description|Units|Notes|
+            |:--------:|:----|:----:|:----|
+            |$Q_\textsf{Peak}$| Peak discharge | acre-in/hr |  |
+            |$C$| Runoff coefficient | - | Measure of land *imperviousness* |
+            |$I$| Average rainfall intensity | in/hr | Obtained from an IDF curve |
+            |$A$| Basin area | acres | It should be small (less than 200 acres) |
+
+            &nbsp;
+
+            """
+
+        with cols[1]:
+            img_url = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/images/4-8.png"
+            source = (
+                "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/rational_method.htm"
+            )
+            st.caption(
+                rf"""
+                **Rational method steps** <br>
+                Source: [{urlparse(source).hostname}]({source})
+                """,
+                unsafe_allow_html=True,
+            )
+            st.image(img_url, use_column_width=True)
 
         r"""
+        ******
         #### Rainfall intensity
         It is the average precipitation rate for a given duration
         and frequency. The duration is usually related to the time of concentration.
         
-        #### Runoff coeffcients
+        #### Runoff coefficients
         Depends on the land use and type of soil.
         """
 
@@ -447,6 +551,12 @@ def main():
             unsafe_allow_html=True,
         )
         st.image(img_url, use_column_width=True)
+
+        st.warning(
+            r"""
+                $200 \textsf{ acres} \approx 80 \textsf{ ha} \approx 151 \textsf{ football fields}$     
+             """
+        )
 
     else:
         st.error("You should not be here!")
