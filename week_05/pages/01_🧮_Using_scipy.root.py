@@ -76,10 +76,10 @@ def main():
     cols = st.columns(2)
     with cols[0]:
         bottom_width = st.slider(
-            "Bottom width -- $b$", 0.5, 15.0, 5.0, 0.1, format="%.1f"
+            "Bottom width -- $b$", 0.5, 50.0, 5.0, 0.1, format="%.1f"
         )
         side_slope = st.slider("Side slope -- $m$", 0.0, 10.0, 2.0, 0.1, format="%.1f")
-        flow_rate = st.slider("Flow rate -- $Q$", 1.0, 100.0, 20.0, 0.1, format="%.1f")
+        flow_rate = st.slider("Flow rate -- $Q$", 1.0, 500.0, 20.0, 0.1, format="%.1f")
         method = st.selectbox("Root finding method:", ["hybr", "lm"])
         initial_guess = st.number_input(
             r"Initial guess -- $y_{c, \textsf{ guess}}$", 0.0, 100.0, 1.0
