@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Saavedra Cifuentes
+    given-names: Edwin Y.
+    orcid: https://orcid.org/0000-0003-1242-4815
+title: "CIV-ENV 340: Hydraulics and hydrology - Supporting material"
+abstract: Supporting material for the class Hydraulics and Hydrology
+version: 2023.07.1
+date-released: 2023-07-23
