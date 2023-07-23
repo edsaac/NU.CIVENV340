@@ -3,6 +3,8 @@
 - Northwestern University 
 - Spring/2023
 
+[![DOI](https://zenodo.org/badge/526700230.svg)](https://zenodo.org/badge/latestdoi/526700230)
+
 ## ✏️ Supporting class material 
 
 |Week|Link|
