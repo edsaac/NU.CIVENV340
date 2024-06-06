@@ -343,17 +343,28 @@ def main():
         """
         st.pyplot(plot_hydrograph(), use_container_width=True)
 
-        st.info(
-            """
-            Some definitions:
-            - **TRH**: Total runoff hydrograph
-            - **DRH**: Direct runoff hydrograph
-                - The volume of direct surface runoff is equal to the excess rainfall
-                times the area of the catchment.
-                - That is, assuming rainfall has a uniform spatial distribution. 
-            - **BF**: Base flow
-            """
-        )
+        cols = st.columns([1,2])
+
+        with cols[0]:
+            st.info(
+                """
+                Check this example from 
+                [usgs.gov](https://www.usgs.gov/special-topics/water-science-school/science/base-flow-rivers)
+                """
+            )
+
+        with cols[1]:
+            st.info(
+                """
+                Some definitions:
+                - **TRH**: Total runoff hydrograph
+                - **DRH**: Direct runoff hydrograph
+                    - The volume of direct surface runoff is equal to the excess rainfall
+                    times the area of the catchment.
+                    - That is, assuming rainfall has a uniform spatial distribution. 
+                - **BF**: Base flow
+                """
+            )
 
         r"""
         **********

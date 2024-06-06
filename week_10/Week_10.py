@@ -1,7 +1,11 @@
 import streamlit as st
 import pickle
 from urllib.parse import urlparse
-
+from scipy.stats import chi2
+import numpy as np
+import matplotlib.pyplot as plt
+from dataretrieval import nwis
+from datetime import timedelta
 
 def main():
     with open("assets/page_config.pkl", "rb") as f:
@@ -20,14 +24,18 @@ def main():
     with st.sidebar:
         lottie = """
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        <lottie-player src="https://assets4.lottiefiles.com/private_files/lf30_nep75hmm.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 100px;"  loop  autoplay></lottie-player>
+        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_Wy80jjKz4n.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 250px;"  loop  autoplay></lottie-player>
         """
-        st.components.v1.html(lottie, width=200, height=100)
+        st.components.v1.html(lottie, width=200, height=250)
 
         "### Select a topic:"
         option = st.radio(
             "Select a topic:",
-            ["Expected value", "Return period", "Hydrological risk"],
+            ["Expected value", 
+             "Probability distributions",
+             "Goodness of fit",
+             "Return period", 
+             "Hydrological risk"],
             label_visibility="collapsed",
         )
 
@@ -111,6 +119,169 @@ def main():
         $$
         """
         )
+    
+    elif option == "Probability distributions":
+
+        r"""
+        ## Probability distribution functions (pdf)
+
+        A pdf $f(x)$ describes the possible outcomes of a random process, if it satisfies 
+        the Kolmogorov axioms
+
+        - Probability is non-negative
+        - No probability exceeds 1.0 
+        - The cumulative probability is 1.0
+
+        ### 🎲 Normal distribution
+        
+        $$
+            f(x) = \dfrac{1}{\sigma\sqrt{2\pi}} \exp{\left( -\dfrac{(x - \mu)^2}{2\sigma^2} \right)}
+        $$
+
+        | Parameter | Symbol   | Units  |
+        |:---------|:--------:|:------------------:|
+        |Outcome value   | $x$   | Same of process $X$ | 
+        |Mean   | $\mu$   | Same of $x$ |
+        |Standard deviation | $\sigma$ | Same of $x$ |
+        |Variance | $\sigma^2$ | Same of $x^2$ |
+        
+        &nbsp;
+
+        The probability that the value of an event lies between $x_1$ and $x_2$ is:
+
+        $$
+            P[x_1 \leq X \leq x_2] = \int_{x_1}^{x_2}f(x)dx
+        $$
+        """
+
+        st.warning(r"""
+        
+        For a probability density function, the probability that the event takes a value equal to something is zero.
+        $$
+            P[X = x_1] = 0
+        $$
+        """)
+
+        r"""
+        ### 🎲 Log-normal distribution
+        
+        Sometimes, the logatithm of the hydrologic random variables are more likely to follow a normal distribution.
+
+        $$
+            f(x) = \dfrac{1}{x\sigma\sqrt{2\pi}} \exp{\left( -\dfrac{(\log{x} - \mu)^2}{2\sigma^2} \right)}
+        $$
+
+        ### 🎲 Gumbel distribution
+
+        Also known as **Type-I generalized extreme value distribution**. 
+
+        $$
+            f(x) = y \left( \exp{\left( -y(x-u) - \exp{\left( -y(x-u) \right)} \right)} \right)
+        $$
+
+        With:
+
+        - $y = {\pi}/({\sigma \sqrt{6}})$
+        - $u = \mu - 0.45\sigma$
+        &nbsp;
+
+        ### 🎲 Log-Pearson Type III distribution
+
+        $$
+            f(x) = \dfrac{\nu^b (\log{x} - r)^{b-1} \exp{\left( -\nu(\log{x} - r) \right)}}{x\Gamma(b)}
+        $$
+
+        With:
+        
+        - $b = 4/G_l^2$
+        - $\nu = \sigma/\sqrt{b}$
+        - $r = \mu - \sigma\sqrt{b}$
+        - $\Gamma$ is the [Gamma function](https://en.wikipedia.org/wiki/Gamma_function).
+
+        """
+        
+        st.info("""How many parameters does my pdf have?""")
+
+        r"""
+        ***********
+
+        ## Cumulative distribution function (CDF)
+
+        The probability that the random variable takes a value less or equal than a certain 
+        value is given by:
+
+        $$
+            P[X \leq x_2] = \int_{-\infty}^{x_2}f(x)dx 
+        $$
+        
+        The CDF is a function that represents that same probability: 
+
+        $$
+            F(x) = \int_{-\infty}^{x} f(u)du
+        $$
+
+        In hydrology, we are more interested in the complement to the CFD, i.e., the **exceedence probability**
+
+        $$
+            p(x) = 1.0 - F(x)
+        $$
+        """
+
+    elif option == "Goodness of fit":
+        r"""
+        ## Goodness of fit
+
+        How well does the data fit a given probability distribution? 
+
+        1. Calculate the statistic $\chi^2$
+        $$
+            \chi^2 = \sum_{i=1}^{k} \dfrac{(O_i - E_i)^2}{E_i}
+        $$
+
+        2. Determine the degrees of freedom ($\mathsf{df}$)
+        $$
+            \mathsf{df} = k - \mathsf{params} - 1
+        $$
+         
+        3. Chose a **significance level** ($\alpha$) for the test. $\alpha$ represents the probability that a rejected test actually corresponded to a 
+        satisfactory distribution. This is refered to as a [type I error](https://en.wikipedia.org/wiki/Type_I_and_type_II_errors#Type_I_error), 
+        or false positive. 
+
+        4. Calculate the critical value for $\chi^2_\alpha$ from the $\chi^2$ probability 
+        distribution
+
+        5. The distribution is accepted if the **$\chi^2$ test** succeeds  
+        $$
+            \chi^2 < \chi^2_\alpha
+        $$
+        """
+
+        r"""
+        ****
+        Calculating $\chi^2_{\alpha}$:
+        
+        """
+
+        cols = st.columns(2)
+
+        with cols[0]:
+            degree_freedom = st.number_input(r"$\mathsf{df}$", 1, 1000, 50, 1)
+        with cols[1]:
+            signif_alpha = st.number_input(r"$\alpha$", 0.0, 1.0, 0.10, 0.01)
+        
+        chi2_value = chi2.ppf(1.0 - signif_alpha, degree_freedom)
+
+        fr"""
+        $$
+            \chi^2_{{\alpha = {signif_alpha} }} = {chi2_value:.1f}
+        $$
+        """
+
+        st.warning(r"""
+            For a $\chi^2$ goodness of fit test, observations are assumed to be **independent**
+            of each other. 
+        """)
+
 
     elif option == "Return period":
         r"""
@@ -174,10 +345,119 @@ def main():
         )
         st.image(img_url, use_column_width=True)
 
+        r"""
+        ******
+        **Example**
+
+        Consider the peak streamflow from USGS 03339000 VERMILION RIVER NEAR DANVILLE, IL.
+        What is the return period of a streamflow of 20000 ft³/s?
+
+        """
+        
+        with st.echo():
+            peaks, metadata = nwis.get_discharge_peaks("03339000")
+        
+        peaks["greater?"] = np.greater(peaks['peak_va'], 20_000)
+
+        st.dataframe(peaks[['peak_va', 'greater?']], use_container_width=True, height=250)
+
+        fig, ax = plt.subplots()
+        ax.bar(peaks.index, peaks['peak_va'], width=timedelta(365))
+        ax.set_xlabel("Year")
+        ax.set_ylabel("Peak instantaneous discharge [ft³/s]")
+        ax.set_title("USGS 03339000 VERMILION RIVER NEAR DANVILLE, IL")
+        st.pyplot(fig)
+
+
     else:
-        st.error("You should not be here!")
-        r" ### 🚧 Under construction 🚧"
+        r"""
+        ## Estimated Limiting Value (ELV)
+
+        Defined as *"the largest magnitude possible for a hydrologic event at a given location,
+        based on the best available hydrologic information"*.
+
+        - **PMP**: [Probable maximum precipitation](https://www.nationalacademies.org/our-work/modernizing-probable-maximum-precipitation-estimation)
+        - **PMF**: Probable maximum flood
+
+        *****
+        ## Hydrologic risk of failure $\bar{R}$
+
+        $\bar{R}$ represents the probability that an event $X > x_T$
+        occurs at least once in a period of $n$ years
+
+        $$
+            \bar{R} = 1 - \left(1 - P(X \geq x_T) \right)^n = 1 - \left(1 - \dfrac{1}{T} \right)^n
+        $$
+
+        | Parameter | Symbol   | Units  |
+        |:---------|:--------:|:------------------:|
+        |Hydrologic risk of failure   | $R$   | - | 
+        |Expected life of the structure | $n$   | years | 
+        |Return period | $T$   | years | 
+        
+        """
 
 
+        risk_value = st.number_input(r"$\bar{R}$", 0.0, 1.0, 0.60, 0.05, format="%.2f")
+        
+        design_life = np.geomspace(1, 1000, 50)
+        return_period = np.geomspace(1, 1000, 50)
+        nn,tt = np.meshgrid(design_life, return_period)
+        risk = 1.0 - np.power(1.0 - 1.0/tt, nn)
+        fig, ax = plt.subplots()
+        # levels = np.arange(0.05, 1.00, 0.10)
+        levels = [risk_value]
+        cs = ax.contour(nn, tt, risk, levels=levels, colors="k", label=r"$\bar{R}$")
+        img = ax.pcolormesh(nn, tt, risk, vmin=0.00, vmax=1.00, alpha=0.5, cmap="jet")
+        plt.colorbar(img, label=r"$\bar{R}$", shrink=0.5)
+        ax.clabel(cs, levels=levels, inline=False, colors='w', fontsize=16, fmt="$\\bar{R}$ = %.2f")
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        ax.grid(which='both', visible=True, lw=1, alpha=0.2, c='k')
+        ax.set_xlabel(r"Design life $n$ [years]")
+        ax.set_ylabel(r"Return period $T$ [years]")
+        ax.set_title(r"Hydrological risk $\bar{R}$")
+        st.pyplot(fig)
+    
+        st.info(
+            r"""
+            *Example:*
+
+            A culvert has an expected life of 10 years. The acceptable risk of at least one event
+            exceeding the culvert capacity during its desing life is 10%. What design period should be used?
+            
+            $$
+                \bar{R} = 1 - \left( 1 - \dfrac{1}{T} \right)^n
+            $$
+
+            Find $T$ such that $\bar{R} = 0.10$
+
+            """
+        )
+
+        r"""
+        ## Safety factor and safety margin
+
+        $$
+            \mathsf{SF} = \dfrac{C}{L}
+        $$
+        
+        | Parameter | Symbol   | Units  |
+        |:---------|:--------:|:------------------:|
+        |Safety factor   | $\mathsf{SF}$   | - | 
+        |Actual capacity adopted in the project | $C$   | - | 
+        |Hydrologic design value | $L$   | - | 
+
+        $$
+            \mathsf{SM} = C - L
+        $$
+        
+        | Parameter | Symbol   | Units  |
+        |:---------|:--------:|:------------------:|
+        |Safety margin   | $\mathsf{SM}$   | - | 
+        |Actual capacity adopted in the project | $C$   | - | 
+        |Hydrologic design value | $L$   | - | 
+
+        """
 if __name__ == "__main__":
     main()
