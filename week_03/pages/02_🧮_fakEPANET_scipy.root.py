@@ -1,4 +1,6 @@
 import streamlit as st
+from streamlit.components.v1 import html, iframe
+
 import numpy as np
 import pandas as pd
 import json, pickle
@@ -198,7 +200,7 @@ def main():
         ## 5️⃣ Call [`scipy.optimize.root`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html)
         """
 
-        st.components.v1.iframe(
+        iframe(
             "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html",
             height=500,
             width=500,
@@ -309,7 +311,7 @@ def build_graph(gv_network):
         fig_gv.export_html(f.name, overwrite=True)
         html_fig = f.read()
 
-    st.components.v1.html(html_fig, height=520, width=700, scrolling=True)
+    html(html_fig, height=520, width=700, scrolling=True)
 
     return None
 

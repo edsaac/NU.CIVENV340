@@ -1,4 +1,6 @@
 import streamlit as st
+from streamlit.components.v1 import html, iframe
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -26,7 +28,7 @@ def main():
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
         <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_ziet9v0c.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 200px;"  loop  autoplay></lottie-player>
         """
-        st.components.v1.html(lottie, width=200, height=200)
+        html(lottie, width=200, height=200)
 
         "### Select a topic:"
         option = st.radio(
@@ -186,7 +188,7 @@ def main():
         ### Euler characteristic for plane graphs:
         """
         with st.expander("🌐 From Wikipedia:"):
-            st.components.v1.iframe(
+            iframe(
                 "https:/en.m.wikipedia.org/wiki/Planar_graph#Euler's_formula",
                 scrolling=True,
                 height=400,
@@ -247,7 +249,7 @@ def main():
         """
 
         with st.expander("🌐 From Wikipedia"):
-            st.components.v1.iframe(
+            iframe(
                 "https://mathworld.wolfram.com/Jacobian.html",
                 width=600,
                 height=500,
@@ -441,7 +443,7 @@ def main():
 
         with st.expander("**Hardy-Cross Method**"):
             url = "https://en.m.wikipedia.org/wiki/Hardy_Cross_method"
-            st.components.v1.iframe(url, height=500, width=500, scrolling=True)
+            iframe(url, height=500, width=500, scrolling=True)
 
         with st.expander("**Linear theory method**"):
             _, col, _ = st.columns([1, 3, 1])
