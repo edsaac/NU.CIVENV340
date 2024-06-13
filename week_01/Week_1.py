@@ -36,7 +36,7 @@ def main():
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
         <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_w9GTXN.json"  background="transparent"  speed="1"  style="width: 200px; height: 100px;"  loop  autoplay></lottie-player>
         """
-        st.components.v1.html(lottie, width=200, height=100)
+        st.html(lottie)
 
         "## Week 1"
         "### Select a topic:"

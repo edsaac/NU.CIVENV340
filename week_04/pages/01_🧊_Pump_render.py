@@ -1,9 +1,7 @@
 import streamlit as st
 from stpyvista import stpyvista
-import matplotlib.pyplot as plt
 import pyvista as pv
-import pickle, json
-import numpy as np
+import pickle
 from pathlib import Path
 
 

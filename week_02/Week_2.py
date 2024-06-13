@@ -60,7 +60,7 @@ def main():
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
         <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_9e8rwhfi.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 200px;"  loop  autoplay></lottie-player>
         """
-        st.components.v1.html(lottie, width=200, height=200)
+        st.html(lottie)
 
         "### Select a topic:"
         option = st.radio(
@@ -360,7 +360,7 @@ def main():
                     use_column_width=True,
                 )
                 st.caption(
-                    f"*Photo of a man with a cap posing near pipes* [🛸 pexels.com](https://www.pexels.com/photo/photo-of-a-man-with-a-cap-posing-near-pipes-5752926/)"
+                    "*Photo of a man with a cap posing near pipes* [🛸 pexels.com](https://www.pexels.com/photo/photo-of-a-man-with-a-cap-posing-near-pipes-5752926/)"
                 )
 
             with cols[1]:
@@ -374,7 +374,7 @@ def main():
                     use_column_width=True,
                 )
                 st.caption(
-                    f"*Woman posing among pipes* [🛸 pexels.com](https://www.pexels.com/photo/woman-posing-among-pipes-5589898/)"
+                    "*Woman posing among pipes* [🛸 pexels.com](https://www.pexels.com/photo/woman-posing-among-pipes-5589898/)"
                 )
 
     elif option == "Empirical relationships":

@@ -3,11 +3,10 @@ from streamlit.components.v1 import html, iframe
 
 import numpy as np
 import pandas as pd
-import json, pickle
+import json
+import pickle
 import gravis as gv
 from tempfile import NamedTemporaryFile
-import matplotlib.pyplot as plt
-import networkx as nx
 
 
 def main():
@@ -47,9 +46,9 @@ def main():
         nodes, edges = gv_network["graph"]["nodes"], gv_network["graph"]["edges"]
 
     for edge in gv_network["graph"]["edges"]:
-        l = edge["metadata"]["length"]
-        d = edge["metadata"]["diameter"]
-        e = edge["metadata"]["roughness"]
+        length = edge["metadata"]["length"]
+        diameter = edge["metadata"]["diameter"]
+        roughness = edge["metadata"]["roughness"]
 
     for node in gv_network["graph"]["nodes"].values():
         x = node["metadata"]["x"]

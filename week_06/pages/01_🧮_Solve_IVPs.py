@@ -1,4 +1,6 @@
 import streamlit as st
+from streamlit.components.v1 import iframe
+
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
@@ -182,7 +184,7 @@ def main():
     ## 5️⃣ Calculate solution with `scipy.solve_ivp`
     """
 
-    st.components.v1.iframe(
+    iframe(
         "https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html#scipy-integrate-solve-ivp",
         height=500,
         width=500,

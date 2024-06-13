@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 import pickle
+from streamlit.components.v1 import iframe
 
 
 def main():
@@ -104,7 +105,7 @@ def main():
     ## 3️⃣ Call `scipy.optimize.root`
     """
 
-    st.components.v1.iframe(
+    iframe(
         "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html#scipy-optimize-root",
         height=500,
         width=500,
@@ -197,7 +198,7 @@ def main():
     #     </object>
     # </div>
     # """
-    # st.components.v1.html(html, height=800, scrolling=True)
+    # html(html, height=800, scrolling=True)
 
 
 if __name__ == "__main__":

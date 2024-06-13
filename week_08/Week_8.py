@@ -1,10 +1,7 @@
 import streamlit as st
 import pickle
 import requests
-from PIL import Image
-from io import BytesIO
 from urllib.parse import urlparse
-import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -41,7 +38,7 @@ def main():
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
         <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_x4j4bs6z.json"  background="transparent"  speed="1.9"  style="width: 200px; height: 200px;"  loop  autoplay></lottie-player>
         """
-        st.components.v1.html(lottie, width=200, height=200)
+        st.html(lottie, width=200, height=200)
 
         "### Select a topic:"
         option = st.radio(
@@ -679,7 +676,7 @@ def open_page(url):
             window.open('{url}', '_blank').focus();
         </script>
     """
-    st.components.v1.html(open_script)
+    st.html(open_script)
 
 
 @st.cache_data

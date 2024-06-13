@@ -40,7 +40,7 @@ def main():
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
         <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_cmzv38mj.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 200px;"  loop  autoplay></lottie-player>
         """
-        st.components.v1.html(lottie, width=200, height=200)
+        st.html(lottie)
 
         "### Select a topic:"
         option = st.radio(
@@ -678,7 +678,7 @@ def main():
 
 
 def draw_profiles(which: str):
-    from matplotlib.patches import Rectangle, Polygon, Circle
+    from matplotlib.patches import Polygon
 
     So = -1 / 10.0  # 1 + x*S0
     x0, x1, x2 = 1, 3, 8

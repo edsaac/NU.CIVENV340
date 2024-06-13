@@ -8,12 +8,11 @@ import plotly.graph_objects as go
 import numpy as np
 
 from collections import namedtuple
+from urllib.parse import urlparse
 
 Side = namedtuple("Side", ["x", "y"])
 Point = namedtuple("Point", ["x", "y"])
 
-from pathlib import Path
-from urllib.parse import urlparse
 
 
 def main():
@@ -47,7 +46,7 @@ def main():
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
         <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_ntrhqntu.json"  background="transparent"  speed="1.5"  style="width: 260px; height: 250px;"  loop  autoplay></lottie-player>
         """
-        st.components.v1.html(lottie, width=250, height=250)
+        st.html(lottie)
 
         "### Select a topic:"
         option = st.radio(
@@ -1898,7 +1897,7 @@ def draw_hydraulic_jump():
     ax.text(
         energy_line.x[-2] + 0.2,
         energy_line.y[2:4].mean(),
-        rf"$h_L$",
+        r"$h_L$",
         ha="left",
         va="center",
         fontdict=dict(color="darkslategray", size=12),

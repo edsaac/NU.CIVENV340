@@ -1,9 +1,11 @@
-import requests
 import streamlit as st
+from streamlit.components.v1 import iframe
+
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, Circle
 import plotly.graph_objects as go
-import pickle, json
+import pickle
+import json
 import numpy as np
 
 from collections import namedtuple
@@ -42,7 +44,7 @@ def main():
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
         <lottie-player src="https://assets7.lottiefiles.com/packages/lf20_tuzu65Bu6N.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 150px;"  loop  autoplay></lottie-player>
         """
-        st.components.v1.html(lottie, width=200, height=150)
+        st.html(lottie)
 
         "### Select a topic:"
         option = st.radio(
@@ -502,7 +504,7 @@ def main():
             </object>
         </div>
         """
-        st.components.v1.html(html, height=800, scrolling=True)
+        st.html(html, height=800, scrolling=True)
 
     elif option == "Cavitation":
         r"""
@@ -624,7 +626,7 @@ def main():
 
     elif option == "Pumps in series/parallel":
         url = "https://engineeringlibrary.org/reference/centrifugal-pumps-fluid-flow-doe-handbook"
-        st.components.v1.iframe(url, height=800, scrolling=True)
+        iframe(url, height=800, scrolling=True)
 
         "*******"
 

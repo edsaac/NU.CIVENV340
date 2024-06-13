@@ -24,7 +24,7 @@ def main():
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
         <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_wvlrz62s.json"  background="transparent"  speed="3.0"  style="width: 200px; height: 200px;"  loop  autoplay></lottie-player>
         """
-        st.components.v1.html(lottie, width=200, height=200)
+        st.html(lottie, width=200, height=200)
 
         "### Select a topic:"
         option = st.radio(

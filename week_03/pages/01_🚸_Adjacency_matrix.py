@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
 import networkx as nx
-import json, pickle
+import json
+import pickle
+from streamlit.components.v1 import iframe
 
 build_graph = st.session_state.build_graph
 
@@ -26,7 +28,7 @@ def main():
     ## [:link:]({url}) Adjacency matrix
     &nbsp;
     """
-    st.components.v1.iframe(url, width=600, height=700, scrolling=True)
+    iframe(url, width=600, height=700, scrolling=True)
 
     ########
     r"""

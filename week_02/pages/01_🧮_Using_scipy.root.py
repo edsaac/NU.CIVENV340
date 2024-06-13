@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit.components.v1 import iframe
 import numpy as np
 import pickle
 
@@ -51,7 +52,7 @@ def main():
     """
 
     url = "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html#scipy-optimize-root"
-    st.components.v1.iframe(url, height=500, width=500, scrolling=True)
+    iframe(url, height=500, width=500, scrolling=True)
     "*****"
 
     cols = st.columns(2)
@@ -109,11 +110,11 @@ def main():
     """
 
     url = "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fsolve.html#scipy.optimize.fsolve"
-    st.components.v1.iframe(url, height=500, width=500, scrolling=True)
+    iframe(url, height=500, width=500, scrolling=True)
 
     with st.expander("About the algorithm"):
         url = "https://www.math.utah.edu/software/minpack/minpack/hybrd.html"
-        st.components.v1.iframe(url, height=500, width=550, scrolling=True)
+        iframe(url, height=500, width=550, scrolling=True)
 
 
 if __name__ == "__main__":

@@ -6,7 +6,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 import networkx as nx
-import json, pickle
+import json
+import pickle
 
 
 def main():

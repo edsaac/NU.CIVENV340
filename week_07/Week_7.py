@@ -1,4 +1,6 @@
 import streamlit as st
+from streamlit.components.v1 import iframe
+
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
@@ -24,7 +26,7 @@ def main():
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
         <lottie-player src="https://assets3.lottiefiles.com/packages/lf20_c3vfwjj1.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 100px;"  loop  autoplay></lottie-player>
         """
-        st.components.v1.html(lottie, width=200, height=100)
+        st.html(lottie, width=200, height=100)
 
         "### Select a topic:"
         option = st.radio(
@@ -883,7 +885,7 @@ def main():
         with st.expander("📡 **USGS data example**:"):
             url = "https://waterdata.usgs.gov/monitoring-location/04079000/#parameterCode=00065&period=P30D"
             source = "https://waterdata.usgs.gov/monitoring-location/04079000/#parameterCode=00065&period=P30D"
-            st.components.v1.iframe(url, height=600, width=800, scrolling=True)
+            iframe(url, height=600, width=800, scrolling=True)
             st.caption(
                 f"Source: [{urlparse(source).hostname}]({source})",
                 unsafe_allow_html=True,
@@ -963,9 +965,9 @@ def wetted_perimeter_v_side_slope_plot():
     m = np.linspace(0, 3, 50)
 
     b = 2 * y * (-m + np.sqrt(1 + np.power(m, 2)))
-    A = (b + m * y) * y
+    # A = (b + m * y) * y
     Pw = b + 2 * y * np.sqrt(1 + m**2)
-    Rh = A / Pw
+    # Rh = A / Pw
 
     fig, ax = plt.subplots()
     ax.plot(m, Pw, c="seagreen", lw=5)

@@ -284,7 +284,7 @@ def open_page(url):
             window.open('{url}', '_blank').focus();
         </script>
     """
-    st.components.v1.html(open_script)
+    st.html(open_script)
 
 
 if __name__ == "__main__":

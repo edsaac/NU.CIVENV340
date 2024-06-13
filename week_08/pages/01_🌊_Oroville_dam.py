@@ -1,8 +1,5 @@
 import streamlit as st
 import pickle
-import requests
-from PIL import Image
-from io import BytesIO
 from urllib.parse import urlparse
 
 
@@ -33,7 +30,7 @@ def main():
     ### Crisis
     """
 
-    st.components.v1.html(
+    st.html(
         r""" <iframe src="https://commons.wikimedia.org/wiki/File:Lake_Oroville_Spillways_February_12,_2017.webm?embedplayer=yes" width="1024" height="576" frameborder="0" ></iframe>""",
         height=600,
         width=1080,
@@ -96,7 +93,7 @@ def main():
         img = "https://upload.wikimedia.org/wikipedia/commons/9/92/Lake_Oroville_events_timeline.jpg"
 
         st.markdown(
-            rf"""
+            r"""
             Lake Oroville Spillway Incident: Timeline of major events February 4-25
             Source
             """
@@ -118,7 +115,7 @@ def main():
         source = "https://www.fema.gov"
 
         st.caption(
-            rf"""
+            r"""
             **National Dam Safety day**<br>
             """
             + f"Source: [{urlparse(source).hostname}]({source})",
@@ -132,7 +129,7 @@ def main():
         source = "https://nid.sec.usace.army.mil/"
 
         st.caption(
-            rf"""
+            r"""
             **National Inventory of Dams: more than 90.000 dams nation-wide**<br>
             """
             + f"Source: [{urlparse(source).hostname}]({source})",
