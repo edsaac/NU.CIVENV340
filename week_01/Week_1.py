@@ -3,9 +3,23 @@ import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
 import pickle
+from typing import Literal
+
+from NU_CIVENV340.hydraulics_book import sidebar_common
+
+TOC = Literal[
+    "Systems of units",
+    "Water properties",
+    "Fluid classification",
+    "Pressure and head",
+    "Mass & energy",
+    "Problem types",
+]
 
 
-def main():
+def page_week_01(
+    option: TOC,
+):
     with open("assets/page_config.pkl", "rb") as f:
         st.session_state.page_config = pickle.load(f)
 
@@ -28,110 +42,58 @@ def main():
 
     #####################################################################
 
-    st.title("CIV-ENV 340: Hydraulics and hydrology")
-    "****"
-
-    with st.sidebar:
-        lottie = """
-        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_w9GTXN.json"  background="transparent"  speed="1"  style="width: 200px; height: 100px;"  loop  autoplay></lottie-player>
-        """
-        st.html(lottie)
-
-        "## Week 1"
-        "### Select a topic:"
-        option = st.radio(
-            "Select a topic:",
-            [
-                "System of units",
-                "Water properties",
-                "Fluid classification",
-                "Pressure and head",
-                "Mass & energy",
-                "Problem types",
-            ],
-            label_visibility="collapsed",
-        )
-
-        "***"
-        st.image(
-            "https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/syndetics.com/index.php?client=primo&isbn=9780134292380/sc.jpg"
-        )
-
-        r"""
-        #### Class textbook:
-        [🌐](https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9980502032702441) *Houghtalen, Akan & Hwang* (2017). **Fundamentals of hydraulic engineering systems** 5th ed.,
-        Pearson Education Inc., Boston.
-        """
-
-        "*****"
-        with st.expander("🧷 Recommended exercises:"):
-            r"""
-            - Units: 1.3.4
-            - Viscosity measurement: 1.4.10
-            - Dam stability: 2.5.2 + What is uplift and how does it affect dam stability?
-            """
-
-        cols = st.columns(2)
-        with cols[0]:
-            r"""
-            [![Github Repo](https://img.shields.io/static/v1?label=&message=Repository&color=black&logo=github)](https://github.com/edsaac/NU.CIVENV340)
-            """
-        with cols[1]:
-            r"""[![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
+    sidebar_common()
 
     ####################################################################
 
-    if option == "System of units":
+    if option == "Systems of units":
         tabs = st.tabs(["**Normal conditions**", "**Standard conditions**"])
 
         with tabs[0]:
-            r"""
+            st.markdown(R"""
 
-            | Parameter           | Symbol | Units       | SI                                | BG                                     |
-            |:--------------------|:------:|:-----------:|:---------------------------------:|:--------------------------------------:|
-            |Temperature          | $T$    | Temperature | $20.2 \, \degree\textrm{C}$       | $68.4 \, \degree\textrm{F}$            |
-            |Atmospheric pressure | $p_{\rm atm}$    | Force/Area  | $1.014 \times 10^{5} \, \textrm{Pa}$ | $14.7 \, \textrm{lb}/\textrm{in}^2$ |
-            |Atmospheric pressure | $p_{\rm atm}/\gamma$ | Lenght  | $10.3 \, \textrm{m H}_2\textrm{O}$   | $33.8 \, \textrm{ft H}_2\textrm{O}$ |
-            |Gravitational acceleration| $g$ | Lenght/Time²  | $9.81 \, \textrm{m}/\textrm{s}^2$| $32.2 \, \textrm{ft}/\textrm{s}^2$ |
-            """
+                | Parameter           | Symbol | Units       | SI                                | BG                                     |
+                |:--------------------|:------:|:-----------:|:---------------------------------:|:--------------------------------------:|
+                |Temperature          | $T$    | Temperature | $20.2 \, \degree\textrm{C}$       | $68.4 \, \degree\textrm{F}$            |
+                |Atmospheric pressure | $p_{\rm atm}$    | Force/Area  | $1.014 \times 10^{5} \, \textrm{Pa}$ | $14.7 \, \textrm{lb}/\textrm{in}^2$ |
+                |Atmospheric pressure | $p_{\rm atm}/\gamma$ | Lenght  | $10.3 \, \textrm{m H}_2\textrm{O}$   | $33.8 \, \textrm{ft H}_2\textrm{O}$ |
+                |Gravitational acceleration| $g$ | Lenght/Time²  | $9.81 \, \textrm{m}/\textrm{s}^2$| $32.2 \, \textrm{ft}/\textrm{s}^2$ |
 
-            "****"
+                ****
 
-            r"""
-            | Water property    | Symbol   | Units              | SI                                                 | BG                                                   |
-            |:---------         |:--------:|:------------------:|:--------------------------------------------------:|:----------------------------------------------------:|
-            |Specific weight    | $\gamma$ | Force/Lenght       | $9790                \, \textrm{N}/\textrm{m}^3$   | $62.3                \, \textrm{lb}/\textrm{ft}^3$   |
-            |Density            | $\rho$   | Mass/Volume        | $998                 \, \textrm{kg}/\textrm{m}^3$  | $1.94                \, \textrm{slug}/\textrm{ft}^3$ |
-            |Viscosity          | $\mu$    | Force · Time/Area  | $1.00 \times 10^{-3} \, \textrm{N s}/\textrm{m}^2$ | $2.09 \times 10^{-5} \, \textrm{lb s}/\textrm{ft}^2$ |
-            |Kinematic viscosity| $\nu$    | Area/Time          | $1.00 \times 10^{-6} \, \textrm{m}^2/\textrm{s}$   | $1.08 \times 10^{-5} \, \textrm{ft}^2/\textrm{s}$    |
-            |Surface tension    | $\sigma$ | Force/Lenght       | $7.13 \times 10^{-2} \, \textrm{N}/\textrm{m}$     | $4.89 \times 10^{-3} \, \textrm{lb}/\textrm{ft}^{-3}$|
-            |Vapor pressure     |   -      | Force/Area         | $2.37 \times 10^{3}  \, \textrm{N}/\textrm{m}^2$   | $3.44 \times 10^{-1} \, \textrm{lb}/\textrm{in}^2$   |
-            """
+                | Water property    | Symbol   | Units              | SI                                                 | BG                                                   |
+                |:---------         |:--------:|:------------------:|:--------------------------------------------------:|:----------------------------------------------------:|
+                |Specific weight    | $\gamma$ | Force/Lenght       | $9790                \, \textrm{N}/\textrm{m}^3$   | $62.3                \, \textrm{lb}/\textrm{ft}^3$   |
+                |Density            | $\rho$   | Mass/Volume        | $998                 \, \textrm{kg}/\textrm{m}^3$  | $1.94                \, \textrm{slug}/\textrm{ft}^3$ |
+                |Viscosity          | $\mu$    | Force · Time/Area  | $1.00 \times 10^{-3} \, \textrm{N s}/\textrm{m}^2$ | $2.09 \times 10^{-5} \, \textrm{lb s}/\textrm{ft}^2$ |
+                |Kinematic viscosity| $\nu$    | Area/Time          | $1.00 \times 10^{-6} \, \textrm{m}^2/\textrm{s}$   | $1.08 \times 10^{-5} \, \textrm{ft}^2/\textrm{s}$    |
+                |Surface tension    | $\sigma$ | Force/Lenght       | $7.13 \times 10^{-2} \, \textrm{N}/\textrm{m}$     | $4.89 \times 10^{-3} \, \textrm{lb}/\textrm{ft}^{-3}$|
+                |Vapor pressure     |   -      | Force/Area         | $2.37 \times 10^{3}  \, \textrm{N}/\textrm{m}^2$   | $3.44 \times 10^{-1} \, \textrm{lb}/\textrm{in}^2$   |
+                """
+            )
 
         with tabs[1]:
-            r"""
-            | Condition           | Symbol | Units       | SI                                | BG                                     |
-            |:--------------------|:------:|:-----------:|:---------------------------------:|:--------------------------------------:|
-            |Temperature          | $T$    | Temperature | $4 \, \degree\textrm{C}$       | $39.2 \, \degree\textrm{F}$            |
-            |Atmospheric pressure | $p_{\rm atm}$    | Force/Area  | $1.014 \times 10^{5} \, \textrm{Pa}$ | $14.7 \, \textrm{lb}/\textrm{in}^2$ |
-            |Atmospheric pressure | $p_{\rm atm}/\gamma$ | Lenght  | ❓   | ❓ |
-            |Gravitational acceleration| $g$ | Lenght/Time²  | $9.81 \, \textrm{m}/\textrm{s}^2$| $32.2 \, \textrm{ft}/\textrm{s}^2$ |
-            """
+            st.markdown(R"""
 
-            "****"
+                | Condition           | Symbol | Units       | SI                                | BG                                     |
+                |:--------------------|:------:|:-----------:|:---------------------------------:|:--------------------------------------:|
+                |Temperature          | $T$    | Temperature | $4 \, \degree\textrm{C}$       | $39.2 \, \degree\textrm{F}$            |
+                |Atmospheric pressure | $p_{\rm atm}$    | Force/Area  | $1.014 \times 10^{5} \, \textrm{Pa}$ | $14.7 \, \textrm{lb}/\textrm{in}^2$ |
+                |Atmospheric pressure | $p_{\rm atm}/\gamma$ | Lenght  | ❓   | ❓ |
+                |Gravitational acceleration| $g$ | Lenght/Time²  | $9.81 \, \textrm{m}/\textrm{s}^2$| $32.2 \, \textrm{ft}/\textrm{s}^2$ |
 
-            r"""
+                ****
 
-            | Water property    | Symbol   | Units              | SI                                                 | BG                                                   |
-            |:---------         |:--------:|:------------------:|:--------------------------------------------------:|:----------------------------------------------------:|
-            |Specific weight    | $\gamma$ | Force/Lenght       | $9810                \, \textrm{N}/\textrm{m}^3$   | $62.4                \, \textrm{lb}/\textrm{ft}^3$   |
-            |Density            | $\rho$   | Mass/Volume        | $1000                 \, \textrm{kg}/\textrm{m}^3$ | $1.94                \, \textrm{slug}/\textrm{ft}^3$ |
-            |Viscosity          | $\mu$    | Force · Time/Area  | $1.57 \times 10^{-3} \, \textrm{N s}/\textrm{m}^2$ | $3.28 \times 10^{-5} \, \textrm{lb s}/\textrm{ft}^2$ |
-            |Kinematic viscosity| $\nu$    | Area/Time          | $1.57 \times 10^{-6} \, \textrm{m}^2/\textrm{s}$   | $1.69 \times 10^{-5} \, \textrm{ft}^2/\textrm{s}$    |
-            |Surface tension    | $\sigma$ | Force/Lenght       | $7.36 \times 10^{-2} \, \textrm{N}/\textrm{m}$     | $5.04 \times 10^{-3} \, \textrm{lb}/\textrm{ft}^{-3}$|
-            |Vapor pressure     |   -      | Force/Area         | $8.21 \times 10^{2}  \, \textrm{N}/\textrm{m}^2$   | $1.19 \times 10^{-1} \, \textrm{lb}/\textrm{in}^2$   |
-            """
+                | Water property    | Symbol   | Units              | SI                                                 | BG                                                   |
+                |:---------         |:--------:|:------------------:|:--------------------------------------------------:|:----------------------------------------------------:|
+                |Specific weight    | $\gamma$ | Force/Lenght       | $9810                \, \textrm{N}/\textrm{m}^3$   | $62.4                \, \textrm{lb}/\textrm{ft}^3$   |
+                |Density            | $\rho$   | Mass/Volume        | $1000                 \, \textrm{kg}/\textrm{m}^3$ | $1.94                \, \textrm{slug}/\textrm{ft}^3$ |
+                |Viscosity          | $\mu$    | Force · Time/Area  | $1.57 \times 10^{-3} \, \textrm{N s}/\textrm{m}^2$ | $3.28 \times 10^{-5} \, \textrm{lb s}/\textrm{ft}^2$ |
+                |Kinematic viscosity| $\nu$    | Area/Time          | $1.57 \times 10^{-6} \, \textrm{m}^2/\textrm{s}$   | $1.69 \times 10^{-5} \, \textrm{ft}^2/\textrm{s}$    |
+                |Surface tension    | $\sigma$ | Force/Lenght       | $7.36 \times 10^{-2} \, \textrm{N}/\textrm{m}$     | $5.04 \times 10^{-3} \, \textrm{lb}/\textrm{ft}^{-3}$|
+                |Vapor pressure     |   -      | Force/Area         | $8.21 \times 10^{2}  \, \textrm{N}/\textrm{m}^2$   | $1.19 \times 10^{-1} \, \textrm{lb}/\textrm{in}^2$   |
+                """
+            )
 
     elif option == "Water properties":
         r"""
@@ -789,5 +751,5 @@ def gradelines_sketch():
     return fig
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__page__":
+    page_week_01()

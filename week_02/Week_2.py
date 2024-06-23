@@ -7,29 +7,20 @@ import requests
 from PIL import Image
 from io import BytesIO
 from urllib.parse import urlparse
+from typing import Literal
+
+TOC = Literal[
+    "Friction head loss",
+    "Empirical relationships",
+    "Equations summary",
+    "Accessories",
+    "Momentum and forces",
+]
 
 
-def colebook_white(
-    relative_roughness: float, reynolds_number: float, fguess: float = 0.01
+def page_week_02(
+    option: TOC,
 ):
-    fcalc = 1.0 / np.power(
-        -2.0
-        * np.log10(
-            relative_roughness / 3.7 + 2.51 / (reynolds_number * np.sqrt(fguess))
-        ),
-        2,
-    )
-    return fcalc
-
-
-def swamme_jain(relative_roughness: float, reynolds_number: float):
-    fcalc = 0.25 / np.power(
-        np.log10(relative_roughness / 3.7 + 5.74 / np.power(reynolds_number, 0.9)), 2
-    )
-    return fcalc
-
-
-def main():
     with open("assets/page_config.pkl", "rb") as f:
         st.session_state.page_config = pickle.load(f)
 
@@ -52,60 +43,7 @@ def main():
 
     #####################################################################
 
-    st.title("CIV-ENV 340: Hydraulics and hydrology")
-    "****"
-
-    with st.sidebar:
-        lottie = """
-        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_9e8rwhfi.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 200px;"  loop  autoplay></lottie-player>
-        """
-        st.html(lottie)
-
-        "### Select a topic:"
-        option = st.radio(
-            "Select a topic:",
-            [
-                "Friction head loss",
-                "Empirical relationships",
-                "Equations summary",
-                "Accessories",
-                "Momentum and forces",
-            ],
-            label_visibility="collapsed",
-        )
-
-        "***"
-        st.image(
-            "https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/syndetics.com/index.php?client=primo&isbn=9780134292380/sc.jpg"
-        )
-
-        r"""
-        #### Class textbook:
-        [🌐](https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9980502032702441) *Houghtalen, Akan & Hwang* (2017). **Fundamentals of hydraulic engineering systems** 5th ed.,
-        Pearson Education Inc., Boston.
-        
-        *****
-        """
-
-        with st.expander("🧷 Recommended exercises:"):
-            r"""
-            - Direct: 3.5.2
-            - Direct: 3.5.8
-            - Design: 3.5.12
-            - Calibration: 3.5.14
-            - 3.3.6 + Calculate the K of the elbow.
-            """
-
-        cols = st.columns(2)
-        with cols[0]:
-            r"""
-            [![Github Repo](https://img.shields.io/static/v1?label=&message=Repository&color=black&logo=github)](https://github.com/edsaac/NU.CIVENV340)
-            """
-        with cols[1]:
-            r"""[![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
-
-        "****"
+    ...
 
     ####################################################################
 
@@ -300,7 +238,9 @@ def main():
             "https://upload.wikimedia.org/wikipedia/commons/d/d9/Moody_EN.svg",
             use_column_width=True,
         )
-        st.caption("*Source* [🛸](https://commons.wikimedia.org/wiki/File:Moody_EN.svg)")
+        st.caption(
+            "*Source* [🛸](https://commons.wikimedia.org/wiki/File:Moody_EN.svg)"
+        )
 
         r"""
         ******
@@ -378,27 +318,29 @@ def main():
                 )
 
     elif option == "Empirical relationships":
-        r"""
-        ## Hazen-Williams equation
+        st.markdown(
+            R"""
+            ## Hazen-Williams equation
 
-        Used for:
-        - Turbulent water flow
-        - Circular pipes with diameter larger than 2 in
-        - Water velocity less than 10 ft/s
+            Used for:
+            - Turbulent water flow
+            - Circular pipes with diameter larger than 2 in
+            - Water velocity less than 10 ft/s
 
-        $$
-            \textsf{BG}: \quad V = 1.318 \, C_{\texttt{HW}} \, R_h^{0.63} \, S^{0.54}
-        $$
+            $$
+                \textsf{BG}: \quad V = 1.318 \, C_{\texttt{HW}} \, R_h^{0.63} \, S^{0.54}
+            $$
 
-        |Parameter|Description|Units|
-        |:---:|:---|:---:|
-        |$C_{\texttt{HW}}$| Hazen-Williams coefficient | 🤔 |
-        |$R_h$| Hydraulic radius | $ {\rm ft} $|
-        |$S = \dfrac{h_f}{L}$| HGL slope | $ - $|
+            |Parameter|Description|Units|
+            |:---:|:---|:---:|
+            |$C_{\texttt{HW}}$| Hazen-Williams coefficient | 🤔 |
+            |$R_h$| Hydraulic radius | $ {\rm ft} $|
+            |$S = \dfrac{h_f}{L}$| HGL slope | $ - $|
 
-        &nbsp;
+            &nbsp;
 
-        """
+            """
+        )
 
         st.info(
             """
@@ -725,6 +667,26 @@ def main():
         st.error("You should not be here!")
 
 
+def colebook_white(
+    relative_roughness: float, reynolds_number: float, fguess: float = 0.01
+):
+    fcalc = 1.0 / np.power(
+        -2.0
+        * np.log10(
+            relative_roughness / 3.7 + 2.51 / (reynolds_number * np.sqrt(fguess))
+        ),
+        2,
+    )
+    return fcalc
+
+
+def swamme_jain(relative_roughness: float, reynolds_number: float):
+    fcalc = 0.25 / np.power(
+        np.log10(relative_roughness / 3.7 + 5.74 / np.power(reynolds_number, 0.9)), 2
+    )
+    return fcalc
+
+
 @st.cache_data
 def get_image(url: str):
     r = requests.get(url, stream=True)
@@ -732,5 +694,5 @@ def get_image(url: str):
     return img
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__page__":
+    page_week_02()

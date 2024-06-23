@@ -1,5 +1,5 @@
 import streamlit as st
-from streamlit.components.v1 import html, iframe
+from streamlit.components.v1 import iframe
 
 import numpy as np
 import pandas as pd
@@ -8,9 +8,17 @@ from matplotlib.patches import FancyArrowPatch
 import networkx as nx
 import json
 import pickle
+from typing import Literal
+
+TOC = Literal[
+    "Pipes in series/parallel",
+    "Branched systems",
+    "Looped networks",
+    "Newton method",
+]
 
 
-def main():
+def page_week_03(option: TOC):
     with open("assets/page_config.pkl", "rb") as f:
         st.session_state.page_config = pickle.load(f)
 
@@ -22,28 +30,8 @@ def main():
     #####################################################################
 
     st.title("CIV-ENV 340: Hydraulics and hydrology")
-    "****"
 
     with st.sidebar:
-        lottie = """
-        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_ziet9v0c.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 200px;"  loop  autoplay></lottie-player>
-        """
-        html(lottie, width=200, height=200)
-
-        "### Select a topic:"
-        option = st.radio(
-            "Select a topic:",
-            [
-                "Pipes in series/parallel",
-                "Branched systems",
-                "Looped networks",
-                "Newton method",
-            ],
-            label_visibility="collapsed",
-        )
-
-        "***"
         st.image(
             "https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/syndetics.com/index.php?client=primo&isbn=9780134292380/sc.jpg"
         )
@@ -1032,5 +1020,5 @@ st.session_state.build_graph = build_graph
 #         self.K = 0.08263 * self.f * self.length / np.power(self.diameter, 5)
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__page__":
+    page_week_03()
