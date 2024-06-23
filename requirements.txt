@@ -1,11 +1,11 @@
 pip
-Pillow
-numpy
-sympy
 streamlit
-matplotlib
-pandas<2.0
+numpy
+pandas
 scipy
+sympy
+Pillow
+matplotlib
 plotly
 openpyxl
 array_to_latex
