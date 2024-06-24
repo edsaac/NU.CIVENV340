@@ -103,23 +103,23 @@ def pipe_design_and_calibration():
     cols = st.columns(2)
     with cols[0]:
         length = st.number_input(
-            "Pipe length -- $L$ [ft]", 0.0, 5000.0, 2500.0, 1.0, format="%.0f"
+            R"Pipe length -- $L$ [ft]", 0.0, 5000.0, 2500.0, 1.0, format="%.0f"
         )
 
         discharge = st.number_input(
-            "Discharge -- $Q$ [ft³/s]", 0.0, 50.0, 21.5, 0.1, format="%.1f", key="cw_Re"
+            R"Discharge -- $Q$ [ft³/s]", 0.0, 50.0, 21.5, 0.1, format="%.1f", key="cw_Re"
         )
 
         roughness = st.number_input(
-            "Roughness height -- $e$ [ft]", 1e-5, 0.15, 5e-5, format="%.6f"
+            R"Roughness height -- $e$ [ft]", 1e-5, 0.15, 5e-5, format="%.6f"
         )
 
         pressure_drop = st.number_input(
-            "Pressure drop -- $\Delta p$ [psi]", 0.1, 100.0, 40.0, 0.1, format="%.1f"
+            R"Pressure drop -- $\Delta p$ [psi]", 0.1, 100.0, 40.0, 0.1, format="%.1f"
         )
 
         initial_guess = st.number_input(
-            "Initial guess for $D$", 0.01, 10.0, 1.0, format="%.2f"
+            R"Initial guess for $D$", 0.01, 10.0, 1.0, format="%.2f"
         )
 
         method = st.selectbox("Root finding method:", ["hybr", "lm"])

@@ -602,7 +602,7 @@ def page_week_01(
 
         with cols[0]:
             st.markdown(
-                """
+                R"""
                 ### Type I:
                 Solve for pressure
                 $$
