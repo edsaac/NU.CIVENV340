@@ -7,6 +7,8 @@ import json
 import gravis as gv
 from tempfile import NamedTemporaryFile
 
+from ...common import swamme_jain
+
 
 def making_epanet():
     format_dict = {
@@ -22,7 +24,7 @@ def making_epanet():
         "2KQ": "{:.1f}",
     }
 
-    with st.sidebar:
+    with st.popover("Adjust global parameters"):
         ν = st.number_input(
             r"Kinematic viscosity -- $\nu$ [m²/s]", 1e-8, 1e-3, 1e-6, format="%.2e"
         )
@@ -31,10 +33,10 @@ def making_epanet():
         gv_network = json.load(f)
         nodes, edges = gv_network["graph"]["nodes"], gv_network["graph"]["edges"]
 
-    for edge in gv_network["graph"]["edges"]:
-        length = edge["metadata"]["length"]
-        diameter = edge["metadata"]["diameter"]
-        roughness = edge["metadata"]["roughness"]
+    # for edge in gv_network["graph"]["edges"]:
+    #     length = edge["metadata"]["length"]
+    #     diameter = edge["metadata"]["diameter"]
+    #     roughness = edge["metadata"]["roughness"]
 
     for node in gv_network["graph"]["nodes"].values():
         x = node["metadata"]["x"]
@@ -118,7 +120,7 @@ def making_epanet():
                 rf" X = {node_df.X:.2f} m<br> Y = {node_df.Y:2f} m<br><b> Demand = {node_df.Demand:.1f} m³/s</b>"
             )
 
-        build_graph(gv_network)
+        build_gravis_graph(gv_network)
 
         st.divider()
         st.header(" 3️⃣ Guess $Q$")
@@ -252,20 +254,11 @@ def making_epanet():
                     + f"<br><b> Discharge = {discharge:.3f} m³/s</b>"
                 )
 
-            build_graph(gv_network)
+            build_gravis_graph(gv_network)
 
 
-def swamme_jain(relative_roughness: float, reynolds_number: float):
-    fcalc = 0.25 / np.power(
-        np.log10(relative_roughness / 3.7 + 5.74 / np.power(reynolds_number, 0.9)), 2
-    )
-    return fcalc
 
-
-swamme_jain = np.vectorize(swamme_jain)
-
-
-def build_graph(gv_network):
+def build_gravis_graph(gv_network):
     fig_gv = gv.vis(
         gv_network,
         graph_height=400,

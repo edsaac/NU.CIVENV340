@@ -3,6 +3,9 @@ import requests
 from base64 import b64encode
 from PIL import Image
 from io import BytesIO
+import numpy as np
+import matplotlib.pyplot as plt
+import networkx as nx
 
 __all__ = [
     "sidebar_common",
@@ -12,7 +15,8 @@ __all__ = [
     "get_pdf_as_bytes",
     "get_image_as_bytes",
     "get_image_as_PIL",
-
+    "build_graph",
+    "swamme_jain"
 ]
 
 def sidebar_common():
@@ -119,3 +123,39 @@ def get_image_as_bytes(url: str):
 def get_image_as_PIL(url: str):
     bytes_img = get_image_as_bytes(url)
     return Image.open(BytesIO(bytes_img), formats=["png", "jpg"])
+
+
+def build_graph(nodes_df, edges_df):
+    nodes_xy = {
+        k: [v["x"], v["y"]]
+        for k, v in nodes_df[["x", "y"]].to_dict(orient="index").items()
+    }
+    edges_ij = edges_df[["i", "j"]].to_numpy()
+
+    G = nx.DiGraph()
+    G.add_nodes_from(nodes_xy)
+    G.add_edges_from(edges_ij)
+
+    fig, ax = plt.subplots()
+    nx.draw(
+        G,
+        nodes_xy,
+        ax=ax,
+        with_labels=True,
+        width=3,
+        edge_color="purple",
+        node_color="lightgray",
+        font_weight="bold",
+    )
+    ax.set_aspect("equal")
+
+    return G, fig
+
+def _swamme_jain(relative_roughness: float, reynolds_number: float):
+    fcalc = 0.25 / np.power(
+        np.log10(relative_roughness / 3.7 + 5.74 / np.power(reynolds_number, 0.9)), 2
+    )
+    return fcalc
+
+
+swamme_jain = np.vectorize(_swamme_jain)

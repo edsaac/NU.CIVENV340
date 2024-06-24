@@ -974,34 +974,7 @@ def write_network_equations():
 #     return matrix
 
 
-def build_graph(nodes_df, edges_df):
-    nodes_xy = {
-        k: [v["x"], v["y"]]
-        for k, v in nodes_df[["x", "y"]].to_dict(orient="index").items()
-    }
-    edges_ij = edges_df[["i", "j"]].to_numpy()
 
-    G = nx.DiGraph()
-    G.add_nodes_from(nodes_xy)
-    G.add_edges_from(edges_ij)
-
-    fig, ax = plt.subplots()
-    nx.draw(
-        G,
-        nodes_xy,
-        ax=ax,
-        with_labels=True,
-        width=3,
-        edge_color="purple",
-        node_color="lightgray",
-        font_weight="bold",
-    )
-    ax.set_aspect("equal")
-
-    return G, fig
-
-
-st.session_state.build_graph = build_graph
 
 # from dataclasses import dataclass
 # @dataclass

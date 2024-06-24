@@ -4,8 +4,7 @@ import networkx as nx
 import json
 from streamlit.components.v1 import iframe
 
-build_graph = st.session_state.build_graph
-
+from ...common import build_graph
 
 def adjacency_matrix():
 
