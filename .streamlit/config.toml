@@ -11,4 +11,4 @@ secondaryBackgroundColor="#B6ACD150"
 magicEnabled = true
 
 [client]
-toolbarMode = "developer"
+toolbarMode = "minimal"
