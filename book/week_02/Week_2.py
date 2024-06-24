@@ -2,12 +2,14 @@ import streamlit as st
 import plotly.graph_objects as go
 from itertools import cycle
 import numpy as np
-import pickle
 import requests
 from PIL import Image
 from io import BytesIO
 from urllib.parse import urlparse
 from typing import Literal
+
+from book.common import axis_format
+from .subpages import using_scipy_root, compare_f_equations, pipe_design_and_calibration
 
 TOC = Literal[
     "Friction head loss",
@@ -15,124 +17,112 @@ TOC = Literal[
     "Equations summary",
     "Accessories",
     "Momentum and forces",
+    "~Using scipy.root",
+    "~Compare f equations",
+    "~Pipe design and calibration",
 ]
 
 
 def page_week_02(
     option: TOC,
 ):
-    with open("assets/page_config.pkl", "rb") as f:
-        st.session_state.page_config = pickle.load(f)
 
-    st.set_page_config(**st.session_state.page_config)
-
-    with open("assets/style.css") as f:
-        st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
-
-    axis_format = dict(
-        title_font_size=20,
-        tickfont_size=16,
-        showline=True,
-        color="RGBA(1, 135, 73, 0.3)",
-        tickcolor="RGBA(1, 135, 73, 0.3)",
-        showgrid=True,
-        griddash="dash",
-        linewidth=1,
-        gridcolor="RGBA(1, 135, 73, 0.3)",
-    )
-
-    #####################################################################
-
-    ...
-
-    ####################################################################
+    st.title(option.replace("~", "🐍"))
 
     if option == "Friction head loss":
-        r"""
+        st.markdown(
+            R"""
 
-        $$
-            \textsf{Total head loss:} \quad h_L = \underbrace{h_f}_{\substack{\textsf{Due} \\ \textsf{friction}}} + \underbrace{\sum{h_a}}_{\substack{\textsf{Due} \\ \textsf{accesories} }}
-        $$
+            $$
+                \textsf{Total head loss:} \quad h_L = \underbrace{h_f}_{\substack{\textsf{Due} \\ \textsf{friction}}} + \underbrace{\sum{h_a}}_{\substack{\textsf{Due} \\ \textsf{accesories} }}
+            $$
 
-        ## Head loss due friction $h_f$
+            ## Head loss due friction $h_f$
 
-        **Darcy-Weisbach equation:**
+            **Darcy-Weisbach equation:**
 
-        $$
-            h_f = f \left( \dfrac{L}{D}\right) \dfrac{V^2}{2g}
-        $$
+            $$
+                h_f = f \left( \dfrac{L}{D}\right) \dfrac{V^2}{2g}
+            $$
 
-        |Parameter|Description|Units|
-        |:---:|:---|:---:|
-        |$f$| Friction factor | $ - $|
-        |$L$| Pipe length | ${\rm m}$ |
-        |$D$| Pipe diameter | ${\rm m}$|
-        |$V^2/2g$| Velocity head | ${\rm m}$|
+            |Parameter|Description|Units|
+            |:---:|:---|:---:|
+            |$f$| Friction factor | $ - $|
+            |$L$| Pipe length | ${\rm m}$ |
+            |$D$| Pipe diameter | ${\rm m}$|
+            |$V^2/2g$| Velocity head | ${\rm m}$|
 
-        &nbsp;
-        """
+            &nbsp;
+            """
+        )
 
         st.warning("Is Darcy-Weisbach equation dimensionally homogeneous?")
 
-        r"""
-        In terms of discharge: 
+        st.markdown(
+            R"""
+            In terms of discharge: 
 
-        $$
-        \begin{align*}
-            h_f &= f \left( \dfrac{L}{D} \right) \dfrac{8}{\pi^2 D^4 g} \, Q^2 \\
-                \\
-            h_f &\approx \dfrac{0.08263\,f\,L}{D^5} Q^2 \quad& \textsf{(For SI units)}
-        \end{align*}
-        $$
+            $$
+            \begin{align*}
+                h_f &= f \left( \dfrac{L}{D} \right) \dfrac{8}{\pi^2 D^4 g} \, Q^2 \\
+                    \\
+                h_f &\approx \dfrac{0.08263\,f\,L}{D^5} Q^2 \quad& \textsf{(For SI units)}
+            \end{align*}
+            $$
 
 
-        In general:
+            In general:
 
-        $$
-            h_f = KQ^m
-        $$
+            $$
+                h_f = KQ^m
+            $$
 
-        |Parameter|Description|Units|
-        |:---:|:---:|:---:|
-        |$K$| ⁉️ | ❓ |
-        |$m$| ⁉️ | ❓ |
+            |Parameter|Description|Units|
+            |:---:|:---:|:---:|
+            |$K$| ⁉️ | ❓ |
+            |$m$| ⁉️ | ❓ |
 
-        ****
-        ## Friction factor $f$
-        """
+            ****
+            ## Friction factor $f$
+            """
+        )
 
         tabs = st.tabs(["Laminar flow", "Turbulent flow"])
 
         with tabs[0]:
-            r"""
-            **Hagen-Poiseuille law:**
+            st.markdown(
+                R"""
+                **Hagen-Poiseuille law:**
 
-            $$
-                f = \dfrac{64}{R_e}
-            $$
+                $$
+                    f = \dfrac{64}{R_e}
+                $$
 
-            |Parameter|Description|Units|
-            |:---:|:---|:---:|
-            |$R_e$| Reynolds number | $ - $|
-            """
+                |Parameter|Description|Units|
+                |:---:|:---|:---:|
+                |$R_e$| Reynolds number | $ - $|
+                """
+            )
 
         with tabs[1]:
-            r"""
-            **Colebrook-White equation:**
+            st.markdown(
+                R"""
+                **Colebrook-White equation:**
 
-            $$
-                \dfrac{1}{\sqrt{f}} = -2\log\left( \dfrac{e}{3.7\,D} + \dfrac{2.51}{R_e \, \sqrt{f}} \right)
-            $$
+                $$
+                    \dfrac{1}{\sqrt{f}} = -2\log\left( \dfrac{e}{3.7\,D} + \dfrac{2.51}{R_e \, \sqrt{f}} \right)
+                $$
 
-            |Parameter|Description|Units|
-            |:---:|:---|:---:|
-            |$e$| Roughness height | $ {\rm m} $|
-            |$e/D$| Relative roughness | $ - $
-            |$D$| Pipe diameter | ${\rm m}$|
-            |$R_e$| Reynolds number | $ - $|
+                |Parameter|Description|Units|
+                |:---:|:---|:---:|
+                |$e$| Roughness height | $ {\rm m} $|
+                |$e/D$| Relative roughness | $ - $
+                |$D$| Pipe diameter | ${\rm m}$|
+                |$R_e$| Reynolds number | $ - $|
 
-            &nbsp;
-            """
+                &nbsp;
+                """
+            )
 
             with st.expander(
                 "🧮 How to solve this *implicit* equation?", expanded=False
@@ -157,10 +147,7 @@ def page_week_02(
                         key="cw_Re",
                     )
 
-                r"""
-                $$
-                    f = \left[-2\log\left( \dfrac{e}{3.7\,D} + \dfrac{2.51}{R_e \, \sqrt{f}} \right)\right]^{-2}
-                $$"""
+                st.latex(R"f = \left[-2\log\left( \dfrac{e}{3.7\,D} + \dfrac{2.51}{R_e \, \sqrt{f}} \right)\right]^{-2}")
 
                 cols = st.columns([1, 0.5, 1])
                 with cols[1]:
@@ -181,17 +168,19 @@ def page_week_02(
                         key="cw_fc",
                     )
 
-            r"""
-            &nbsp;
+            st.markdown(
+                r"""
+                &nbsp;
 
-            **Swamme-Jain equation:**
+                **Swamme-Jain equation:**
 
-            $$
-                f = \dfrac{0.25}{\left[ \log{\left( \dfrac{e}{3.7\,D} + \dfrac{5.74}{R_e^{0.9}} \right)} \right]^2}
-            $$
+                $$
+                    f = \dfrac{0.25}{\left[ \log{\left( \dfrac{e}{3.7\,D} + \dfrac{5.74}{R_e^{0.9}} \right)} \right]^2}
+                $$
 
-            &nbsp;
-            """
+                &nbsp;
+                """
+            )
 
             with st.expander("🧮 How to solve this equation?"):
                 cols = st.columns(2)
@@ -229,10 +218,7 @@ def page_week_02(
                 "How close is the Swamme-Jain equation to the implicit Colebrook-White equation?"
             )
 
-        r"""
-        ****
-        ## Moody diagram
-        """
+        st.header("Moody diagram")
 
         st.image(
             "https://upload.wikimedia.org/wikipedia/commons/d/d9/Moody_EN.svg",
@@ -242,18 +228,20 @@ def page_week_02(
             "*Source* [🛸](https://commons.wikimedia.org/wiki/File:Moody_EN.svg)"
         )
 
-        r"""
-        ******
-        ## Hydraulically smooth and rough pipes
-        
-        $$
-        \begin{align*}
-            \textsf{Hydraulically smooth:} &\quad \delta > 1.7\,e \\
-            \textsf{Hydraulically rough:}  &\quad \delta < 0.08\,e
-        \end{align*}
-        $$
-        
-        """
+        st.markdown(
+            R"""
+            ******
+            ## Hydraulically smooth and rough pipes
+            
+            $$
+            \begin{align*}
+                \textsf{Hydraulically smooth:} &\quad \delta > 1.7\,e \\
+                \textsf{Hydraulically rough:}  &\quad \delta < 0.08\,e
+            \end{align*}
+            $$
+            
+            """
+        )
 
         cols = st.columns([1, 2, 1])
         with cols[1]:
@@ -265,19 +253,20 @@ def page_week_02(
                 "*Source* [CS James (2019), Hydraulic Structures. Springer 🛸](https://link.springer.com/chapter/10.1007/978-3-030-34086-5_1)"
             )
 
-        r"""
-        |Parameter|Description|Units|Notes|
-        |:---:|:---|:---:|:---|
-        |$e$| Roughness height | $ {\rm m} $ | Same as $k$ in the image |
-        |$\delta$| Thickness of the viscous sublayer | $ {\rm m} $| $\delta =  0.37 \, D \, R_e ^{-1/5} \; \textsf{\dag}$  |
-        """
+        st.markdown(
+            R"""
+            |Parameter|Description|Units|Notes|
+            |:---:|:---|:---:|:---|
+            |$e$| Roughness height | $ {\rm m} $ | Same as $k$ in the image |
+            |$\delta$| Thickness of the viscous sublayer | $ {\rm m} $| $\delta =  0.37 \, D \, R_e ^{-1/5} \; \textsf{\dag}$  |
+            """
+        )
+
         st.caption("† For turbulent flow in a circular pipe")
         # |$u^*$| Shear velocity | $ {\rm m/s} $| $u^* = \sqrt{\dfrac{\tau_0}{\rho}}$ |
         # |$\tau_0$| Wall shear stress | $ {\rm N/m²} $| $\tau_0 = \mu \dfrac{\partial u}{\partial y}\biggm\vert_{y=0}$ |
 
-        r"""
-        ### Velocity profiles & shear stress
-        """
+        st.subheader("Velocity profiles & shear stress")
 
         st.image(
             "https://engineeringlibrary.org/static/img/References/DOE-Fundamentals-Handbook/fluid-flow/fig-5-laminar-and-turbulent-flow-velocity-profiles.webp"
@@ -350,60 +339,66 @@ def page_week_02(
         """
         )
 
-        r"""
-        ****
-        ## Manning equation
-        
-        Used for:
-        - Turbulent water flow
-        - Both free surface and pipe systems
+        st.markdown(
+            R"""
+            ****
+            ## Manning equation
+            
+            Used for:
+            - Turbulent water flow
+            - Both free surface and pipe systems
 
-        $$
-            \textsf{SI}: \quad V = \dfrac{1}{n} \, R_h^{\tfrac{2}{3}} \, S^{\tfrac{1}{2}}
-        $$
+            $$
+                \textsf{SI}: \quad V = \dfrac{1}{n} \, R_h^{\tfrac{2}{3}} \, S^{\tfrac{1}{2}}
+            $$
 
-        |Parameter|Description|Units|
-        |:---:|:---|:---:|
-        |$n$| Manning's coefficient | 🤔 |
-        |$R_h$| Hydraulic radius | $ {\rm m} $|
-        |$S = \dfrac{h_f}{L}$| HGL slope | $ - $|
+            |Parameter|Description|Units|
+            |:---:|:---|:---:|
+            |$n$| Manning's coefficient | 🤔 |
+            |$R_h$| Hydraulic radius | $ {\rm m} $|
+            |$S = \dfrac{h_f}{L}$| HGL slope | $ - $|
 
-        &nbsp;
-        """
+            &nbsp;
+            """
+        )
 
         st.info(
             """
-        - Is the Manning equation dimensionally homogeneous?
-        - What would be the equivalent Manning equation for BG units?
-        """
+            - Is the Manning equation dimensionally homogeneous?
+            - What would be the equivalent Manning equation for BG units?
+            """
         )
 
     elif option == "Equations summary":
-        r"""
+        st.markdown(
+            r"""
+            $$
+                h_f = KQ^m
+            $$
 
-        $$
-            h_f = KQ^m
-        $$
-
-        |Equation|m|K (BG System)|K (SI System) |
-        |:----|:---:|:---:|:---:|
-        |Darcy-Weisbach | $2.0$ | $\dfrac{0.0252fL}{D^5}$ | $\dfrac{0.0826fL}{D^5}$ |
-        |Hazen-Williams | $1.85$ | $\dfrac{4.73L}{D^{4.87}C^{1.85}_{\texttt{HW}}}$ | $\dfrac{10.7L}{D^{4.87}C^{1.85}_{\texttt{HW}}}$ |
-        |Manning  | $2.0$ | $\dfrac{4.64n^2L}{D^{5.33}}$ | $\dfrac{10.3n^2L}{D^{5.33}}$ |
-        """
+            |Equation|m|K (BG System)|K (SI System) |
+            |:----|:---:|:---:|:---:|
+            |Darcy-Weisbach | $2.0$ | $\dfrac{0.0252fL}{D^5}$ | $\dfrac{0.0826fL}{D^5}$ |
+            |Hazen-Williams | $1.85$ | $\dfrac{4.73L}{D^{4.87}C^{1.85}_{\texttt{HW}}}$ | $\dfrac{10.7L}{D^{4.87}C^{1.85}_{\texttt{HW}}}$ |
+            |Manning  | $2.0$ | $\dfrac{4.64n^2L}{D^{5.33}}$ | $\dfrac{10.3n^2L}{D^{5.33}}$ |
+            """
+        )
 
         st.caption("*Source:* Table 3.4 - Class textbook")
 
-        r"""
-        *****
-        ## Comparing head loss equations
-        
-        """
+        st.markdown(
+            R"""
+            *****
+            ## Comparing head loss equations
+            
+            """
+        )
 
         cols = st.columns([0.5, 2], gap="medium")
 
         with cols[0]:
-            "****"
+            st.markdown("****")
+
             f_dw = st.slider(
                 "Darcy-Weisbach -- $f$",
                 0.008,
@@ -413,6 +408,7 @@ def page_week_02(
                 key="dw_f",
                 format="%.3f",
             )
+
             c_hw = st.slider(
                 r"Hazen-Williams -- $C_{\texttt{HW}}$",
                 75,
@@ -422,6 +418,7 @@ def page_week_02(
                 key="c_hw",
                 format="%d",
             )
+
             n_man = st.slider(
                 r"Manning -- $n$",
                 0.009,
@@ -431,9 +428,11 @@ def page_week_02(
                 key="n_man",
                 format="%.3f",
             )
+
             length = st.number_input(
                 "Pipe lenght -- $L$ [m]", 1, 100, 10, key="len_pipe", format="%d"
             )
+
             diameter = st.number_input(
                 "Pipe diameter -- $D$ [mm]",
                 5.0,
@@ -514,9 +513,11 @@ def page_week_02(
             st.plotly_chart(fig, use_container_width=True)
 
     elif option == "Accessories":
-        r"""
-        ## Pipe accessories
-        """
+        st.markdown(
+            r"""
+            ## Pipe accessories
+            """
+        )
 
         accesories_img_sources = [
             "https://images.pexels.com/photos/12142829/pexels-photo-12142829.jpeg",
@@ -532,36 +533,38 @@ def page_week_02(
                 st.image(img, use_column_width=True)
                 st.caption(f"*Source* [🛸 https://www.pexels.com/]({img})")
 
-        r"""
-        ****
-        ## Head loss in accessories $\sum{h_a}$
+        st.markdown(
+            r"""
+            ****
+            ## Head loss in accessories $\sum{h_a}$
 
-        Also known as minor losses. 
+            Also known as minor losses. 
 
-        $$
-            \begin{align*}
-                h_1 + \dfrac{p_1}{\gamma} + \dfrac{V^2_1}{2g} = h_2 + \dfrac{p_2}{\gamma} + \dfrac{V^2_2}{2g} + \underbrace{h_f}_{\textsf{Friction}} + \underbrace{\sum{h_a}}_{\textsf{Accesories}}
-            \end{align*}
-        $$
+            $$
+                \begin{align*}
+                    h_1 + \dfrac{p_1}{\gamma} + \dfrac{V^2_1}{2g} = h_2 + \dfrac{p_2}{\gamma} + \dfrac{V^2_2}{2g} + \underbrace{h_f}_{\textsf{Friction}} + \underbrace{\sum{h_a}}_{\textsf{Accesories}}
+                \end{align*}
+            $$
 
-        Just as the friction losses, minor losses are proportional to the velocity head.
+            Just as the friction losses, minor losses are proportional to the velocity head.
 
-        $$
-            h_a = \underbrace{K_a}_{\substack{\textsf{Accesory} \\ \textsf{loss} \\ \textsf{coefficient}}} \, \dfrac{V^2}{2g}
-        $$
+            $$
+                h_a = \underbrace{K_a}_{\substack{\textsf{Accesory} \\ \textsf{loss} \\ \textsf{coefficient}}} \, \dfrac{V^2}{2g}
+            $$
 
 
-        The energy conservation equation can be rewritten: 
+            The energy conservation equation can be rewritten: 
 
-        $$
-            \begin{align*}
-                h_1 + \dfrac{p_1}{\gamma} + \dfrac{V^2_1}{2g} = h_2 + \dfrac{p_2}{\gamma} + \dfrac{V^2_2}{2g} + \underbrace{f\dfrac{L}{D}\dfrac{V^2}{2g}}_{\textsf{Friction}} + \underbrace{\sum{K_a \dfrac{V^2}{2g}}}_{\textsf{Accesories}}
-            \end{align*}
-        $$
+            $$
+                \begin{align*}
+                    h_1 + \dfrac{p_1}{\gamma} + \dfrac{V^2_1}{2g} = h_2 + \dfrac{p_2}{\gamma} + \dfrac{V^2_2}{2g} + \underbrace{f\dfrac{L}{D}\dfrac{V^2}{2g}}_{\textsf{Friction}} + \underbrace{\sum{K_a \dfrac{V^2}{2g}}}_{\textsf{Accesories}}
+                \end{align*}
+            $$
 
-        *****
+            *****
 
-        """
+            """
+        )
 
         accesories_img_sources = [
             "https://images.thdstatic.com/productImages/4869fac1-e9fc-46ce-84a8-42dd89c9e11c/svn/black-the-plumber-s-choice-pvc-fittings-e83846x4-c3_600.jpg",
@@ -583,10 +586,12 @@ def page_week_02(
                 st.caption(f"*Source:* [🏡]({img})")
                 st.image(img, use_column_width=True)
 
-        r"""
-        ****
-        ## Emmiters
-        """
+        st.markdown(
+            r"""
+            ****
+            ## Emmiters
+            """
+        )
 
         cols = st.columns([1, 2])
 
@@ -600,49 +605,57 @@ def page_week_02(
             )
 
         with cols[1]:
-            r"""
-            > **Extracted from [EPANET User Manual](https://epanet22.readthedocs.io/en/latest/3_network_model.html)**
-            >
-            > *Emitters are devices associated with junctions that model the flow through a nozzle or orifice that discharges to the atmosphere.*
-            > *The flow rate through the emitter varies as a function of the pressure available at the node:*
-            > $$
-            >     Q = Cp^{\alpha}
-            > $$
-            > |Parameter|Description|Units|
-            > |:----:|:---|:---:|
-            > |$Q$ | Discharge | ${\rm gpm}$ |
-            > |$p$ | Pressure  | ${\rm psi}$ |
-            > |$C$ | Emmiter coefficient | ${\rm gpm/psi}^{\alpha}$ |
-            > |$\alpha = 0.5$  | Emmiter pressure exponent | - |
-            >
-            > &nbsp;
-            >
-            > *Emitters are used to model flow through sprinkler systems and irrigation networks. They can also be used to simulate leakage in a pipe
-            > connected to the junction (if a discharge coefficient and pressure exponent for the leaking crack or joint can be estimated) or compute a fire flow at the junction
-            > (the flow available at some minimum residual pressure).*
+            st.markdown(
+                R"""
+                > **Extracted from [EPANET User Manual](https://epanet22.readthedocs.io/en/latest/3_network_model.html)**
+                >
+                > *Emitters are devices associated with junctions that model the flow through a nozzle or orifice that discharges to the atmosphere.*
+                > *The flow rate through the emitter varies as a function of the pressure available at the node:*
+                > $$
+                >     Q = Cp^{\alpha}
+                > $$
+                > |Parameter|Description|Units|
+                > |:----:|:---|:---:|
+                > |$Q$ | Discharge | ${\rm gpm}$ |
+                > |$p$ | Pressure  | ${\rm psi}$ |
+                > |$C$ | Emmiter coefficient | ${\rm gpm/psi}^{\alpha}$ |
+                > |$\alpha = 0.5$  | Emmiter pressure exponent | - |
+                >
+                > &nbsp;
+                >
+                > *Emitters are used to model flow through sprinkler systems and irrigation networks. They can also be used to simulate leakage in a pipe
+                > connected to the junction (if a discharge coefficient and pressure exponent for the leaking crack or joint can be estimated) or compute a fire flow at the junction
+                > (the flow available at some minimum residual pressure).*
+
+                """
+            )
+    
+    elif option == "Momentum and forces":
+        
+        st.markdown(
+            R"""
+            ## Momentum balance:
+
+            $$
+                \sum{\vec{F}} = \rho \, Q \, \left( \vec{V}_2 - \vec{V}_1\right)
+            $$
 
             """
-
-    elif option == "Momentum and forces":
-        r"""
-        ## Momentum balance:
-
-        $$
-            \sum{\vec{F}} = \rho \, Q \, \left( \vec{V}_2 - \vec{V}_1\right)
-        $$
-
-        """
-
+        )
+        
         cols = st.columns(2)
 
         with cols[0]:
-            "### Thrust blocks"
+            st.subheader("Thrust blocks", anchor=False)
+
             url = (
                 "https://www.meyerfire.com/uploads/1/6/0/7/16072416/97-550-v2_orig.jpg"
             )
+
             source = (
                 "https://www.meyerfire.com/blog/a-new-thrust-block-calculator-part-i"
             )
+
             st.image(get_image(url), use_column_width=True)
             st.caption(f"*Source* [🛸 {urlparse(source).hostname}]({source})")
 
@@ -652,7 +665,7 @@ def page_week_02(
             st.caption(f"*Source* [🛸 {urlparse(source).hostname}]({source})")
 
         with cols[1]:
-            "### Pipe restraints"
+            st.subheader("Pipe restraints", anchor=False)
             url = "https://kannsupply.ca/wp-content/uploads/2020/02/1300C-Pipe-Restraint-4-42-1-scaled.jpeg"
             source = "https://kannsupply.ca/kann-products/1300c-pipe-restraint-4-42-2/"
             st.image(get_image(url), use_column_width=True)
@@ -662,6 +675,15 @@ def page_week_02(
             source = "https://www.stocklib.com/media-40298637/failure-of-joint-restraint-ductile-water-pipe-600-mm-diameter.html"
             st.image(get_image(url), use_column_width=True)
             st.caption(f"*Source* [🛸 {urlparse(url).hostname}]({source})")
+
+    elif option == "~Using scipy.root":
+        using_scipy_root()
+    
+    elif option == "~Compare f equations":
+        compare_f_equations()
+
+    elif option == "~Pipe design and calibration":
+        pipe_design_and_calibration()
 
     else:
         st.error("You should not be here!")

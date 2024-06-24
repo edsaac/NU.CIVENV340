@@ -1,28 +1,14 @@
 import streamlit as st
 from stpyvista import stpyvista
+from stpyvista.utils import start_xvfb
 import pyvista as pv
-import pickle
-from pathlib import Path
 
 
-def main():
-    with open("assets/page_config.pkl", "rb") as f:
-        st.session_state.page_config = pickle.load(f)
+def pump_render():
+    st.header("Centifugal pump")
+    start_xvfb()
 
-    st.set_page_config(**st.session_state.page_config)
-
-    with open("assets/style.css") as f:
-        st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
-
-    #####################################################################
-
-    st.title("CIV-ENV 340: Hydraulics and hydrology")
-    "****"
-
-    "## Centifugal pump"
-    pv.start_xvfb()
-
-    file = Path("assets/3d/pump.STL")
+    file = "./book/assets/3d/pump.STL"
     reader = pv.STLReader(file)
     mesh = reader.read()
 
@@ -47,4 +33,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    pump_render()

@@ -1,38 +1,25 @@
 import streamlit as st
-import pickle
 import numpy as np
 from scipy.optimize import root
 import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter
 
 
-def main():
-    with open("assets/page_config.pkl", "rb") as f:
-        st.session_state.page_config = pickle.load(f)
-
-    st.set_page_config(**st.session_state.page_config)
-
-    with open("assets/style.css") as f:
-        st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
-
-    st.title("CIV-ENV 340: Hydraulics and hydrology")
-    "****"
-
-    #####################################################################
+def compare_f_equations():
 
     f_cw = cw_multidimensional()
     f_sj = sj_multidimensional()
 
     cols = st.columns(2)
     with cols[0]:
-        "#### Colebrook-White eq."
+        st.markdown("#### Colebrook-White eq.")
         st.pyplot(friction_factor_heatmap(f_cw))
 
     with cols[1]:
-        "#### Swamme-Jain eq."
+        st.markdown("#### Swamme-Jain eq.")
         st.pyplot(friction_factor_heatmap(f_sj))
 
-    "#### Difference between the two equations"
+    st.markdown("#### Difference between the two equations")
 
     cols = st.columns([1, 2, 1])
     with cols[1]:
@@ -113,11 +100,7 @@ def error_equations_heatmap():
     f_sj = sj_multidimensional()
     f_cw = cw_multidimensional()
 
-    r"""
-    $$
-        \textsf{Percent error} = \dfrac{f_{\rm SJ} - f_{\rm CW}}{f_{\rm CW}}
-    $$
-    """
+    st.latex(R"\textsf{Percent error} = \dfrac{f_{\rm SJ} - f_{\rm CW}}{f_{\rm CW}}")
 
     fig, ax = plt.subplots(figsize=(5, 6))
     im = ax.pcolormesh(Re, eD, 100 * (f_sj - f_cw) / f_cw, cmap="PiYG", vmin=-2, vmax=2)
@@ -141,4 +124,4 @@ def error_equations_heatmap():
 
 
 if __name__ == "__main__":
-    main()
+    compare_f_equations()

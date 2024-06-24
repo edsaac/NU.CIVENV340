@@ -4,5 +4,11 @@ gatherUsageStats = false
 [theme]
 base="light"
 primaryColor="#4E2A84"
-backgroundColor="#FFFFFF"
-secondaryBackgroundColor="#B6ACD1"
+backgroundColor="snow"
+secondaryBackgroundColor="#B6ACD150"
+
+[runner]
+magicEnabled = true
+
+[client]
+toolbarMode = "developer"

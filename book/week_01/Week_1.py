@@ -1,11 +1,11 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 import numpy as np
-import pickle
 from typing import Literal
 
-from NU_CIVENV340.hydraulics_book import sidebar_common
+from book.common import axis_format
 
 TOC = Literal[
     "Systems of units",
@@ -20,31 +20,6 @@ TOC = Literal[
 def page_week_01(
     option: TOC,
 ):
-    with open("assets/page_config.pkl", "rb") as f:
-        st.session_state.page_config = pickle.load(f)
-
-    st.set_page_config(**st.session_state.page_config)
-
-    with open("assets/style.css") as f:
-        st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
-
-    axis_format = dict(
-        title_font_size=20,
-        tickfont_size=16,
-        showline=True,
-        color="RGBA(1, 135, 73, 0.3)",
-        tickcolor="RGBA(1, 135, 73, 0.3)",
-        showgrid=True,
-        griddash="dash",
-        linewidth=1,
-        gridcolor="RGBA(1, 135, 73, 0.3)",
-    )
-
-    #####################################################################
-
-    sidebar_common()
-
-    ####################################################################
 
     if option == "Systems of units":
         tabs = st.tabs(["**Normal conditions**", "**Standard conditions**"])
@@ -69,8 +44,7 @@ def page_week_01(
                 |Kinematic viscosity| $\nu$    | Area/Time          | $1.00 \times 10^{-6} \, \textrm{m}^2/\textrm{s}$   | $1.08 \times 10^{-5} \, \textrm{ft}^2/\textrm{s}$    |
                 |Surface tension    | $\sigma$ | Force/Lenght       | $7.13 \times 10^{-2} \, \textrm{N}/\textrm{m}$     | $4.89 \times 10^{-3} \, \textrm{lb}/\textrm{ft}^{-3}$|
                 |Vapor pressure     |   -      | Force/Area         | $2.37 \times 10^{3}  \, \textrm{N}/\textrm{m}^2$   | $3.44 \times 10^{-1} \, \textrm{lb}/\textrm{in}^2$   |
-                """
-            )
+                """)
 
         with tabs[1]:
             st.markdown(R"""
@@ -92,15 +66,18 @@ def page_week_01(
                 |Kinematic viscosity| $\nu$    | Area/Time          | $1.57 \times 10^{-6} \, \textrm{m}^2/\textrm{s}$   | $1.69 \times 10^{-5} \, \textrm{ft}^2/\textrm{s}$    |
                 |Surface tension    | $\sigma$ | Force/Lenght       | $7.36 \times 10^{-2} \, \textrm{N}/\textrm{m}$     | $5.04 \times 10^{-3} \, \textrm{lb}/\textrm{ft}^{-3}$|
                 |Vapor pressure     |   -      | Force/Area         | $8.21 \times 10^{2}  \, \textrm{N}/\textrm{m}^2$   | $1.19 \times 10^{-1} \, \textrm{lb}/\textrm{in}^2$   |
-                """
-            )
+                """)
 
     elif option == "Water properties":
-        r"""
-        ## Density $\rho_{(T)}$
-        """
+        water_props_path = "./book/week_01/properties.xlsx"
 
-        density = pd.read_excel("week_01/properties.xlsx", sheet_name="Density_water")
+        st.markdown(
+            R"""
+            ## Density $\rho_{(T)}$
+            """
+        )
+
+        density = pd.read_excel(water_props_path, sheet_name="Density_water")
         density["Density (kg/m3)"] = density["Density (g/cm3)"] * 1.0e3
 
         fig = go.Figure(
@@ -123,14 +100,16 @@ def page_week_01(
 
         st.plotly_chart(fig, use_container_width=True)
 
-        r"""
-        ****
-        ## Dynamic Viscosity $\mu(T)$
+        st.markdown(
+            R"""
+            ****
+            ## Dynamic Viscosity $\mu(T)$
 
-        $$
-            \tau = \mu \dfrac{\partial u}{\partial y} 
-        $$
-        """
+            $$
+                \tau = \mu \dfrac{\partial u}{\partial y} 
+            $$
+            """
+        )
 
         with st.expander("🖼️ **Viscosity diagram**"):
             st.image(
@@ -139,7 +118,7 @@ def page_week_01(
             )
             st.caption("*Source* [🛸](https://en.wikipedia.org/wiki/Viscosity)")
 
-        viscosity = pd.read_excel("week_01/properties.xlsx", sheet_name="Viscosity")
+        viscosity = pd.read_excel(water_props_path, sheet_name="Viscosity")
         viscosity["Water viscosity (μ) [SI]"] = (
             viscosity["Water viscosity (μ) [SI]"] * 1e-3
         )  # Convert to N.s/m²
@@ -195,22 +174,24 @@ def page_week_01(
 
         st.info(
             """
-        - What is a `poise`? 
-        - Who was JLM Poiseuille? 🇫🇷
-        """
+            - What is a `poise`? 
+            - Who was JLM Poiseuille? 🇫🇷
+            """
         )
 
-        r"""
-        ****
-        ## Kinematic Viscosity $\nu_{(T)}$
+        st.markdown(
+            R"""
+            ****
+            ## Kinematic Viscosity $\nu_{(T)}$
 
-        $$
-            \nu = \dfrac{\mu}{\rho}
-        $$
+            $$
+                \nu = \dfrac{\mu}{\rho}
+            $$
 
-        """
+            """
+        )
 
-        viscosity = pd.read_excel("week_01/properties.xlsx", sheet_name="Viscosity")
+        viscosity = pd.read_excel(water_props_path, sheet_name="Viscosity")
         viscosity["Kinematic water viscosity (ν) [SI]"] = (
             viscosity["Kinematic water viscosity (ν) [SI]"] * 1e-6
         )  # Convert to N.s/m²
@@ -266,17 +247,19 @@ def page_week_01(
 
         st.info(
             """
-        - What is a `stokes`? 
-        - Who was GG Stoke? 🇬🇧 
-        """
+            - What is a `stokes`? 
+            - Who was GG Stoke? 🇬🇧 
+            """
         )
 
-        r"""
-        ****
-        ## Vapor pressure
-        """
+        st.markdown(
+            R"""
+            ****
+            ## Vapor pressure
+            """
+        )
 
-        vapor = pd.read_excel("week_01/properties.xlsx", sheet_name="vapor_pressure")
+        vapor = pd.read_excel(water_props_path, sheet_name="vapor_pressure")
         vapor["Vapor pressure (mH2O)"] = vapor["Vapor pressure (atm)"] * 10.3326
 
         units = st.radio("Units", ["(atm)", "(mH2O)"], horizontal=True)
@@ -321,27 +304,34 @@ def page_week_01(
         st.plotly_chart(fig, use_container_width=True)  # ?
 
     elif option == "Fluid classification":
-        r"""
-        ## Fluids
+        st.markdown(
+            """
+            ## Fluids
 
-        ### Compressible | Non-compressible
+            ### Compressible | Non-compressible
 
-        Does the fluid density change with changes on pressure?
-        """
+            Does the fluid density change with changes on pressure?
+            """
+        )
 
         with st.expander("🧮 As math:"):
-            r"""
-            $$
-                \textsf{Compressibility}: \quad \beta = \dfrac{1}{\rho} \left(\dfrac{\partial \rho}{\partial p}\right)
-            $$
+            st.markdown(
+                R"""
+                $$
+                    \textsf{Compressibility}: \quad \beta = \dfrac{1}{\rho} \left(\dfrac{\partial \rho}{\partial p}\right)
+                $$
+                """
+            )
+
+        st.markdown(
+            R"""
+            ### Newtonian | Non-newtonian
+
+            Does the fluid viscosity change with changes on the shear stress?
+
             """
+        )
 
-        r"""
-        ### Newtonian | Non-newtonian
-
-        Does the fluid viscosity change with changes on the shear stress?
-
-        """
         with st.expander("🖼️ **Non-newtonian fluids**"):
             st.image(
                 "https://upload.wikimedia.org/wikipedia/commons/8/89/Rheology_of_time_independent_fluids.svg",
@@ -351,62 +341,66 @@ def page_week_01(
                 "*Source* [🛸](https://en.wikipedia.org/wiki/Non-Newtonian_fluid)"
             )
 
-        r"""
-        *****
-        ## Flows
+        st.markdown(
+            R"""
+            *****
+            ## Flows
 
-        ### Permanent/Transient
+            ### Permanent/Transient
 
-        Does the flow change over time?
-        
+            Does the flow change over time?
+            
 
-        ### Uniform/Varied
+            ### Uniform/Varied
 
-        Does the flow change over space?
+            Does the flow change over space?
 
-        ### Turbulent/Laminar
+            ### Turbulent/Laminar
 
-        Are viscous stresses dominant over the flow inertia?
+            Are viscous stresses dominant over the flow inertia?
 
-        **Reynolds number $R_e$:**
-        $$
-            R_e = \dfrac{\textrm{Inertial forces}}{\textrm{Viscous forces}} = \dfrac{uL}{\nu}
-        $$
+            **Reynolds number $R_e$:**
+            $$
+                R_e = \dfrac{\textrm{Inertial forces}}{\textrm{Viscous forces}} = \dfrac{uL}{\nu}
+            $$
 
-        | Parameter | Symbol   | Units  |
-        |:---------|:--------:|:------------------:|
-        |Characteristic length   | $L$   | Length        | 
-        |Characteristic velocity | $u$    | Length/Time  |
-        |Kinematic viscosity | $\nu$    | Area/Time  | 
+            | Parameter | Symbol   | Units  |
+            |:---------|:--------:|:------------------:|
+            |Characteristic length   | $L$   | Length        | 
+            |Characteristic velocity | $u$    | Length/Time  |
+            |Kinematic viscosity | $\nu$    | Area/Time  | 
 
-        &nbsp;
+            &nbsp;
 
-        ### Subcritical/supercritical
+            ### Subcritical/supercritical
 
-        Are body forces dominant over the flow inertia?
+            Are body forces dominant over the flow inertia?
 
-        **Froude number $F_r$**
-        $$
-            F_r = \dfrac{\textrm{Inertial forces}}{\textrm{Body forces}} = \dfrac{u}{\sqrt{gL}}
-        $$
+            **Froude number $F_r$**
+            $$
+                F_r = \dfrac{\textrm{Inertial forces}}{\textrm{Body forces}} = \dfrac{u}{\sqrt{gL}}
+            $$
 
-        | Parameter | Symbol   | Units  |
-        |:---------|:--------:|:------------------:|
-        |Characteristic length   | $L$   | Length        | 
-        |Characteristic velocity | $u$    | Length/Time  |
-        |Gravitational acceleration | $g$    | Length/Time²  | 
+            | Parameter | Symbol   | Units  |
+            |:---------|:--------:|:------------------:|
+            |Characteristic length   | $L$   | Length        | 
+            |Characteristic velocity | $u$    | Length/Time  |
+            |Gravitational acceleration | $g$    | Length/Time²  | 
 
-        """
+            """
+        )
 
     elif option == "Pressure and head":
-        r"""
-        ## Absolute and gauge pressure
+        st.markdown(
+            R"""
+            ## Absolute and gauge pressure
 
-        $$
-            p = p_{\rm abs} - p_{\rm atm}
-        $$
+            $$
+                p = p_{\rm abs} - p_{\rm atm}
+            $$
 
-        """
+            """
+        )
 
         with st.expander("**Diagram:**"):
             st.image(
@@ -417,26 +411,28 @@ def page_week_01(
                 "*Source* [🛸](https://www.engineeringtoolbox.com/docs/documents/587/absolute_gauge_pressure.png)"
             )
 
-        r"""
-        ### Barometric formula
+        st.markdown(
+            r"""
+            ### Barometric formula
 
-        $$
-            \dfrac{p_{\rm atm}}{p_{\rm atm, 0}} \approx \exp\left( - \dfrac{ghM}{T_0 R_0} \right) 
-        $$
-        
-        &nbsp;
-        
-        |Parameter|Description|Value|
-        |:---:|:---|---:|
-        |$p_{\rm atm,0}$| Sea level standard atmospheric pressure| $101325 \, {\rm Pa}$|
-        |$h$| Elevation above sea level | ${\rm m}$|
-        |$M$| Molar mass of dry air | $0.02897 \, {\rm kg/mol}$|
-        |$T_0$| Standard temperature | $288.16 \, {\rm K}$|
-        |$R_0$| Ideal gas constant   | $8.314 \, {\rm J/mol.K}$|
-        |$g$| Grav. acceleration   | $9.81 \, {\rm m/s²}$|
-        
-        &nbsp;
-        """
+            $$
+                \dfrac{p_{\rm atm}}{p_{\rm atm, 0}} \approx \exp\left( - \dfrac{ghM}{T_0 R_0} \right) 
+            $$
+            
+            &nbsp;
+            
+            |Parameter|Description|Value|
+            |:---:|:---|---:|
+            |$p_{\rm atm,0}$| Sea level standard atmospheric pressure| $101325 \, {\rm Pa}$|
+            |$h$| Elevation above sea level | ${\rm m}$|
+            |$M$| Molar mass of dry air | $0.02897 \, {\rm kg/mol}$|
+            |$T_0$| Standard temperature | $288.16 \, {\rm K}$|
+            |$R_0$| Ideal gas constant   | $8.314 \, {\rm J/mol.K}$|
+            |$g$| Grav. acceleration   | $9.81 \, {\rm m/s²}$|
+            
+            &nbsp;
+            """
+        )
 
         st.warning("Is this equation **dimensionally homogeneous**?")
 
@@ -460,25 +456,24 @@ def page_week_01(
 
         st.plotly_chart(fig, use_container_width=True)
 
-        r"""
+        st.markdown(
+            R"""
 
-        ### Pressure and head
+            ### Pressure and head
 
-        $$
-            h = \dfrac{p}{\gamma} = \dfrac{p}{\rho g}
-        $$ 
+            $$
+                h = \dfrac{p}{\gamma} = \dfrac{p}{\rho g}
+            $$ 
 
-        """
+            *****
+            ## Hydrostatic pressure distribution
 
-        r"""
-        *****
-        ## Hydrostatic pressure distribution
+            $$
+                p = \rho g \overbrace{y}^{\textrm{Depth}}
+            $$ 
 
-        $$
-            p = \rho g \overbrace{y}^{\textrm{Depth}}
-        $$ 
-
-        """
+            """
+        )
 
         st.info(
             """
@@ -487,45 +482,50 @@ def page_week_01(
         )
 
     elif option == "Mass & energy":
-        r"""
+        st.markdown(
+            R"""
 
-        ## Flow rate and mean velocity
+            ## Flow rate and mean velocity
 
-        $$
-            Q = V\,A
-        $$
+            $$
+                Q = V\,A
+            $$
 
-        |Parameter|Description|Units|
-        |:---:|:---|---:|
-        |$Q$| Discharge (volumetric flow rate) | ${\rm m³/s}$|
-        |$V$| Mean velocity | ${\rm m/s}$|
-        |$A$| Cross-sectional area | ${\rm m²}$|
+            |Parameter|Description|Units|
+            |:---:|:---|---:|
+            |$Q$| Discharge (volumetric flow rate) | ${\rm m³/s}$|
+            |$V$| Mean velocity | ${\rm m/s}$|
+            |$A$| Cross-sectional area | ${\rm m²}$|
 
-        &nbsp;
+            &nbsp;
 
-        ## Reynolds number $R_e$
+            ## Reynolds number $R_e$
 
-        $$
-            R_e = \dfrac{uL}{\nu} = \underbrace{\dfrac{VD}{\nu}}_{\textsf{For circular pipes}} = \dfrac{4Q}{\pi D \nu}
-        $$
+            $$
+                R_e = \dfrac{uL}{\nu} = \underbrace{\dfrac{VD}{\nu}}_{\textsf{For circular pipes}} = \dfrac{4Q}{\pi D \nu}
+            $$
 
-        """
+            """
+        )
 
         with st.expander("Reynolds experiment"):
             st.video("https://www.youtube.com/watch?v=y0WRJtXvpSo")
 
-        r"""
-        ******
-        ## Mass conservation
+        st.markdown(
+            R"""
+            ******
+            ## Mass conservation
 
-        The discharge between two sections in a pipe must be the same
+            The discharge between two sections in a pipe must be the same
 
-        $$
-            Q_1 = Q_2
-        $$
-        
-        ## Energy conservation
-        """
+            $$
+                Q_1 = Q_2
+            $$
+            
+            ## Energy conservation
+            """
+        )
+
         with st.expander(
             "**Energy grade line (EGH)** and **hydraulic grade line (HGL)**",
             expanded=True,
@@ -535,100 +535,109 @@ def page_week_01(
             # st.image("https://www.pipeflow.com/public/PipeFlowExpertSoftwareHelp/desktop/PipeFlowExpertUserGuide_files/image371.jpg", use_column_width=True)
             # st.caption("*Source* [🛸](https://www.pipeflow.com/public/PipeFlowExpertSoftwareHelp/desktop/Energy_and_Hydraulic_Grade_Lines.htm)")
 
-        r"""
-        The *Bernoulli's equation* describes the energy (head) balance of an ideal flow with no energy losses between
-        two sections 
+        st.markdown(
+            R"""
+            The *Bernoulli's equation* describes the energy (head) balance of an ideal flow with no energy losses between
+            two sections 
 
-        $$
-            H_1 = H_2
-        $$
+            $$
+                H_1 = H_2
+            $$
 
-        But to account for energy losses, a head loss $h_L$ is introduced in the energy balance
+            But to account for energy losses, a head loss $h_L$ is introduced in the energy balance
 
-        $$
-            H_1 = H_2 + h_L
-        $$
+            $$
+                H_1 = H_2 + h_L
+            $$
 
-        Total energy is composed by potential, kinetic and pressure components, thus
+            Total energy is composed by potential, kinetic and pressure components, thus
 
-        $$
-            h_1 + \dfrac{p_1}{\gamma} + \dfrac{V_1^2}{2g} = h_2 + \dfrac{p_2}{\gamma} + \dfrac{V_2^2}{2g} + h_L
-        $$
-        
-        &nbsp;
+            $$
+                h_1 + \dfrac{p_1}{\gamma} + \dfrac{V_1^2}{2g} = h_2 + \dfrac{p_2}{\gamma} + \dfrac{V_2^2}{2g} + h_L
+            $$
+            
+            &nbsp;
 
-        |Parameter|Description|Units|
-        |:---:|:---|:---:|
-        |$H$| Total head | ${\rm m}$|
-        |$h$| Elevation head | ${\rm m}$|
-        |$p/\gamma$| Pressure head | ${\rm m}$|
-        |$V^2/2g$| Velocity head | ${\rm m}$|
+            |Parameter|Description|Units|
+            |:---:|:---|:---:|
+            |$H$| Total head | ${\rm m}$|
+            |$h$| Elevation head | ${\rm m}$|
+            |$p/\gamma$| Pressure head | ${\rm m}$|
+            |$V^2/2g$| Velocity head | ${\rm m}$|
 
-        &nbsp;
+            &nbsp;
 
-        For a pipe of uniform size, $V_1 = V_2$
+            For a pipe of uniform size, $V_1 = V_2$
 
-        $$
-            h_1 + \dfrac{p_1}{\gamma} = h_2 + \dfrac{p_2}{\gamma} + h_L
-        $$
+            $$
+                h_1 + \dfrac{p_1}{\gamma} = h_2 + \dfrac{p_2}{\gamma} + h_L
+            $$
 
-        """
+            """
+        )
 
     elif option == "Problem types":
-        r"""
-        ## Problem types
+        st.markdown(
+            R"""
+            ## Problem types
 
-        $$
-            h_1 + \dfrac{p_1}{\gamma} + \dfrac{V_1^2}{2g} = h_2 + \dfrac{p_2}{\gamma} + \dfrac{V_2^2}{2g} + h_L(V,D,L,e)
-        $$
+            $$
+                h_1 + \dfrac{p_1}{\gamma} + \dfrac{V_1^2}{2g} = h_2 + \dfrac{p_2}{\gamma} + \dfrac{V_2^2}{2g} + h_L(V,D,L,e)
+            $$
 
-        |Parameter|Description|Units|
-        |:---:|:---|:---:|
-        |$h$| Elevation head | ${\rm m}$|
-        |$p/\gamma$| Pressure head | ${\rm m}$|
-        |$V^2/2g$| Velocity head | ${\rm m}$|
-        |$D$| Pipe diameter | ${\rm m}$|
-        |$L$| Pipe length| ${\rm m}$|
-        |$e$| Roughness height | ${\rm m}$|
+            |Parameter|Description|Units|
+            |:---:|:---|:---:|
+            |$h$| Elevation head | ${\rm m}$|
+            |$p/\gamma$| Pressure head | ${\rm m}$|
+            |$V^2/2g$| Velocity head | ${\rm m}$|
+            |$D$| Pipe diameter | ${\rm m}$|
+            |$L$| Pipe length| ${\rm m}$|
+            |$e$| Roughness height | ${\rm m}$|
 
-        *****
-        """
+            *****
+            """
+        )
 
         cols = st.columns(3)
 
         with cols[0]:
-            r"""
-            ### Type I:
-            Solve for pressure
-            $$
-                \dfrac{p_2 - p_1}{\gamma}
-            $$
-            """
+            st.markdown(
+                """
+                ### Type I:
+                Solve for pressure
+                $$
+                    \dfrac{p_2 - p_1}{\gamma}
+                $$
+                """
+            )
 
         with cols[1]:
-            r"""
-            ### Type II:
-            Solve for discharge
-            $$
-                Q, V
-            $$
-            """
+            st.markdown(
+                r"""
+                ### Type II:
+                Solve for discharge
+                $$
+                    Q, V
+                $$
+                """
+            )
 
         with cols[2]:
-            r"""
-            ### Type III:
-            Solve for diameter
-            $$
-                A, D
-            $$
-            """
+            st.markdown(
+                r"""
+                ### Type III:
+                Solve for diameter
+                $$
+                    A, D
+                $$
+                """
+            )
 
     else:
         st.error("You should not be here!")
 
 
 def gradelines_sketch():
-    import matplotlib.pyplot as plt
 
     fig, ax = plt.subplots()
 

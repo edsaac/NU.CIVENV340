@@ -7,66 +7,21 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 import networkx as nx
 import json
-import pickle
 from typing import Literal
+
+from .subpages import making_epanet, adjacency_matrix
 
 TOC = Literal[
     "Pipes in series/parallel",
     "Branched systems",
     "Looped networks",
     "Newton method",
+    "~Building an EPANET",
+    "~Adjacency matrix",
 ]
 
 
 def page_week_03(option: TOC):
-    with open("assets/page_config.pkl", "rb") as f:
-        st.session_state.page_config = pickle.load(f)
-
-    st.set_page_config(**st.session_state.page_config)
-
-    with open("assets/style.css") as f:
-        st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
-
-    #####################################################################
-
-    st.title("CIV-ENV 340: Hydraulics and hydrology")
-
-    with st.sidebar:
-        st.image(
-            "https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/syndetics.com/index.php?client=primo&isbn=9780134292380/sc.jpg"
-        )
-
-        r"""
-        #### Class textbook:
-        [🌐](https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9980502032702441) *Houghtalen, Akan & Hwang* (2017). **Fundamentals of hydraulic engineering systems** 5th ed.,
-        Pearson Education Inc., Boston.
-        
-        *****
-        """
-        with st.expander("🧷 Recommended exercises:"):
-            r"""
-            - Series/Parallel:
-                - 4.1.6
-                - 4.1.15
-            - Branched system:
-                - 4.3.3
-            - Networks: (but using Newton method, a spreadsheet or `scipy.optimize.root`)
-                - 4.4.2
-                - 4.4.5
-                - 4.4.7
-                - 4.4.10
-            - Design: 4.7.2
-            """
-
-        cols = st.columns(2)
-        with cols[0]:
-            r"""
-            [![Github Repo](https://img.shields.io/static/v1?label=&message=Repository&color=black&logo=github)](https://github.com/edsaac/NU.CIVENV340)
-            """
-        with cols[1]:
-            r"""[![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
-
-    ####################################################################
 
     if option == "Pipes in series/parallel":
         cols = st.columns(2)
@@ -74,108 +29,113 @@ def page_week_03(option: TOC):
             st.pyplot(pipes_in_series())
 
         with cols[0]:
-            r"""## Pipes in series"""
-            r"""
+            st.header("Pipes in series", anchor=False)
 
-            The mass between consecutive pipes must be conserved,
+            st.markdown(
+                r"""
+
+                The mass between consecutive pipes must be conserved,
+                $$
+                    Q_1 = Q_2 = \mathellipsis  = Q_n
+                $$
+
+                Whereas the head loss adds up
+                $$
+                    h_{L} = h_{L_1} + h_{L_2} + \mathellipsis + h_{L_n}
+                $$
+                
+                """
+            )
+
+        st.markdown(
+            R""" 
+            ****
+            ## Pipes in parallel
+            
+            The mass between the parallel pipes must be conserved,
             $$
-                Q_1 = Q_2 = \mathellipsis  = Q_n
+                h_1 = h_2 = \mathellipsis = h_{L_n}
             $$
 
-            Whereas the head loss adds up
+            Whereas the discharge adds up
             $$
-                h_{L} = h_{L_1} + h_{L_2} + \mathellipsis + h_{L_n}
+                Q = Q_{1} + Q_{2} + \mathellipsis + Q_{n}
             $$
             
             """
-
-        r""" 
-        ****
-        ## Pipes in parallel
-        
-        The mass between the parallel pipes must be conserved,
-        $$
-            h_1 = h_2 = \mathellipsis = h_{L_n}
-        $$
-
-        Whereas the discharge adds up
-        $$
-            Q = Q_{1} + Q_{2} + \mathellipsis + Q_{n}
-        $$
-        
-        """
+        )
 
     elif option == "Looped networks":
-        r"""
-        ## Looped networks
-        """
+        st.header("Looped networks", anchor=False)
 
         cols = st.columns(2)
         with cols[0]:
             show_loops = st.checkbox("Show loops")
+
         with cols[1]:
             show_fluxes = st.checkbox("Show fluxes")
 
         st.pyplot(pipes_network_elements(loops=show_loops, fluxes=show_fluxes))
 
-        r"""
-        *****
-        ### Kirchhoff's circuit laws
-        # """
+        st.divider()
+        st.subheader("Kirchhoff's circuit laws", anchor=False)
 
         cols = st.columns([1, 1.5])
 
         with cols[0]:
-            r"""
-            #### ⚖️ Mass balance
+            st.markdown(
+                R"""
+                #### ⚖️ Mass balance
 
-            Net dicharge in nodes must be zero
+                Net dicharge in nodes must be zero
 
-            $$
-                \sum_j^{\texttt{Node}}{Q_j} = 0
-            $$
+                $$
+                    \sum_j^{\texttt{Node}}{Q_j} = 0
+                $$
 
-            For example, the mass balance in junction $j_4$:
+                For example, the mass balance in junction $j_4$:
 
-            $$
-                \sum_{\textsf{Pipe } i}^{\substack{\textsf{Pipes} \\ \textsf{on } j_4 }} {Q_{\textsf{Pipe } i}} = 0
-            $$
+                $$
+                    \sum_{\textsf{Pipe } i}^{\substack{\textsf{Pipes} \\ \textsf{on } j_4 }} {Q_{\textsf{Pipe } i}} = 0
+                $$
 
-            $$
-                Q_{\texttt{4-5}} + Q_{\texttt{4-2}} + Q_{\texttt{4-7}} + 0.1\,{\rm m^3/s} = 0
-            $$
-            """
+                $$
+                    Q_{\texttt{4-5}} + Q_{\texttt{4-2}} + Q_{\texttt{4-7}} + 0.1\,{\rm m^3/s} = 0
+                $$
+                """
+            )
 
         with cols[1]:
-            r"""
-            #### ⚡ Energy conservation
+            st.markdown(
+                R"""
+                #### ⚡ Energy conservation
 
-            Signed head loss in loops must be zero
+                Signed head loss in loops must be zero
 
-            $$
-                \sum_i^{\texttt{Loop}}{h_{L_i}} = 0
-            $$
+                $$
+                    \sum_i^{\texttt{Loop}}{h_{L_i}} = 0
+                $$
 
-            And the energy balance in circuit $\mathtt{II}$:
+                And the energy balance in circuit $\mathtt{II}$:
 
-            $$
-                \sum_{\textsf{Pipe } k}^{\substack{\textsf{Pipes on} \\ \textsf{loop } \mathtt{II} }} {h_{\textsf{Pipe } k}} = h_{\texttt{2-3}} + h_{\texttt{3-5}} + h_{\texttt{5-4}} + h_{\texttt{4-2}} = 0
-            $$
+                $$
+                    \sum_{\textsf{Pipe } k}^{\substack{\textsf{Pipes on} \\ \textsf{loop } \mathtt{II} }} {h_{\textsf{Pipe } k}} = h_{\texttt{2-3}} + h_{\texttt{3-5}} + h_{\texttt{5-4}} + h_{\texttt{4-2}} = 0
+                $$
 
-            Which can be rewritten in terms of discharge:
+                Which can be rewritten in terms of discharge:
 
-            $$
-                (KQ^m)_{\texttt{2-3}} + (KQ^m)_{\texttt{3-5}} + (KQ^m)_{\texttt{5-4}} + (KQ^m)_{\texttt{4-2}} = 0
-            $$
+                $$
+                    (KQ^m)_{\texttt{2-3}} + (KQ^m)_{\texttt{3-5}} + (KQ^m)_{\texttt{5-4}} + (KQ^m)_{\texttt{4-2}} = 0
+                $$
 
-            """
+                """
+            )
 
         write_network_equations()
 
-        r"""
-        ****
-        ### Euler characteristic for plane graphs:
-        """
+        st.divider()
+        st.subheader("Euler characteristic for plane graphs:", anchor=False)
+
         with st.expander("🌐 From Wikipedia:"):
             iframe(
                 "https:/en.m.wikipedia.org/wiki/Planar_graph#Euler's_formula",
@@ -183,26 +143,30 @@ def page_week_03(option: TOC):
                 height=400,
                 width=700,
             )
-        r"""
-        $$
-        \begin{align*}
-            \textsf{Nodes} - \textsf{Edges} + \textsf{Loops} + \overbrace{1}^{\substack{\textsf{Outer} \\ \textsf{region}}} &=& 2
-            \\ \\
-            \textsf{Nodes} - \textsf{Edges} + \textsf{Loops} &=& 1  
-        \end{align*}
-        $$
-        
-        
-        **Number of equations to solve:**
 
-        - $\textsf{Nodes}$ -- Number of mass balance equations
-        - $\textsf{Loops}$ -- Number of energy conservation equations
-        - $\textsf{Edges}$ -- Number of unknown discharges to be solved
-        
-        """
+        st.markdown(
+            R"""
+            $$
+            \begin{align*}
+                \textsf{Nodes} - \textsf{Edges} + \textsf{Loops} + \overbrace{1}^{\substack{\textsf{Outer} \\ \textsf{region}}} &=& 2
+                \\ \\
+                \textsf{Nodes} - \textsf{Edges} + \textsf{Loops} &=& 1  
+            \end{align*}
+            $$
+            
+            
+            **Number of equations to solve:**
+
+            - $\textsf{Nodes}$ -- Number of mass balance equations
+            - $\textsf{Loops}$ -- Number of energy conservation equations
+            - $\textsf{Edges}$ -- Number of unknown discharges to be solved
+            
+            """
+        )
 
     elif option == "Newton method":
-        "## Root finding ft. Newton iteration method"
+        st.header("Root finding ft. Newton iteration method", anchor=False)
+
         st.image(
             "https://upload.wikimedia.org/wikipedia/commons/8/8c/Newton_iteration.svg",
             width=500,
@@ -211,31 +175,35 @@ def page_week_03(option: TOC):
             "*Source:* [*wikipedia.org*](https://en.wikipedia.org/wiki/Newton%27s_method)"
         )
 
-        r"""
-        For a single variable function like the one from the figure:
+        st.markdown(
+            r"""
+            For a single variable function like the one from the figure:
 
-        $$
-            \begin{align*}
-                x_{n+1} = x_{n} - \dfrac{f(x_n)}{f'(x_n)}  & \quad \rightarrow & f'(x_n) \underbrace{\left(x_{n+1} - x_{n}\right)}_{\textsf{Should be zero}} = - f(x_n)
-            \end{align*}
-        $$
+            $$
+                \begin{align*}
+                    x_{n+1} = x_{n} - \dfrac{f(x_n)}{f'(x_n)}  & \quad \rightarrow & f'(x_n) \underbrace{\left(x_{n+1} - x_{n}\right)}_{\textsf{Should be zero}} = - f(x_n)
+                \end{align*}
+            $$
 
-        For multiple dimensions, where $\mathbf{Q}$ is a **vector** representing the discharge and $\mathbf{F}$ is the system of mass and energy balance equations:
+            For multiple dimensions, where $\mathbf{Q}$ is a **vector** representing the discharge and $\mathbf{F}$ is the system of mass and energy balance equations:
 
-        $$
-            \begin{align*}
-                \mathbf{Q}_{n+1} = \mathbf{Q}_{n} - J^{-1}_{\mathbf{F}(\mathbf{Q}_n)} \mathbf{F}(\mathbf{Q}_n)
-                & \quad \rightarrow  & 
-                \underbrace{J_{\mathbf{F}(\mathbf{Q}_n)}}_{\textsf{Jacobian}} \overbrace{\left( \mathbf{Q}_{n+1} - \mathbf{Q}_{n} \right)}^{\Delta \mathbf{Q}} =  - \mathbf{F}(\mathbf{Q})
-            \end{align*}
-        $$
+            $$
+                \begin{align*}
+                    \mathbf{Q}_{n+1} = \mathbf{Q}_{n} - J^{-1}_{\mathbf{F}(\mathbf{Q}_n)} \mathbf{F}(\mathbf{Q}_n)
+                    & \quad \rightarrow  & 
+                    \underbrace{J_{\mathbf{F}(\mathbf{Q}_n)}}_{\textsf{Jacobian}} \overbrace{\left( \mathbf{Q}_{n+1} - \mathbf{Q}_{n} \right)}^{\Delta \mathbf{Q}} =  - \mathbf{F}(\mathbf{Q})
+                \end{align*}
+            $$
 
-        """
+            """
+        )
 
-        r"""
-        ******
-        #### What is the *Jacobian* $J$?
-        """
+        st.markdown(
+            R"""
+            ******
+            #### What is the *Jacobian* $J$?
+            """
+        )
 
         with st.expander("🌐 From Wikipedia"):
             iframe(
@@ -245,78 +213,85 @@ def page_week_03(option: TOC):
                 scrolling=True,
             )
 
-        r"""
+        st.markdown(
+            r"""
 
-        The Jacobian is a matrix of all the first-order partial derivatives of a vector function. 
+            The Jacobian is a matrix of all the first-order partial derivatives of a vector function. 
 
-        $$
-            J_{\mathbf{F}(\mathbf{Q})} = 
-            \begin{bmatrix}
-                \dfrac{\partial F_1}{Q_1} & \dots & \dfrac{\partial F_1}{Q_e} \\
-                \vdots & \ddots & \vdots \\
-                \dfrac{\partial F_m}{Q_1} & \dots & \dfrac{\partial F_m}{Q_m} \\
-            \end{bmatrix}
-        $$
-        
-        For example, the mass balance equation of node $j$ looks like:
-        $$
-            F_j(\mathbf{Q}) = \sum_{k}{Q_{\texttt{j-k}}}
-        $$
+            $$
+                J_{\mathbf{F}(\mathbf{Q})} = 
+                \begin{bmatrix}
+                    \dfrac{\partial F_1}{Q_1} & \dots & \dfrac{\partial F_1}{Q_e} \\
+                    \vdots & \ddots & \vdots \\
+                    \dfrac{\partial F_m}{Q_1} & \dots & \dfrac{\partial F_m}{Q_m} \\
+                \end{bmatrix}
+            $$
+            
+            For example, the mass balance equation of node $j$ looks like:
+            $$
+                F_j(\mathbf{Q}) = \sum_{k}{Q_{\texttt{j-k}}}
+            $$
 
-        $$
-            \dfrac{\partial F_j}{\partial Q_i} = 
-            \begin{cases}
-                1 &\quad \text{ if pipe } k \text{ is connected to node j}  \\
-                0 &\quad \text{otherwise} 
-            \end{cases}
-        $$
+            $$
+                \dfrac{\partial F_j}{\partial Q_i} = 
+                \begin{cases}
+                    1 &\quad \text{ if pipe } k \text{ is connected to node j}  \\
+                    0 &\quad \text{otherwise} 
+                \end{cases}
+            $$
 
-        Similarly, for the energy conservation equation on loop $\texttt{I}$:
+            Similarly, for the energy conservation equation on loop $\texttt{I}$:
 
-        $$
-            F_{\mathtt{I}}(\mathbf{Q}) = \sum_k{K_kQ_k^m}
-        $$
+            $$
+                F_{\mathtt{I}}(\mathbf{Q}) = \sum_k{K_kQ_k^m}
+            $$
 
-        $$
-            \dfrac{\partial F_{\mathtt{I}}}{\partial Q_i} = 
-            \begin{cases}
-                mK_kQ_k^{m-1} &\quad \text{ if pipe } k \text{ is part of the loop } \texttt{I}  \\
-                0 &\quad \text{otherwise} 
-            \end{cases}
-        $$
-        
-        If using Darcy-Weisbach equation to calculate head losses, $m=2$:
+            $$
+                \dfrac{\partial F_{\mathtt{I}}}{\partial Q_i} = 
+                \begin{cases}
+                    mK_kQ_k^{m-1} &\quad \text{ if pipe } k \text{ is part of the loop } \texttt{I}  \\
+                    0 &\quad \text{otherwise} 
+                \end{cases}
+            $$
+            
+            If using Darcy-Weisbach equation to calculate head losses, $m=2$:
 
-        $$
-            \dfrac{\partial F_{\mathtt{I}}}{\partial Q_i} = 
-            \begin{cases}
-                2K_kQ_k &\quad \text{ if pipe } k \text{ is part of the loop } \texttt{I}  \\
-                0 &\quad \text{otherwise} 
-            \end{cases}
-        $$
-        """
+            $$
+                \dfrac{\partial F_{\mathtt{I}}}{\partial Q_i} = 
+                \begin{cases}
+                    2K_kQ_k &\quad \text{ if pipe } k \text{ is part of the loop } \texttt{I}  \\
+                    0 &\quad \text{otherwise} 
+                \end{cases}
+            $$
+            """
+        )
 
-        r"""
-        *****
-        #### Sign conventions:
+        st.markdown(
+            R"""
+            *****
+            #### Sign conventions:
 
-        For mass balances:
-        - $Q < 0 \quad \text{if entering the node}$
-        - $Q > 0 \quad \text{if exiting the node}$
+            For mass balances:
+            - $Q < 0 \quad \text{if entering the node}$
+            - $Q > 0 \quad \text{if exiting the node}$
 
-        For energy conservation eqs:
-        - $KQ|Q| < 0 \quad \text{if counter-clockwise}$
-        - $KQ|Q| > 0 \quad \text{if clockwise}$
+            For energy conservation eqs:
+            - $KQ|Q| < 0 \quad \text{if counter-clockwise}$
+            - $KQ|Q| > 0 \quad \text{if clockwise}$
 
-        """
+            """
+        )
 
-        r"""
-        **********
+        st.markdown(
+            R"""
+            **********
 
-        ### Algorithm
+            ### Algorithm
 
-        ##### 1️⃣ Make a diagram & define sign conventions:
-        """
+            ##### 1️⃣ Make a diagram & define sign conventions:
+            """
+        )
+
         cols = st.columns([1, 4, 1])
         with cols[1]:
             show_guess = st.checkbox("Show guess")
@@ -325,18 +300,20 @@ def page_week_03(option: TOC):
                 dpi=600,
             )
 
-        "##### 2️⃣ Write mass and energy conservation equations:"
+        st.markdown("##### 2️⃣ Write mass and energy conservation equations:")
         write_network_equations()
 
-        r"""
-        &nbsp;
+        st.markdown(
+            r"""
+            &nbsp;
 
-        ##### 3️⃣ Assemble the system of equations:
+            ##### 3️⃣ Assemble the system of equations:
 
-        $$
-            J_{\mathbf{F}(\mathbf{Q}_n)} \Delta \mathbf{Q} =  - \mathbf{F}(\mathbf{Q})
-        $$
-        """
+            $$
+                J_{\mathbf{F}(\mathbf{Q}_n)} \Delta \mathbf{Q} =  - \mathbf{F}(\mathbf{Q})
+            $$
+            """
+        )
 
         with st.expander("Arranged in matrix form.", expanded=True):
             st.warning(
@@ -344,91 +321,105 @@ def page_week_03(option: TOC):
                 icon="⚠️",
             )
 
-            r"""
-            $$
-            \def\arraystretch{1.5}
-            \left[
-            \begin{array}{c:c:c:c:c:c:c:c:c:c}
-                \texttt{1-2} & \texttt{2-3} & \texttt{1-6} & \texttt{2-4} & \texttt{3-5} & \texttt{4-5} & \texttt{4-7} & \texttt{5-8} & \texttt{6-7} & \texttt{7-8} \\
-                \hline
-                1 & \, & 1 & \, & \, & \, & \, & \, & \, & \,  \\  \hdashline
-                -1 & 1 & \, & 1 & \, & \, & \, & \, & \, & \,  \\  \hdashline
-                \, & -1 & \, & \, & 1 & \, & \, & \, & \, & \, \\  \hdashline
-                \, & \, & \, & -1 & \, & 1 & -1 & \, & \, & \, \\  \hdashline
-                \, & \, & -1 & \, & \, & \, & \, & \, & 1 & \, \\  \hdashline
-                \, & \, & \, & \, & \, & \, & 1 & \, & -1 & 1  \\  \hdashline
-                \, & \, & \, & \, & \, & \, & \, & -1 & \, & -1 \\  \hdashline
-                2KQ_\texttt{1-2} & \, & -2KQ_\texttt{1-6} & 2KQ_\texttt{2-4} & \, & \, & -2KQ_\texttt{4-7} & \, & -2KQ_\texttt{6-7} & \, \\ \hdashline
-                \, & 2KQ_\texttt{2-3} & \, & -2KQ_\texttt{2-4} & 2KQ_\texttt{3-5} & -2KQ_\texttt{4-5} & \, & \, & \, & \, \\ \hdashline
-                \, & \, & \, & \, & \, & 2KQ_\texttt{4-5} & 2KQ_\texttt{4-7} & 2KQ_\texttt{5-8} & \, & -2KQ_\texttt{7-8} \\ 
-            \end{array}
-            \right]
+            st.markdown(
+                R"""
+                $$
+                \def\arraystretch{1.5}
+                \left[
+                \begin{array}{c:c:c:c:c:c:c:c:c:c}
+                    \texttt{1-2} & \texttt{2-3} & \texttt{1-6} & \texttt{2-4} & \texttt{3-5} & \texttt{4-5} & \texttt{4-7} & \texttt{5-8} & \texttt{6-7} & \texttt{7-8} \\
+                    \hline
+                    1 & \, & 1 & \, & \, & \, & \, & \, & \, & \,  \\  \hdashline
+                    -1 & 1 & \, & 1 & \, & \, & \, & \, & \, & \,  \\  \hdashline
+                    \, & -1 & \, & \, & 1 & \, & \, & \, & \, & \, \\  \hdashline
+                    \, & \, & \, & -1 & \, & 1 & -1 & \, & \, & \, \\  \hdashline
+                    \, & \, & -1 & \, & \, & \, & \, & \, & 1 & \, \\  \hdashline
+                    \, & \, & \, & \, & \, & \, & 1 & \, & -1 & 1  \\  \hdashline
+                    \, & \, & \, & \, & \, & \, & \, & -1 & \, & -1 \\  \hdashline
+                    2KQ_\texttt{1-2} & \, & -2KQ_\texttt{1-6} & 2KQ_\texttt{2-4} & \, & \, & -2KQ_\texttt{4-7} & \, & -2KQ_\texttt{6-7} & \, \\ \hdashline
+                    \, & 2KQ_\texttt{2-3} & \, & -2KQ_\texttt{2-4} & 2KQ_\texttt{3-5} & -2KQ_\texttt{4-5} & \, & \, & \, & \, \\ \hdashline
+                    \, & \, & \, & \, & \, & 2KQ_\texttt{4-5} & 2KQ_\texttt{4-7} & 2KQ_\texttt{5-8} & \, & -2KQ_\texttt{7-8} \\ 
+                \end{array}
+                \right]
 
-            \begin{bmatrix}
-                \Delta Q \\ \hline Q_\texttt{1-2} \\ Q_\texttt{2-3} \\ Q_\texttt{1-6} \\ Q_\texttt{2-4} \\ Q_\texttt{3-5} \\ Q_\texttt{4-5} \\ Q_\texttt{4-7} \\ Q_\texttt{5-8} \\ Q_\texttt{6-7} \\ Q_\texttt{7-8}
-            \end{bmatrix}
+                \begin{bmatrix}
+                    \Delta Q \\ \hline Q_\texttt{1-2} \\ Q_\texttt{2-3} \\ Q_\texttt{1-6} \\ Q_\texttt{2-4} \\ Q_\texttt{3-5} \\ Q_\texttt{4-5} \\ Q_\texttt{4-7} \\ Q_\texttt{5-8} \\ Q_\texttt{6-7} \\ Q_\texttt{7-8}
+                \end{bmatrix}
 
-            = -
+                = -
 
-            \begin{bmatrix}
-                F(Q) \\ \hline +0.3 \\ 0 \\ -0.05 \\ -0.10 \\ 0 \\ 0 \\ -0.15 \\ 0 \\ 0 \\ 0
-            \end{bmatrix}
-            $$
-            
-            &nbsp;
+                \begin{bmatrix}
+                    F(Q) \\ \hline +0.3 \\ 0 \\ -0.05 \\ -0.10 \\ 0 \\ 0 \\ -0.15 \\ 0 \\ 0 \\ 0
+                \end{bmatrix}
+                $$
+                
+                &nbsp;
+                """
+            )
+
+        st.markdown(
+            R"""
+            ##### 4️⃣ Solve for the discharge correction $\Delta Q$:
             """
-
-        r"""
-        ##### 4️⃣ Solve for the discharge correction $\Delta Q$:
-        """
+        )
 
         cols = st.columns([1, 2])
 
         with cols[0]:
-            r"""
-            $$
-                \Delta \mathbf{Q} =  - J_{\mathbf{F}(\mathbf{Q}_n)}^{-1}\mathbf{F}(\mathbf{Q})
-            $$
-            """
+            st.markdown(
+                R"""
+                $$
+                    \Delta \mathbf{Q} =  - J_{\mathbf{F}(\mathbf{Q}_n)}^{-1}\mathbf{F}(\mathbf{Q})
+                $$
+                """
+            )
 
         with cols[1]:
             st.warning(
-                "👈 Directly calculating the inverse of a matrix is **computationally expensive**! There are more efficient ways to solve a system of equations."
+                """
+                👈 Directly calculating the inverse of a matrix is **computationally expensive**! 
+                There are more efficient ways to solve a system of equations.
+                """
             )
 
-        r"""
-        &nbsp;
+        st.markdown(
+            R"""
+            &nbsp;
 
-        ##### 5️⃣ Recalculate $\mathbf{Q}$ based on the correction $\Delta\mathbf{Q}$:
-    
-        $$
-            \Delta \mathbf{Q} =  \mathbf{Q}_{n+1} -  \mathbf{Q}_{n} \quad \rightarrow \quad \underbrace{\mathbf{Q}_{n+1}}_{\textsf{New guess}} = \Delta \mathbf{Q} + \mathbf{Q}_{n}
-        $$
+            ##### 5️⃣ Recalculate $\mathbf{Q}$ based on the correction $\Delta\mathbf{Q}$:
+        
+            $$
+                \Delta \mathbf{Q} =  \mathbf{Q}_{n+1} -  \mathbf{Q}_{n} \quad \rightarrow \quad \underbrace{\mathbf{Q}_{n+1}}_{\textsf{New guess}} = \Delta \mathbf{Q} + \mathbf{Q}_{n}
+            $$
 
-        ##### ↔️ Check if a better guess is needed for $\mathbf{Q}$:
-        """
+            ##### ↔️ Check if a better guess is needed for $\mathbf{Q}$:
+            """
+        )
+
         cols = st.columns(2)
 
         with cols[0]:
-            r"""
-            $$
-                \textsf{if: } \quad |\Delta \mathbf{Q}| > \varepsilon
-            $$
-            🔄 Return to step 4 with the new guess for $\mathbf{Q}$
-            """
+            st.markdown(
+                R"""
+                $$
+                    \textsf{if: } \quad |\Delta \mathbf{Q}| > \varepsilon
+                $$
+                🔄 Return to step 4 with the new guess for $\mathbf{Q}$
+                """
+            )
 
         with cols[1]:
-            r"""
-            $$
-                \textsf{if: } \quad |\Delta \mathbf{Q}| < \varepsilon
-            $$
-            🏁 A solution has been found!
-            """
+            st.markdown(
+                R"""
+                $$
+                    \textsf{if: } \quad |\Delta \mathbf{Q}| < \varepsilon
+                $$
+                🏁 A solution has been found!
+                """
+            )
 
-        r"""
-        *****
-        ### Other methods
-        """
+        st.divider()
+        st.subheader("Other methods", anchor=False)
 
         with st.expander("**Hardy-Cross Method**"):
             url = "https://en.m.wikipedia.org/wiki/Hardy_Cross_method"
@@ -447,83 +438,89 @@ def page_week_03(option: TOC):
                 American Society of Civil Engineers (ASCE). DOI:[10.1061/jyceaj.0003348]({url})
                 """
 
-        "****"
+        st.divider()
         _, col, _ = st.columns([1, 3, 1])
         with col:
             url = "https://doi.org/10.1002/9780470225059"
-            rf"""
-            Also check:
+            st.markdown(
+                rf"""
+                Also check:
 
-            Swamee, P. K., & Sharma, A. K. (2008). 
-            **Design of Water Supply Pipe Networks.**
-            *John Wiley & Sons, Inc.* 
-            DOI:[10.1002/9780470225059]({url})
-            """
+                Swamee, P. K., & Sharma, A. K. (2008). 
+                **Design of Water Supply Pipe Networks.**
+                *John Wiley & Sons, Inc.* 
+                DOI:[10.1002/9780470225059]({url})
+                """
+            )
 
     elif option == "Branched systems":
-        r"""
-        ## Branched networks
-
-        Aka *tree networks*, these are systems without loops.
-        """
+        st.header("Branched networks", anchor=False)
+        st.markdown(
+            R"""
+            Also known as *tree networks*, these are systems without loops.
+            """
+        )
 
         st.pyplot(three_reservoirs())
 
-        r"""
-        ### Three-reservoir problem
+        st.markdown(
+            r"""
+            ### Three-reservoir problem
 
-        Determine the flow rates between multiple connected reservoirs. 
-        For the problem in the figure, we can write energy balance of each of the pipes
+            Determine the flow rates between multiple connected reservoirs. 
+            For the problem in the figure, we can write energy balance of each of the pipes
 
-        $$
-        \begin{array}{rl}
-            H_\texttt{A} =& H_\texttt{J} + h_{f_\texttt{A-J}} \\
-            H_\texttt{B} =& H_\texttt{J} + h_{f_\texttt{B-J}} \\
-            H_\texttt{J} =& H_\texttt{C} + h_{f_\texttt{J-C}} \\
-        \end{array}
-        $$
-
-        And at the junction $\texttt{J}$, mass must be conserved
-
-        $$
-            \sum{Q} = Q_\texttt{A-J} + Q_\texttt{B-J} - Q_\texttt{J-C} = 0
-        $$
-
-        In this case, we obtain four equations to solve for four unknowns: the three flow rates
-        and the energy head on the junction. We can rewrite the problem to contain only the 
-        discharges as unknowns:
-
-        $$
-            \def\arraystretch{1.5}
-            \begin{cases}
+            $$
             \begin{array}{rl}
-                h_{f_\texttt{A-J}} + h_{f_\texttt{J-C}} =& H_\texttt{A} - H_\texttt{C} \\
-                h_{f_\texttt{B-J}} + h_{f_\texttt{J-C}} =& H_\texttt{B} - H_\texttt{C} \\
-                Q_\texttt{A-J} + Q_\texttt{B-J} - Q_\texttt{J-C} =& 0
+                H_\texttt{A} =& H_\texttt{J} + h_{f_\texttt{A-J}} \\
+                H_\texttt{B} =& H_\texttt{J} + h_{f_\texttt{B-J}} \\
+                H_\texttt{J} =& H_\texttt{C} + h_{f_\texttt{J-C}} \\
             \end{array}
-            \end{cases}
-        $$
+            $$
 
-        Or,
-        
-        $$
-            \def\arraystretch{1.5}            
-            \begin{cases}
-            \begin{array}{rl}
-                K_\texttt{A-J}(Q_\texttt{A-J})^2 + K_\texttt{J-C}(Q_\texttt{J-C})^2 =& H_\texttt{A} - H_\texttt{C} \\
-                K_\texttt{B-J}(Q_\texttt{B-J})^2 + K_\texttt{J-C}(Q_\texttt{J-C})^2 =& H_\texttt{B} - H_\texttt{C} \\
-                Q_\texttt{A-J} + Q_\texttt{B-J} - Q_\texttt{J-C} =& 0
-            \end{array}            
-            \end{cases}
-        $$
-        ********
+            And at the junction $\texttt{J}$, mass must be conserved
 
-        ## Solving example 4.6 with `scipy.root`:
-        """
+            $$
+                \sum{Q} = Q_\texttt{A-J} + Q_\texttt{B-J} - Q_\texttt{J-C} = 0
+            $$
+
+            In this case, we obtain four equations to solve for four unknowns: the three flow rates
+            and the energy head on the junction. We can rewrite the problem to contain only the 
+            discharges as unknowns:
+
+            $$
+                \def\arraystretch{1.5}
+                \begin{cases}
+                \begin{array}{rl}
+                    h_{f_\texttt{A-J}} + h_{f_\texttt{J-C}} =& H_\texttt{A} - H_\texttt{C} \\
+                    h_{f_\texttt{B-J}} + h_{f_\texttt{J-C}} =& H_\texttt{B} - H_\texttt{C} \\
+                    Q_\texttt{A-J} + Q_\texttt{B-J} - Q_\texttt{J-C} =& 0
+                \end{array}
+                \end{cases}
+            $$
+
+            Or,
+            
+            $$
+                \def\arraystretch{1.5}            
+                \begin{cases}
+                \begin{array}{rl}
+                    K_\texttt{A-J}(Q_\texttt{A-J})^2 + K_\texttt{J-C}(Q_\texttt{J-C})^2 =& H_\texttt{A} - H_\texttt{C} \\
+                    K_\texttt{B-J}(Q_\texttt{B-J})^2 + K_\texttt{J-C}(Q_\texttt{J-C})^2 =& H_\texttt{B} - H_\texttt{C} \\
+                    Q_\texttt{A-J} + Q_\texttt{B-J} - Q_\texttt{J-C} =& 0
+                \end{array}            
+                \end{cases}
+            $$
+            ********
+
+            ## Solving example 4.6 with `scipy.root`:
+            """
+        )
+
         cols = st.columns(2)
 
         with cols[0]:
-            "### 1️⃣ Pipe characteristics"
+            st.subheader("1️⃣ Pipe characteristics", anchor=False)
             with st.echo():
                 pipes = pd.DataFrame(
                     {
@@ -542,7 +539,7 @@ def page_week_03(option: TOC):
             )
 
         with cols[1]:
-            "### 1️⃣ Node characteristics"
+            st.subheader(" 1️⃣ Node characteristics", anchor=False)
 
             with st.echo():
                 nodes = pd.DataFrame(
@@ -557,7 +554,7 @@ def page_week_03(option: TOC):
 
             st.dataframe(nodes.style.format(precision=1), use_container_width=True)
 
-        "### 2️⃣ Define the problem system of equations"
+        st.subheader("2️⃣ Define the problem system of equations", anchor=False)
         with st.echo():
             from scipy.optimize import root
 
@@ -591,7 +588,7 @@ def page_week_03(option: TOC):
 
                 return error
 
-        "### 🍠 Find the root "
+        st.subheader("### 🍠 Find the root ", anchor=False)
 
         with st.echo():
             solution = root(
@@ -604,7 +601,7 @@ def page_week_03(option: TOC):
                 ),
             )
 
-        "### 🏁 Print solution"
+        st.subheader("🏁 Print solution", anchor=False)
         if solution.success:
             st.info(solution.message, icon="😎")
             pipes["Discharge (m³/s)"] = solution.x
@@ -617,9 +614,15 @@ def page_week_03(option: TOC):
                 use_container_width=True,
             )
 
-        "*****"
+        st.divider()
         st.warning("What was the pressure in the junction?")
-
+    
+    elif option == "~Building an EPANET":
+        making_epanet()
+    
+    elif option == "~Adjacency matrix":
+        adjacency_matrix()
+        
     else:
         r"### 🚧 Under construction 🚧"
 
@@ -771,7 +774,7 @@ def pipes_network_elements(loops, fluxes, guess=False):
     G = nx.Graph()
 
     ## Add nodes
-    with open("week_03/networks/figure4.9.json") as f:
+    with open("./book/week_03/networks/figure4.9.json") as f:
         network = json.load(f)
 
         G.add_nodes_from(network["nodes"])
@@ -948,6 +951,7 @@ def write_network_equations():
 
             &nbsp;
             """
+
     return None
 
 

@@ -3,44 +3,57 @@ from streamlit.navigation.page import StreamlitPage
 
 from functools import partial
 from typing import Callable, get_args
+from types import ModuleType
 
-from week_01.Week_1 import page_week_01
-from week_02.Week_2 import page_week_02
-from week_03.Week_3 import page_week_03
+from book.pages import page_week_01, page_week_02, page_week_03, page_week_04
+from book.common import page_config_common, apply_css_style, sidebar_common
 
-def generate_list_of_pages(page_week: Callable, week_number: int) -> list[StreamlitPage]:
+
+def generate_list_of_pages(page_week: Callable, nweek: int) -> list[StreamlitPage]:
     list_of_topics = get_args(page_week.__annotations__["option"])
-    
-    return [
-        st.Page(
-            partial(page_week, topic), 
-            title=(title:=f"{week_number}.{i} - {topic}"), 
-            url_path=title.lower()
-        )
-        for i, topic in enumerate(list_of_topics, start=1)
-    ]
+
+    pages = []
+
+    for i, topic in enumerate(list_of_topics, start=1):
+        if not topic.startswith("~"):
+            pages.append(
+                st.Page(
+                    partial(page_week, topic),
+                    title=(title := f"{topic}"),
+                    url_path=title.replace(" ", "_"),
+                    icon=":material/article:"
+                )
+            )
+
+        else:
+            pages.append(
+                st.Page(
+                    partial(page_week, topic),
+                    title=(title := " - " + topic.replace("~", "")),
+                    url_path=title.replace(" ", "_"),
+                    icon="🐍",
+                )
+            )
+
+    return pages
 
 
-def sidebar_common():
-    with st.sidebar:
-        cols = st.columns(2)
-        with cols[0]:
-            st.markdown(
-                """
-                [![Github Repo](https://img.shields.io/static/v1?label=&message=Repository&color=black&logo=github)](https://github.com/edsaac/NU.CIVENV340)
-                """
-            )
-        with cols[1]:
-            st.markdown(
-                """[![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
-            )
+def generate_list_sidequest_pages(subpage: ModuleType):
+    subpage.__all__
+
 
 def entrypoint_page():
     st.title("Hydraulics with Python")
 
+    "Hehe :violet[magic]"
+
 
 def main():
-    entry_page = st.Page(entrypoint_page, title="**Book**")
+    st.set_page_config(**page_config_common)
+    apply_css_style()
+    sidebar_common()
+
+    entry_page = st.Page(entrypoint_page, title="Cover", default=True, icon=":material/book_2:")
 
     nav = st.navigation(
         {
@@ -48,7 +61,7 @@ def main():
             "Week 1": generate_list_of_pages(page_week_01, 1),
             "Week 2": generate_list_of_pages(page_week_02, 2),
             "Week 3": generate_list_of_pages(page_week_03, 3),
-
+            "Week 4": generate_list_of_pages(page_week_04, 4),
         }
     )
 

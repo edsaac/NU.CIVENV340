@@ -1,117 +1,67 @@
 import streamlit as st
-from streamlit.components.v1 import iframe
+from streamlit.components.v1 import iframe, html
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, Circle
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+
 import plotly.graph_objects as go
-import pickle
 import json
 import numpy as np
 
 from collections import namedtuple
 
+from typing import Literal
+
+from book.common import axis_format, get_pdf_as_bytes, get_image_as_bytes, get_image_as_PIL
+from .subpages import pump_render
+
 Point = namedtuple("Point", ["x", "y"])
 
+TOC = Literal[
+    "System curve",
+    "Types of pumps",
+    "Characteristic curves",
+    "Cavitation",
+    "Pumps in series and parallel",
+    "~Pump render",
+]
 
-def main():
-    with open("assets/page_config.pkl", "rb") as f:
-        st.session_state.page_config = pickle.load(f)
 
-    st.set_page_config(**st.session_state.page_config)
-
-    with open("assets/style.css") as f:
-        st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
-
-    axis_format = dict(
-        title_font_size=20,
-        tickfont_size=16,
-        showline=True,
-        color="RGBA(1, 135, 73, 0.3)",
-        tickcolor="RGBA(1, 135, 73, 0.3)",
-        showgrid=True,
-        griddash="dash",
-        linewidth=1,
-        gridcolor="RGBA(1, 135, 73, 0.3)",
-    )
-
-    #####################################################################
-
-    st.title("CIV-ENV 340: Hydraulics and hydrology")
-    "****"
-
-    with st.sidebar:
-        lottie = """
-        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        <lottie-player src="https://assets7.lottiefiles.com/packages/lf20_tuzu65Bu6N.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 150px;"  loop  autoplay></lottie-player>
-        """
-        st.html(lottie)
-
-        "### Select a topic:"
-        option = st.radio(
-            "Select a topic:",
-            [
-                "System curve",
-                "Types of pumps",
-                "Characteristic curves",
-                "Cavitation",
-                "Pumps in series/parallel",
-            ],
-            label_visibility="collapsed",
-        )
-
-        "***"
-        st.image(
-            "https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/syndetics.com/index.php?client=primo&isbn=9780134292380/sc.jpg"
-        )
-
-        r"""
-        #### Class textbook:
-        [🌐](https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9980502032702441) *Houghtalen, Akan & Hwang* (2017). **Fundamentals of hydraulic engineering systems** 5th ed.,
-        Pearson Education Inc., Boston.
-        """
-
-        cols = st.columns(2)
-        with cols[0]:
-            r"""
-            [![Github Repo](https://img.shields.io/static/v1?label=&message=Repository&color=black&logo=github)](https://github.com/edsaac/NU.CIVENV340)
-            """
-        with cols[1]:
-            r"""[![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
-
-    ####################################################################
-
+def page_week_04(option: TOC):
     if option == "System curve":
-        r"""
-        ### System head curve
-        """
+        st.subheader("System head curve", anchor=False)
 
         st.pyplot(pump_and_pipeline())
 
-        r"""
-        For the pump and pipeline system, a relationship for the head that the pump must provide can be derived 
-        in terms of the static head plus the head losses due friction and accessories.
+        st.markdown(
+            R"""
+            For the pump and pipeline system, a relationship for the head that the pump must provide can be derived 
+            in terms of the static head plus the head losses due friction and accessories.
 
-        $$
-            H_A + \underbrace{H_p}_{\substack{\textsf{Head by} \\ \textsf{pump}}}= H_B + h_L
-        $$
+            $$
+                H_A + \underbrace{H_p}_{\substack{\textsf{Head by} \\ \textsf{pump}}}= H_B + h_L
+            $$
 
-        $$
-            H_p = \underbrace{(H_B - H_A)}_{\substack{\textsf{Static head}}} + h_L = H_\textsf{SH} + h_L
-        $$
-        
-        $$
-            H_p = H_\textsf{SH} + h_L
-        $$
+            $$
+                H_p = \underbrace{(H_B - H_A)}_{\substack{\textsf{Static head}}} + h_L = H_\textsf{SH} + h_L
+            $$
+            
+            $$
+                H_p = H_\textsf{SH} + h_L
+            $$
 
-        Considering only friction losses (i.e., $h_L = h_f$)
-        
-        $$
-            H_p = H_\textsf{SH} + KQ^m
-        $$
+            Considering only friction losses (i.e., $h_L = h_f$)
+            
+            $$
+                H_p = H_\textsf{SH} + KQ^m
+            $$
 
-        *****
+            *****
 
-        """
+            """
+        )
+
         cols = st.columns([0.8, 1.4], gap="large")
 
         with cols[0]:
@@ -147,7 +97,7 @@ def main():
             head_pump = H_static_head + hf
 
         with cols[1]:
-            "### System curve ($Q$, $H_p$)"
+            st.subheader("System curve ($Q$, $H_p$)", anchor=False)
 
             h_pump_fig = go.Figure(
                 [
@@ -190,15 +140,15 @@ def main():
 
             st.plotly_chart(h_pump_fig, use_container_width=True)
 
-        "****"
+        st.divider()
 
     elif option == "Types of pumps":
-        r"## Types of pumps"
+        st.header("Types of pumps")
 
         cols = st.columns(2)
 
         with cols[0]:
-            "### Turbo-hydraulic pumps"
+            st.subheader("Turbo-hydraulic pumps", anchor=False)
 
             with st.expander("🚁 **Centrifugal pumps**"):
                 url = "https://www.lockewell.com/images/large/goulds/3656m_LRG.jpg"
@@ -224,46 +174,53 @@ def main():
                 st.image(url, use_column_width=True)
 
         with cols[1]:
-            r"""
-            ### Positive-displacement pumps
-            """
+            st.subheader("Positive-displacement pumps")
+
             with st.expander("➰ **Rotary lobe pumps**"):
                 url = "https://www.youtube.com/watch?v=1ca-rXDqMMo"
                 st.caption(f"Source: [youtube.com/@VikingPumpInc]({url})")
                 st.video(url)
-                "*****"
 
             with st.expander("➰ **Peristaltic pumps**"):
                 url = "https://www.youtube.com/watch?v=3H4Ftf_imrg"
                 st.caption(f"Source: [youtube.com/@sityu82]({url})")
                 st.video(url)
-                "*****"
 
     elif option == "Characteristic curves":
-        r"## Characteristic curves"
+        st.header("Characteristic curves", anchor=False)
 
         tabs = st.tabs(
-            ["**🌊 Pump head**", "**🦾 Efficiency**", "**🔋Power input**", "**🫧 NSPHr**"]
+            [
+                "**🌊 Pump head**",
+                "**🦾 Efficiency**",
+                "**🔋Power input**",
+                "**🫧 NSPHr**",
+            ]
         )
 
         discharge = np.linspace(0, 500, 100)
         system_head = 1e-4 * discharge**2 + 10.0
 
         with tabs[0]:  ## Head vs Q plot
-            r"""
-            **🌊 Pump head**
+            st.markdown(
+                R"""
+                **🌊 Pump head**
 
-            $$
-                H_p = a_0 + a_1 Q + a_2Q^2
-            $$
-            """
+                $$
+                    H_p = a_0 + a_1 Q + a_2Q^2
+                $$
+                """
+            )
+
             cols = st.columns(3)
             with cols[0]:
                 a0 = st.slider("$a_0$", 0.0, 100.0, 25.0)
+
             with cols[1]:
                 a1 = st.slider(
                     "$a_1$", -0.0200, -0.0010, -0.0054, 0.0001, format="%.4f"
                 )
+
             with cols[2]:
                 a2 = st.slider(
                     "$a_2$", -0.000200, -0.000010, -0.000086, -0.000001, format="%.6f"
@@ -350,9 +307,9 @@ def main():
                 + 15
             ) / 100
 
-            r"""
-            🦾 **Efficiency:** ratio of the power output to the power input 
-            """
+            st.markdown(
+                "🦾 **Efficiency:** ratio of the power output to the power input "
+            )
 
             efficiency_fig = go.Figure()
 
@@ -398,14 +355,17 @@ def main():
             st.plotly_chart(efficiency_fig, use_container_width=True)
 
         with tabs[2]:  ## Power vs Q plot
-            r"""
-            🔋 **Power input:** required by the pump.
-            $$
-                \mathcal{P} = \dfrac{Q H_p \rho g}{\eta}
-            $$
+            st.markdown(
+                R"""
+                🔋 **Power input:** required by the pump.
+                $$
+                    \mathcal{P} = \dfrac{Q H_p \rho g}{\eta}
+                $$
 
-            🐎 **Brake horsepower:** power input in horsepower units.
-            """
+                🐎 **Brake horsepower:** power input in horsepower units.
+                """
+            )
+
             brake_power_manufacturer = (
                 discharge_manufacturer
                 / (1000 * 60)
@@ -450,10 +410,13 @@ def main():
             st.plotly_chart(power_fig, use_container_width=True)
 
         with tabs[3]:  ## NPSH vs Q plot
-            r"""
-            🫧 **Net Positive Suction Head (NPSHr):** represents the pressure drop between the eye
-            of the pump and the tip of the impeller vanes.
-            """
+            st.markdown(
+                R"""
+                🫧 **Net Positive Suction Head (NPSHr):** represents the pressure drop between the eye
+                of the pump and the tip of the impeller vanes.
+                """
+            )
+
             npsh_manufacturer = (
                 2.93
                 - 0.017 * discharge_manufacturer
@@ -496,40 +459,38 @@ def main():
 
         "****"
 
-        r"## Pump Selection"
-        "Check a catalogue!"
-        html = r"""
-        <div>
-            <object data="https://www.centrifugal-pump-online.com/MD.pdf" type="application/pdf" width="100%" height="800">
-            </object>
-        </div>
-        """
-        st.html(html, height=800, scrolling=True)
+        st.header("Pump Selection")
+        catalogue_url = "https://www.centrifugal-pump-online.com/MD.pdf"
+        st.markdown(f"Check a [catalogue]({catalogue_url})!")
+
+        bytes_pdf = get_pdf_as_bytes("https://www.centrifugal-pump-online.com/MD.pdf")
+        html(
+            f"""<embed src='data:application/pdf;base64,{bytes_pdf}' width="100%" height="900" type="application/pdf">""",
+            height=600,
+            scrolling=True,
+        )
 
     elif option == "Cavitation":
-        r"""
-        ### 🌘 Water phase diagram
-        """
+        st.subheader("🌘 Water phase diagram")
 
         st.image(
             "https://www.101diagrams.com/wp-content/uploads/2017/09/phase-diagram-of-water-image.jpg",
             use_column_width=True,
         )
 
-        r"""
-        *****
-        ### 🫧 Cavitation
+        st.divider()
 
-        """
-        st.video("https://www.youtube.com/watch?v=0dd6AlyOnfc")
+        st.subheader("🫧 Cavitation")
+
+        st.video("https://www.youtube.com/watch?v=eMDAw0TXvUo")
         st.caption(
-            "Source: [youtube.com/@MntengDenver](https://www.youtube.com/watch?v=0dd6AlyOnfc)"
+            "Source: [youtube.com/@BTCInstrumentation](https://www.youtube.com/watch?v=eMDAw0TXvUo)"
         )
 
-        r"""
-        *****
-        ### 🪠 Pressure drop in a pump suction line
-        """
+        st.divider()
+
+        st.subheader("🪠 Pressure drop in a pump suction line")
+
         tabs = st.tabs(
             [
                 "**⛲ No cavitation**",
@@ -537,132 +498,153 @@ def main():
                 "**🫧 Cavitation in pump**",
             ]
         )
+
         with tabs[0]:
             st.pyplot(suction_pipeline_cavitate(where=False))
+
         with tabs[1]:
             st.pyplot(suction_pipeline_cavitate(where="pipe"))
+
         with tabs[2]:
             st.pyplot(suction_pipeline_cavitate(where="pump"))
 
-        r"""
+        st.markdown(
+            R"""
 
-        Energy balance between the suction tank and the eye of the pump:
-        $$
-            z_{\rm tank} + \dfrac{p_{\rm tank}}{\gamma} = \cancel{z_{\rm eye}} + \dfrac{p_{\rm eye,abs}}{\gamma} + \dfrac{V^2}{2g} + h_L
-        $$
+            Energy balance between the suction tank and the eye of the pump:
+            $$
+                z_{\rm tank} + \dfrac{p_{\rm tank}}{\gamma} = \cancel{z_{\rm eye}} + \dfrac{p_{\rm eye,abs}}{\gamma} + \dfrac{V^2}{2g} + h_L
+            $$
 
-        $$
-            \dfrac{p_{\rm eye,abs}}{\gamma} = z_{\rm tank} + \dfrac{p_{\rm tank,abs}}{\gamma} - \dfrac{V^2}{2g} - h_L
-        $$
+            $$
+                \dfrac{p_{\rm eye,abs}}{\gamma} = z_{\rm tank} + \dfrac{p_{\rm tank,abs}}{\gamma} - \dfrac{V^2}{2g} - h_L
+            $$
 
-        $$
-            \dfrac{p_{\rm eye,abs}}{\gamma} = z_{\rm tank} + \dfrac{p_{\rm atm}}{\gamma} - \dfrac{V^2}{2g} - h_L
-        $$
+            $$
+                \dfrac{p_{\rm eye,abs}}{\gamma} = z_{\rm tank} + \dfrac{p_{\rm atm}}{\gamma} - \dfrac{V^2}{2g} - h_L
+            $$
 
-        To avoid fluid cavitation, the pressure cannot be lower than its vapor pressure:
-        
-        $$
-            \dfrac{p_{\rm eye,abs}}{\gamma} >  \dfrac{p_{\rm vapor}}{\gamma}
-        $$
-        
-        ### ⚬ Net Pressure Suction Head -- $\mathtt{NPSH}$
-        
-        The pressure head drops even further inside a centrifugal pump. 
-        Pump manufacturers often especify the minimum required pressure at the 
-        eye $(\mathtt{NPSH_r})$.
+            To avoid fluid cavitation, the pressure cannot be lower than its vapor pressure:
+            
+            $$
+                \dfrac{p_{\rm eye,abs}}{\gamma} >  \dfrac{p_{\rm vapor}}{\gamma}
+            $$
+            
+            ### ⚬ Net Pressure Suction Head -- $\mathtt{NPSH}$
+            
+            The pressure head drops even further inside a centrifugal pump. 
+            Pump manufacturers often especify the minimum required pressure at the 
+            eye $(\mathtt{NPSH_r})$.
 
-        """
+            """
+        )
+
         cols = st.columns(2)
 
         with cols[0]:
-            r"""
-            #### $\mathtt{NPSH_a}$
+            st.markdown(
+                R"""
+                #### $\mathtt{NPSH_a}$
 
-            Absolute head  at the suction eye of the pump
+                Absolute head  at the suction eye of the pump
 
-            $$
-                \mathtt{NPSH_a} = \dfrac{p_{\rm eye,abs}}{\gamma} +  \dfrac{V^2}{2g} - \dfrac{p_{\rm vapor}}{\gamma}
-            $$
-            """
+                $$
+                    \mathtt{NPSH_a} = \dfrac{p_{\rm eye,abs}}{\gamma} +  \dfrac{V^2}{2g} - \dfrac{p_{\rm vapor}}{\gamma}
+                $$
+                """
+            )
 
         with cols[1]:
-            r"""
-            #### $\mathtt{NPSH_r}$
+            st.markdown(
+                R"""
+                #### $\mathtt{NPSH_r}$
 
-            Minimum pressure required at the suction eye to keep the pump from cavitating
+                Minimum pressure required at the suction eye to keep the pump from cavitating
 
-            $$
-                \mathtt{NPSH_r} = \substack{\textsf{Check pump} \\ \textsf{characteristic curve!}}
-            $$
+                $$
+                    \mathtt{NPSH_r} = \substack{\textsf{Check pump} \\ \textsf{characteristic curve!}}
+                $$
+
+                """
+            )
+
+        st.latex(
+            R"\textsf{To avoid cavitation:} \quad \mathtt{NPSH_a} > \mathtt{NPSH_r}"
+        )
+        st.divider()
+        st.subheader("Euler number")
+        st.latex(
+            R"\mathsf{E_u} = \dfrac{\textsf{Pressure forces}}{\textsf{Inertial forces}} = \dfrac{p_\textsf{U} - p_\textsf{D}}{\rho u^2}"
+        )
+        st.markdown(
+            R"""
+            | Parameter | Symbol   | Units  |
+            |:---------|:--------:|:------------------:|
+            |Pressure upstream   | $p_\textsf{U}$   | Force/Area        | 
+            |Pressure downstream   | $p_\textsf{D}$   | Force/Area        | 
+            |Characteristic velocity | $u$    | Length/Time  |
+            |Fluid density | $\rho$    | Mass/Volume  | 
+
+            &nbsp;
+
+            In an ideal flow with no energy losses, $\mathsf{E_u} = 0$
 
             """
+        )
 
-        r"""
-        $$
-            \textsf{To avoid cavitation:} \quad \mathtt{NPSH_a} > \mathtt{NPSH_r}
-        $$
-        """
-
-        r"""
-        *****
-        ### Euler number
-
-        $$
-            \mathsf{E_u} = \dfrac{\textsf{Pressure forces}}{\textsf{Inertial forces}} = \dfrac{p_\textsf{U} - p_\textsf{D}}{\rho u^2}
-        $$
-
-        | Parameter | Symbol   | Units  |
-        |:---------|:--------:|:------------------:|
-        |Pressure upstream   | $p_\textsf{U}$   | Force/Area        | 
-        |Pressure downstream   | $p_\textsf{D}$   | Force/Area        | 
-        |Characteristic velocity | $u$    | Length/Time  |
-        |Fluid density | $\rho$    | Mass/Volume  | 
-
-        &nbsp;
-
-        In an ideal flow with no energy losses, $\mathsf{E_u} = 0$
-
-        """
-
-    elif option == "Pumps in series/parallel":
+    elif option == "Pumps in series and parallel":
         url = "https://engineeringlibrary.org/reference/centrifugal-pumps-fluid-flow-doe-handbook"
         iframe(url, height=800, scrolling=True)
 
-        "*******"
+        st.divider()
 
         cols = st.columns(2)
 
         with cols[0]:
-            r"""
-            ### Pumps in series
+            st.markdown(
+                R"""
+                ### Pumps in series
 
-            The head produced by two pumps in series is their sum
-            and the volumetric flow is the same
-            """
+                The head produced by two pumps in series is their sum
+                and the volumetric flow is the same
+                """
+            )
 
         with cols[1]:
-            r"""
-            ### Pumps in parallel
+            st.markdown(
+                R"""
+                ### Pumps in parallel
 
-            The head produced by two pumps in parallel is the same while
-            they contribute a higher flow rate.
-            """
+                The head produced by two pumps in parallel is the same while
+                they contribute a higher flow rate.
+                """
+            )
 
-        r"""
-        ****
+        st.divider()
 
-        #### Multistage pumps
-        """
-        url = "https://www.xylem.com/siteassets/brand/goulds-water-technology/product-images/45hb-70hb-high-pressure-centrifugal-booster-pumps.jpg?width=800&height=800&mode=boxpad&bgcolor=fff"
-        st.caption(f"Source: [xylem.com]({url})")
-        st.image(url, use_column_width=True)
+        st.markdown("#### Multistage pumps")
 
-        r"""
-        Check documentation and performance curves [here](https://www.xylem.com/en-us/brands/goulds-water-technology/products/all-products/45hb-70hb-high-pressure-centrifugal-booster-pumps/documentation/)
-        """
+        cols = st.columns(2)
+
+        with cols[0]:
+            url = "https://www.xylem.com/siteassets/brand/goulds-water-technology/product-images/45hb-70hb-high-pressure-centrifugal-booster-pumps.jpg"
+            multistage_pump_photo = get_image_as_bytes(url)
+            st.caption(f"Source: [xylem.com]({url})")
+            st.image(multistage_pump_photo, use_column_width=True)
+
+
+        with cols[1]:
+            st.markdown(
+                R"""
+                Check documentation and performance curves for [that pump](https://www.xylem.com/en-us/brands/goulds-water-technology/products/all-products/45hb-70hb-high-pressure-centrifugal-booster-pumps/documentation/).
+                """
+            )
+
+    elif option == "~Pump render":
+        pump_render()
+
     else:
         st.error("You should not be here!")
-        r" ### 🚧 Under construction 🚧"
 
 
 #############################################
@@ -680,7 +662,7 @@ swamme_jain = np.vectorize(swamme_jain)
 
 @st.cache_data
 def get_roughness_database():
-    with open("assets/pipe_roughness.json") as f:
+    with open("./book/assets/pipe_roughness.json") as f:
         pipe_roughness_db = json.load(f)
     return pipe_roughness_db
 
@@ -701,28 +683,10 @@ def pump(ax, p: Point, radius: float):
     ax.text(p.x, p.y, r"$\mathtt{P}$", ha="center", va="center")
 
 
-def get_realistic_pump():
-    import requests
-    from PIL import Image
-    from io import BytesIO
-
-    url = "https://www.pump.co.uk/images/cm50-range-of-end-suction-centrifugal-pumps-p5471-2913_medium.jpg"
-    r = requests.get(url, stream=True)
-
-    img = Image.open(BytesIO(r.content), formats=["png", "jpg"])
-
-    return img
-
-
 def realistic_pump(ax, p: Point, size: float):
-    if "realistic_pump" not in st.session_state:
-        img = get_realistic_pump()
-        st.session_state.realistic_pump = img
-    else:
-        img = st.session_state.realistic_pump
-
-    from matplotlib.offsetbox import OffsetImage, AnnotationBbox
-
+    pump_img_url = "https://www.pump.co.uk/images/cm50-range-of-end-suction-centrifugal-pumps-p5471-2913_medium.jpg"
+    img = get_image_as_PIL(pump_img_url)
+    
     imagebox = OffsetImage(img, zoom=size, cmap="bone_r")
 
     ax.add_artist(AnnotationBbox(imagebox, p, frameon=False, zorder=1))
@@ -869,5 +833,5 @@ def pump_and_pipeline():
     return fig
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__page__":
+    page_week_04()

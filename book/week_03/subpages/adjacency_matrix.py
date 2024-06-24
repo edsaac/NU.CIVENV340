@@ -2,41 +2,34 @@ import streamlit as st
 import pandas as pd
 import networkx as nx
 import json
-import pickle
 from streamlit.components.v1 import iframe
 
 build_graph = st.session_state.build_graph
 
 
-def main():
-    with open("assets/page_config.pkl", "rb") as f:
-        st.session_state.page_config = pickle.load(f)
-
-    st.set_page_config(**st.session_state.page_config)
-
-    with open("assets/style.css") as f:
-        st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
-
-    st.title("CIV-ENV 340: Hydraulics and hydrology")
-    "****"
-
-    #####################################################################
+def adjacency_matrix():
 
     url = "https://mathworld.wolfram.com/AdjacencyMatrix.html"
 
-    rf"""
-    ## [:link:]({url}) Adjacency matrix
-    &nbsp;
-    """
+    st.markdown(
+        Rf"""
+        ## [:link:]({url}) Adjacency matrix
+        &nbsp;
+        """
+    )
+
     iframe(url, width=600, height=700, scrolling=True)
 
-    ########
-    r"""
-    ****
-    ### Building a network
-    &nbsp;
-    """
-    with open("week_03/networks/figureSJ.json") as f:
+
+    st.markdown(
+        """
+        ****
+        ### Building a network
+        &nbsp;
+        """
+    )
+
+    with open("./book/week_03/networks/figureSJ.json") as f:
         network = json.load(f)
         nodes, edges = network["nodes"], network["edges"]
 
@@ -46,14 +39,14 @@ def main():
         with cols[0]:
             "#### 🔵 Nodes"
             nodes_df = pd.DataFrame(nodes).transpose()[["x", "y"]]
-            nodes_df = st.experimental_data_editor(
+            nodes_df = st.data_editor(
                 nodes_df, num_rows="dynamic", use_container_width=True
             )
 
         with cols[1]:
             "#### 📐 Edges"
             edges_df = pd.DataFrame(edges).transpose()[["i", "j"]]
-            edges_df = st.experimental_data_editor(
+            edges_df = st.data_editor(
                 edges_df, num_rows="dynamic", use_container_width=True
             )
 
@@ -68,7 +61,7 @@ def main():
         G, fig = build_graph(nodes_df, edges_df)
         st.pyplot(fig)
 
-        "#### Adjacency matrix"
+        st.markdown("#### Adjacency matrix")
         adjacency_np = nx.to_numpy_array(G)
         adjacency_np = adjacency_np - adjacency_np.T
 
@@ -88,4 +81,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    adjacency_matrix()
