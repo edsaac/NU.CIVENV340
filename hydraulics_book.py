@@ -3,9 +3,8 @@ from streamlit.navigation.page import StreamlitPage
 
 from functools import partial
 from typing import Callable, get_args
-from types import ModuleType
 
-from book.pages import (
+from .book.pages import (
     page_week_01,
     page_week_02,
     page_week_03,
@@ -17,7 +16,7 @@ from book.pages import (
     page_week_09,
     page_week_10,
 )
-from book.common import page_config_common, apply_css_style, sidebar_common
+from .book.common import page_config_common, apply_css_style, sidebar_common
 
 
 def generate_list_of_pages(page_week: Callable) -> list[StreamlitPage]:
@@ -49,14 +48,10 @@ def generate_list_of_pages(page_week: Callable) -> list[StreamlitPage]:
     return pages
 
 
-def generate_list_sidequest_pages(subpage: ModuleType):
-    subpage.__all__
-
-
 def entrypoint_page():
     st.title("Hydraulics with Python")
 
-    "Hehe :violet[magic]"
+    "Made by [Edwin Saavedra Cifuentes](https:edsaac.github.io)"
 
 
 def main():
