@@ -15,7 +15,7 @@ folium
 streamlit-folium
 gravis
 dataretrieval
-shapely --no-binary shapely
+shapely==2.0.2
 rasterio
 cartopy
 pysheds
