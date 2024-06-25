@@ -353,7 +353,7 @@ def page_week_10(option: TOC):
         fig, ax = plt.subplots()
         # levels = np.arange(0.05, 1.00, 0.10)
         levels = [risk_value]
-        cs = ax.contour(nn, tt, risk, levels=levels, colors="k", label=r"$\bar{R}$")
+        cs = ax.contour(nn, tt, risk, levels=levels, colors="k")#, label=r"$\bar{R}$")
         img = ax.pcolormesh(nn, tt, risk, vmin=0.00, vmax=1.00, alpha=0.5, cmap="jet")
         plt.colorbar(img, label=r"$\bar{R}$", shrink=0.5)
         ax.clabel(

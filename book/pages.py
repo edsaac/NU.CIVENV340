@@ -29,8 +29,8 @@ all_sections = {
     "Week 10 - Basics of probability": page_week_10,
 }
 
-def generate_pages(page_week: Callable) -> dict[str, StreamlitPage]:
 
+def generate_pages(page_week: Callable) -> dict[str, StreamlitPage]:
     list_of_topics = get_args(page_week.__annotations__["option"])
 
     pages = {}
@@ -38,21 +38,22 @@ def generate_pages(page_week: Callable) -> dict[str, StreamlitPage]:
     for i, topic in enumerate(list_of_topics, start=1):
         if not topic.startswith("~"):
             pages[topic] = st.Page(
-                    partial(page_week, topic),
-                    title=(title := f"{topic}"),
-                    url_path=title.replace(" ", "_").replace("-", "").strip().lower(),
-                    icon=":material/article:",
-                )
+                partial(page_week, topic),
+                title=(title := f"{topic}"),
+                url_path=title.replace(" ", "_").replace("-", "").strip().lower(),
+                icon=":material/article:",
+            )
 
         else:
             pages[topic] = st.Page(
-                    partial(page_week, topic),
-                    title=(title := " - " + topic.replace("~", "")),
-                    url_path=title.replace("-", "").strip().replace(" ", "_").lower(),
-                    icon="🐍",
-                )
+                partial(page_week, topic),
+                title=(title := " - " + topic.replace("~", "")),
+                url_path=title.replace("-", "").strip().replace(" ", "_").lower(),
+                icon="🐍",
+            )
 
     return pages
+
 
 all_pages = {"Cover": None}
 
