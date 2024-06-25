@@ -331,13 +331,13 @@ def page_week_07(option: TOC):
             Fr = V / np.sqrt(g * Dh)
 
             with cols[0]:
-                st.metric("$\; V$", f"{V:.2f} m/s")
+                st.metric(R"$\; V$", f"{V:.2f} m/s")
             with cols[1]:
-                st.metric("$\; T$", f"{T:.2f} m")
+                st.metric(R"$\; T$", f"{T:.2f} m")
             with cols[2]:
-                st.metric("$\; D_h$", f"{Dh:.2f} m")
+                st.metric(R"$\; D_h$", f"{Dh:.2f} m")
             with cols[3]:
-                st.metric("$\; F_r$", f"{Fr:.2f}")
+                st.metric(R"$\; F_r$", f"{Fr:.2f}")
 
             st.warning("Don't forget to add a freeboard!")
 

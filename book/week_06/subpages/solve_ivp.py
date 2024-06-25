@@ -116,7 +116,7 @@ def solve_ivp():
 
         with normaldepth_container.container():
             if normal_depth.success:
-                st.metric("$\; y_n$", f"{normal_depth.x[0]:.2f} m")
+                st.metric(R"$\; y_n$", f"{normal_depth.x[0]:.2f} m")
 
         st.divider()
 
