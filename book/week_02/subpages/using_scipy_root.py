@@ -26,6 +26,9 @@ def using_scipy_root():
     with st.echo():
 
         def colebrook_white_equation(fguess, rel_rough, reynolds):
+            if fguess <= 0 :
+                return np.nan
+            
             return (
                 -2 * np.log10(rel_rough / 3.7 + 2.51 / (reynolds * np.sqrt(fguess)))
             ) - (1.0 / np.sqrt(fguess))
@@ -36,7 +39,7 @@ def using_scipy_root():
         ## 3️⃣ Call `scipy.optimize.root`
         """
     )
-    
+
     url = "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html#scipy-optimize-root"
     iframe(url, height=500, width=500, scrolling=True)
     st.divider()
@@ -47,19 +50,19 @@ def using_scipy_root():
         relative_roughness = st.number_input(
             "Relative roughness -- $e/D$", 1e-6, 0.05, 1e-5, format="%.2e", key="cw_eD"
         )
-    
+
         Reynolds = st.number_input(
             "Reynolds number -- $R_e$", 1e3, 1e9, 1e6, format="%.2e", key="cw_Re"
         )
-    
+
         initial_guess = st.number_input(
             "Initial guess for $f$", 0.004, 0.10, 0.05, format="%.4f"
         )
-    
+
         method = st.selectbox("Root finding method:", ["hybr", "lm"])
-    
+
     with cols[1]:
-        "&nbsp;"
+        st.markdown("&nbsp;")
 
         with st.echo():
             from scipy.optimize import root
@@ -74,10 +77,13 @@ def using_scipy_root():
                 method=method,
             )
 
-    r"""
-    ****
-    ## 🏁 Print final results
-    """
+    st.markdown(
+        R"""
+        ****
+        ## 🏁 Print final results
+        """
+    )
+
     cols = st.columns(2)
 
     with cols[0]:
@@ -89,16 +95,18 @@ def using_scipy_root():
         else:
             st.error(
                 r"""
-            Something went wrong... 
-            try changing the initial guess for $f$ or the root-finding method.
-            """,
+                Something went wrong... 
+                try changing the initial guess for $f$ or the root-finding method.
+                """,
                 icon="🧪",
             )
 
-    r"""
-    ****
-    ## 👾 What about `scipy.optimize.fsolve`
-    """
+    st.markdown(
+        R"""
+        ****
+        ## 👾 What about `scipy.optimize.fsolve`
+        """
+    )
 
     url = "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fsolve.html#scipy.optimize.fsolve"
     iframe(url, height=500, width=500, scrolling=True)
