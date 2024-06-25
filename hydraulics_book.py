@@ -4,7 +4,7 @@ from streamlit.navigation.page import StreamlitPage
 from functools import partial
 from typing import Callable, get_args
 
-from .book.pages import (
+from book.pages import (
     page_week_01,
     page_week_02,
     page_week_03,
@@ -16,7 +16,7 @@ from .book.pages import (
     page_week_09,
     page_week_10,
 )
-from .book.common import page_config_common, apply_css_style, sidebar_common
+from book.common import page_config_common, apply_css_style, sidebar_common
 
 
 def generate_list_of_pages(page_week: Callable) -> list[StreamlitPage]:
