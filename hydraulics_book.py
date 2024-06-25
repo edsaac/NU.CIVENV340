@@ -3,6 +3,7 @@ from streamlit.navigation.page import StreamlitPage
 
 from functools import partial
 from typing import Callable, get_args
+from PIL import Image, ImageOps
 
 from book.pages import (
     page_week_01,
@@ -16,7 +17,7 @@ from book.pages import (
     page_week_09,
     page_week_10,
 )
-from book.common import page_config_common, apply_css_style, sidebar_common
+from book.common import page_config_common, apply_css_style, sidebar_common, badges
 
 
 def generate_list_of_pages(page_week: Callable) -> list[StreamlitPage]:
@@ -49,9 +50,55 @@ def generate_list_of_pages(page_week: Callable) -> list[StreamlitPage]:
 
 
 def entrypoint_page():
-    st.title("Hydraulics with Python")
+    
+    with st.popover("About", use_container_width=False):
+        
+        st.image('./book/assets/img/in_class_l.jpg', caption="During a lecture")
 
-    "Made by [Edwin Saavedra Cifuentes](https:edsaac.github.io)"
+        st.html(
+            R"""
+            <p style="text-align:center">
+                By Edwin Saavedra Cifuentes, PhD.
+            </p>
+            <p style="text-align:center; font-size:0.8rem; line-height:0.9rem;>
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" />
+            </a>
+            <br />This work is licensed under a 
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License
+            </a>.
+            </p>
+            """
+        )
+
+        left_col, right_col = st.columns(2)
+        left_col.markdown(badges["this_repo"])
+        right_col.markdown(badges["other_stuff"])
+    
+    st.title("🌊 Hydraulics with Python 🌊")
+    st.header("", anchor=False, divider="blue")
+
+    st.markdown(
+        R"""
+        This material was first made to support the course 
+        :violet[CIV-ENV 340: Hydraulics and Hydrology] that I taught during 
+        the Spring quarter of 2023 at Northwestern University. It is divided
+        in the ten weeks of the quarter, covering concepts in hydraulics of
+        presurized pipe systems, open channel flow, and basic hydrology. This
+        class included short computational projects, in which we...
+
+        > - built our own EPANET® using scipy
+        > - made a gradually-variable flow profiles calculator
+        > - delineated a real watershed programatically
+        > - queried and analyzed stream gauge data from USGS
+
+        The pages marked with a 🐍 indicate the projects involving using Python.
+        The rest correspond to supplemental material for the lectures, like 
+        diagrams and interactive plots.
+
+        """
+    )
 
 
 def main():
@@ -60,12 +107,12 @@ def main():
     sidebar_common()
 
     entry_page = st.Page(
-        entrypoint_page, title="Cover", default=True, icon=":material/book_2:"
+        entrypoint_page, title="Introduction", default=True, icon=":material/book_2:"
     )
 
     nav = st.navigation(
         {
-            "Main": [entry_page],
+            "Cover": [entry_page],
             "Week 1 - Basics & introduction": generate_list_of_pages(page_week_01),
             "Week 2 - Head losses": generate_list_of_pages(page_week_02),
             "Week 3 - Pipe networks": generate_list_of_pages(page_week_03),
@@ -76,7 +123,6 @@ def main():
             "Week 8 - Watersheds and water cycle": generate_list_of_pages(page_week_08),
             "Week 9 - Hydrology and engineering": generate_list_of_pages(page_week_09),
             "Week 10 - Basics of probability": generate_list_of_pages(page_week_10),
-
         }
     )
 

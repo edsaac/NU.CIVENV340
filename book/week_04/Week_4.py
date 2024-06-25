@@ -31,6 +31,8 @@ TOC = Literal[
 
 
 def page_week_04(option: TOC):
+    st.title(option.replace("~", ""))
+    
     if option == "System curve":
         st.subheader("System head curve", anchor=False)
 

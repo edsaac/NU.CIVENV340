@@ -27,7 +27,7 @@ def page_week_02(
     option: TOC,
 ):
 
-    st.title(option.replace("~", "🐍"))
+    st.title(option.replace("~", ""))
 
     if option == "Friction head loss":
         st.markdown(

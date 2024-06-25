@@ -20,6 +20,7 @@ TOC = Literal[
 def page_week_01(
     option: TOC,
 ):
+    st.title(option.replace("~", ""))
 
     if option == "Systems of units":
         tabs = st.tabs(["**Normal conditions**", "**Standard conditions**"])
@@ -49,7 +50,7 @@ def page_week_01(
         with tabs[1]:
             st.markdown(R"""
 
-                | Condition           | Symbol | Units       | SI                                | BG                                     |
+                | Parameter           | Symbol | Units       | SI                                | BG                                     |
                 |:--------------------|:------:|:-----------:|:---------------------------------:|:--------------------------------------:|
                 |Temperature          | $T$    | Temperature | $4 \, \degree\textrm{C}$       | $39.2 \, \degree\textrm{F}$            |
                 |Atmospheric pressure | $p_{\rm atm}$    | Force/Area  | $1.014 \times 10^{5} \, \textrm{Pa}$ | $14.7 \, \textrm{lb}/\textrm{in}^2$ |
@@ -636,7 +637,7 @@ def page_week_01(
     else:
         st.error("You should not be here!")
 
-
+@st.cache_resource
 def gradelines_sketch():
 
     fig, ax = plt.subplots()

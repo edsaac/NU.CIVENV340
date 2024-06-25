@@ -75,4 +75,6 @@ img {
 
 [data-testid="stHeader"] {
     background-color: rgba(078, 042, 132, 0.5);
+    visibility: collapse;
+    display: none;
 }

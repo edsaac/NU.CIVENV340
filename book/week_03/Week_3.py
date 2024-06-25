@@ -22,6 +22,7 @@ TOC = Literal[
 
 
 def page_week_03(option: TOC):
+    st.title(option.replace("~", ""))
 
     if option == "Pipes in series/parallel":
         cols = st.columns(2)
