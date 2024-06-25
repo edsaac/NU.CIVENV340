@@ -34,7 +34,7 @@ def watershed_delimitation():
     cols = st.columns(2)
 
     with cols[0]:
-        with st.popover("ℹ️ About"):
+        with st.popover("ℹ️ About `pysheds`"):
             st.markdown(
                 R"""
                 **Source:**
@@ -128,18 +128,20 @@ def watershed_delimitation():
 
     with map_container.container():
         st.subheader("General location", divider="rainbow")
-        tiles = st.selectbox(
-            "🌌 Pick a map style:",
-            [
-                "OpenStreetMap",
-                "CartoDB Positron",
-                "CartoDB Dark_Matter",
-            ],
-            index=0,
-        )
+        # tiles = st.selectbox(
+        #     "🌌 Pick a map style:",
+        #     [
+        #         "OpenStreetMap",
+        #         "CartoDB Positron",
+        #         "CartoDB Dark_Matter",
+        #     ],
+        #     index=0,
+        # )
 
         midpoint = Point(mean([bottom, top]), mean([left, right]))
-        m = folium.Map(location=midpoint, zoom_start=8, tiles=tiles)
+        m = folium.Map(location=midpoint, zoom_start=8, tiles="OpenStreetMap")
+        fg = folium.FeatureGroup("Pour point")
+
         boundary = [
             (bottom, left),
             (bottom, right),
@@ -147,15 +149,19 @@ def watershed_delimitation():
             (top, left),
             (bottom, left),
         ]
-        folium.Polygon(boundary, tooltip="DEM boundary").add_to(m)
 
-        folium.Marker(
+        polygon_bound = folium.Polygon(boundary, tooltip="DEM boundary")
+        fg.add_child(polygon_bound)
+
+        marker = folium.Marker(
             (pour_point[1], pour_point[0]),
             tooltip="Pour point (Outlet)",
             icon=folium.Icon("purple"),
-        ).add_to(m)
+        )
 
-        st_folium(m, use_container_width=True, height=500, returned_objects=[])
+        fg.add_child(marker)
+
+        st_folium(m, feature_group_to_add=fg, use_container_width=True, height=500, returned_objects=[])
 
     with dem_container.container():
         st.subheader("DEM: Digital Elevation Model", divider=True)
