@@ -1,211 +1,37 @@
 import streamlit as st
-import pickle
 import numpy as np
 import plotly.graph_objects as go
-import pandas as pd
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle, Polygon, Circle
+
+from typing import Literal
 from collections import namedtuple
+
+from book.common import axis_format
+from .subpages import find_critical_depth
 
 Point = namedtuple("Point", ["x", "y"])
 
+TOC = Literal[
+    "Open channel flow",
+    "Section geometry",
+    "Specific energy",
+    "Froude number",
+    "~Critical depth calculation",
+]
 
-def main():
-    with open("assets/page_config.pkl", "rb") as f:
-        st.session_state.page_config = pickle.load(f)
 
-    st.set_page_config(**st.session_state.page_config)
+def page_week_05(option: TOC):
+    st.title(option.replace("~", ""))
 
-    with open("assets/style.css") as f:
-        st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
-
-    axis_format = dict(
-        title_font_size=20,
-        tickfont_size=16,
-        showline=True,
-        color="RGBA(1, 135, 73, 0.3)",
-        tickcolor="RGBA(1, 135, 73, 0.3)",
-        showgrid=True,
-        griddash="dash",
-        linewidth=1,
-        gridcolor="RGBA(1, 135, 73, 0.3)",
-    )
-    #####################################################################
-
-    st.title("CIV-ENV 340: Hydraulics and hydrology")
-    "****"
-
-    with st.sidebar:
-        lottie = """
-        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_cmzv38mj.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 200px;"  loop  autoplay></lottie-player>
-        """
-        st.html(lottie)
-
-        "### Select a topic:"
-        option = st.radio(
-            "Select a topic:",
-            [
-                "Operation point",
-                "Open channel flow",
-                "Section geometry",
-                "Specific energy",
-                "Froude number",
-            ],
-            label_visibility="collapsed",
-        )
-
-        "***"
-        st.image(
-            "https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/syndetics.com/index.php?client=primo&isbn=9780134292380/sc.jpg"
-        )
-
-        r"""
-        #### Class textbook:
-        [🌐](https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9980502032702441) *Houghtalen, Akan & Hwang* (2017). **Fundamentals of hydraulic engineering systems** 5th ed.,
-        Pearson Education Inc., Boston.
-        """
-
-        cols = st.columns(2)
-        with cols[0]:
-            r"""
-            [![Github Repo](https://img.shields.io/static/v1?label=&message=Repository&color=black&logo=github)](https://github.com/edsaac/NU.CIVENV340)
-            """
-        with cols[1]:
-            r"""[![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
-
-    ####################################################################
-    if option == "Operation point":
-        r"### Operation point"
-
-        cols = st.columns(2)
-
-        with cols[0]:
-            with st.expander("⚙️ **Pump head**"):
-                r"""
-                $$
-                    H_\textsf{Pump}(Q) = \substack{\textsf{Check pump catalogue} \\ \textsf{for characteristic curve!}}
-                $$
-                """
-
-                discharge_manufacturer = np.arange(100, 400, 10)
-                head_pump_manufacturer = (
-                    25.0
-                    - 0.0054 * discharge_manufacturer
-                    - 0.000086 * discharge_manufacturer**2
-                )
-                pump_df = pd.DataFrame(
-                    {
-                        "Discharge (LPS)": discharge_manufacturer,
-                        "Head (m)": head_pump_manufacturer,
-                    }
-                )
-
-        with cols[1]:
-            with st.expander("🚿 **System head**"):
-                r"""
-                ####
-
-                $$
-                    H_\textsf{System}(Q) = H_\textsf{Static head} + KQ^m
-                $$
-                """
-
-                discharge = np.arange(0, 500, 10)
-                static_head = st.slider(
-                    r"$H_\textsf{Static head}$", 0.0, 22.0, 10.0, step=0.2
-                )
-                head_loss_K = st.slider(
-                    r"$K$", 0.1e-4, 10e-4, 1e-4, 1e-5, key="head_loss", format="%.2e"
-                )
-                system_head = head_loss_K * discharge**2 + static_head
-
-                system_df = pd.DataFrame(
-                    {"Discharge (LPS)": discharge, "Head (m)": system_head}
-                )
-
-        all_df = pd.merge(
-            pump_df,
-            system_df,
-            on="Discharge (LPS)",
-            how="outer",
-            suffixes=["_Pump", "_System"],
-        ).sort_values(by="Discharge (LPS)")
-        all_df["ΔH"] = np.abs(all_df["Head (m)_Pump"] - all_df["Head (m)_System"])
-
-        operation_point = all_df[all_df["ΔH"] == all_df["ΔH"].min()]
-
-        fig = go.Figure()
-
-        fig.add_traces(
-            [
-                go.Scatter(  ## System curve
-                    x=discharge,
-                    y=system_head,
-                    name="System",
-                    hovertemplate="<i>H<sub>p</sub></i> = %{y:.1f} m <br><b>Q = %{x:.2f} L/min</b>",
-                    line=dict(width=4, color="cornflowerblue"),
-                ),
-                go.Scatter(  ## Pump curve
-                    x=discharge_manufacturer,
-                    y=head_pump_manufacturer,
-                    name="Pump",
-                    hovertemplate="<i>H<sub>p</sub></i> = %{y:.1f} m <br><b>Q = %{x:.2f} L/min</b>",
-                    line=dict(width=8, color="purple"),
-                ),
-                go.Scatter(  ## Operation point
-                    x=operation_point["Discharge (LPS)"],
-                    y=operation_point["Head (m)_Pump"],
-                    name="Operation <br>point",
-                    mode="markers",
-                    hovertemplate="<i>H<sub>p</sub></i> = %{y:.1f} m <br><b>Q = %{x:.2f} L/min</b>",
-                    marker=dict(
-                        size=20,
-                        color="#ff8811",
-                        opacity=0.5,
-                        line=dict(color="MediumPurple", width=2),
-                    ),
-                ),
-            ]
-        )
-
-        fig.update_layout(
-            height=600,
-            margin=dict(t=40),
-            # title_text = '''System curve''',
-            yaxis=dict(
-                title="Head pump [m]", range=[0, 30], showspikes=True, **axis_format
-            ),
-            xaxis=dict(
-                title="Discharge [L/min]",
-                range=[0, 500],
-                showspikes=True,
-                **axis_format,
-            ),
-            legend=dict(
-                title="Curves",
-                font=dict(size=18),
-                orientation="v",
-                bordercolor="gainsboro",
-                borderwidth=1,
-                yanchor="top",
-                y=0.30,
-                xanchor="right",
-                x=0.95,
-            ),
-            hoverlabel=dict(font_size=18),
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
-
-    elif option == "Open channel flow":
+    if option == "Open channel flow":
         url = "https://upload.wikimedia.org/wikipedia/commons/9/92/Japan_Kyoto_philosophers_walk_DSC00297.jpg"
         st.image(url, use_column_width=True)
         st.caption(f"Lake Biwa Canal. Source: [wikimedia.org]({url})")
 
-        r"""
-        ### Open-channel flow classification
-        """
+        st.subheader("Open-channel flow classification")
+
         tabs = st.tabs(
             [
                 "**Uniform**",
@@ -220,99 +46,77 @@ def main():
 
             cols = st.columns(3)
             with cols[0]:
-                r"""
-                $$
-                    y_1 = y_2
-                $$
-                """
+                st.latex(R"y_1 = y_2")
+
             with cols[1]:
-                r"""
-                $$
-                    \dfrac{V^2_1}{2g} = \dfrac{V^2_2}{2g}
-                $$
-                """
+                st.latex(R"\dfrac{V^2_1}{2g} = \dfrac{V^2_2}{2g}")
+
             with cols[2]:
-                r"""
-                $$
-                    S_0 = S_w = S_e
-                $$
-                """
+                st.latex("S_0 = S_w = S_e")
 
         with tabs[1]:  ## GVF -> Accelerates
             st.pyplot(draw_profiles(which="gvf_accelerate"))
 
             cols = st.columns(3)
             with cols[0]:
-                r"""
-                $$
-                    y_1 > y_2
-                $$
-                """
+                st.latex("y_1 > y_2")
+
             with cols[1]:
-                r"""
-                $$
-                    \dfrac{V^2_1}{2g} < \dfrac{V^2_2}{2g}
-                $$
-                """
+                st.latex(R"\dfrac{V^2_1}{2g} < \dfrac{V^2_2}{2g}")
+
             with cols[2]:
-                r"""
-                $$
-                    S_0 \neq S_w \neq S_e
-                $$
-                """
+                st.latex(R"S_0 \neq S_w \neq S_e")
 
         with tabs[2]:  ## GVF -> Deaccelerates
             st.pyplot(draw_profiles(which="gvf_slowing"))
 
             cols = st.columns(3)
             with cols[0]:
-                r"""
-                $$
-                    y_1 < y_2
-                $$
-                """
+                st.latex("y_1 < y_2")
+
             with cols[1]:
-                r"""
-                $$
-                    \dfrac{V^2_1}{2g} > \dfrac{V^2_2}{2g}
-                $$
-                """
+                st.latex("\dfrac{V^2_1}{2g} > \dfrac{V^2_2}{2g}")
+
             with cols[2]:
-                r"""
-                $$
-                    S_0 \neq S_w \neq S_e
-                $$
-                """
+                st.latex("S_0 \neq S_w \neq S_e")
 
         with tabs[3]:  ## RVF
             url = "https://www.youtube.com/watch?v=nX6aemsdFIo"
-            st.video(url)
+            st.video(url, muted=True)
             st.caption(f"Source: [youtube.com/@fluidsin4k719]({url})")
 
     elif option == "Section geometry":
-        r"""
-        ## 📜 Some definitions
+        st.markdown(
+            R"""
+            ## 📜 Some definitions
 
-        |Parameter | Symbol | Description | Units |
-        |:---------|:------:|:------------|:-----:|
-        |Discharge |$Q$     |Volumetric flow rate| Volume/Time |
-        |Flow area |$A$     |Cross-sectional area of the flow| Area |
-        |Average velocity| $V$ | $Q = VA$ | Length/Time |
-        |Depth     |$y$     |Vertical distance from the channel bottom to the free surface| Length |
-        |Top width |$T$     |Width at the surface | Length |
-        |Bottom width | $b$ | Width at the bottom | Length |
-        |Wetted perimeter | $P_w$| Contact length of water and the channel | Lenght |
-        |Hydraulic depth  | $D_h$| $D_h = \dfrac{A}{T}$| Lenght |
-        |Hydraulic radius | $R_h$| $R_h = \dfrac{A}{P_w}$ | Lenght |
-        |Bottom slope     | $S_0$| Longitudinal slope | - |
-        |Side slope       | $m$  | 1 vertical over $m$ horizontal | - |
-        """
-        st.caption("Adapted from pp. 198-199 - Course textbook")
+            |Parameter | Symbol | Description | Units |
+            |:---------|:------:|:------------|:-----:|
+            |Discharge |$Q$     |Volumetric flow rate| Volume/Time |
+            |Flow area |$A$     |Cross-sectional area of the flow| Area |
+            |Average velocity| $V$ | $Q = VA$ | Length/Time |
+            |Depth     |$y$     |Vertical distance from the channel bottom to the free surface| Length |
+            |Top width |$T$     |Width at the surface | Length |
+            |Bottom width | $b$ | Width at the bottom | Length |
+            |Wetted perimeter | $P_w$| Contact length of water and the channel | Lenght |
+            |Hydraulic depth  | $D_h$| $D_h = \dfrac{A}{T}$| Lenght |
+            |Hydraulic radius | $R_h$| $R_h = \dfrac{A}{P_w}$ | Lenght |
+            |Bottom slope     | $S_0$| Longitudinal slope | - |
+            |Side slope       | $m$  | 1 vertical over $m$ horizontal | - |
+            """
+        )
 
-        r"""
-        *****
-        ## 📐 Cross-section geometry
-        """
+        st.caption(
+            "Adapted from *Houghtalen, Akan & Hwang* (2017). **Fundamentals of hydraulic engineering systems** 5th ed., pp. 198-199"
+        )
+
+        st.markdown(
+            R"""
+            *****
+            ## 📐 Cross-section geometry
+            """
+        )
+
         tabs = st.tabs(["Rectangular", "Trapezoidal", "Triangular", "Circular"])
 
         with tabs[0]:  # Rectangular
@@ -321,8 +125,8 @@ def main():
                 st.pyplot(draw_sections("rectangle"))
 
             with cols[1]:  # Equations
-                r"""
-                $$
+                st.latex(
+                    R"""
                     \begin{align*}
                         A &= by \\
                         \\
@@ -334,8 +138,8 @@ def main():
                         \\
                         D_h &= y
                     \end{align*}
-                $$
-                """
+                    """
+                )
 
         with tabs[1]:  # Trapezoidal
             cols = st.columns(2)
@@ -343,8 +147,8 @@ def main():
                 st.pyplot(draw_sections("trapezoid"))
 
             with cols[1]:
-                r"""
-                $$
+                st.latex(
+                    R"""
                     \begin{align*}
                         A &= (b+my)y \\
                         \\  
@@ -356,8 +160,8 @@ def main():
                         \\
                         D_h &= \dfrac{(b+my)y}{b + 2my}
                     \end{align*}
-                $$
-                """
+                    """
+                )
 
         with tabs[2]:  # Triangular
             cols = st.columns(2)
@@ -366,8 +170,8 @@ def main():
                 st.pyplot(draw_sections("triangle"))
 
             with cols[1]:
-                r"""
-                $$
+                st.latex(
+                    R"""
                     \begin{align*}
                         A &= my^2 \\
                         \\
@@ -379,8 +183,8 @@ def main():
                         \\
                         D_h &= \dfrac{y}{2}
                     \end{align*}
-                $$
-                """
+                    """
+                )
 
         with tabs[3]:  # Circular
             cols = st.columns(2)
@@ -389,8 +193,8 @@ def main():
                 st.pyplot(draw_sections("circle"))
 
             with cols[1]:
-                r"""
-                $$
+                st.latex(
+                    R"""
                     \begin{align*}
                         \theta &= \pi - \arccos{\left( \dfrac{y - d_0/2}{d_0/2} \right)} \\
                         \\
@@ -404,56 +208,57 @@ def main():
                         \\
                         D_h &= \dfrac{d_0}{8}\left( \dfrac{2\theta - \sin{2\theta}}{\sin{\theta}} \right)
                     \end{align*}
-                $$
-                """
+                    """
+                )
 
     elif option == "Specific energy":
-        r"""
 
-        ## Total and specific energy
+        st.subheader("Total and specific energy", anchor=False)
 
-        The **total energy** per unit weight of water flowing in an open channel is the sum of:
-        - Kinetic energy
-        - Pressure energy
-        - Potential energy (elevation above a datum line)
+        st.markdown(
+            R"""
+            The **total energy** per unit weight of water flowing in an open channel is the sum of:
+            - Kinetic energy
+            - Pressure energy
+            - Potential energy (elevation above a datum line)
+            """
+        )
 
-        $$
-            H = \underbrace{z}_{\substack{ \textsf{Elevation} \\ \textsf{head} }} + \underbrace{ \dfrac{p}{\gamma} }_{ \substack{ \textsf{Pressure} \\ \textsf{head} }} + \underbrace{ \alpha\dfrac{V^2}{2g} }_{ \substack{\textsf{Kinetic} \\ \textsf{head}}}
-        $$
+        st.latex(R"H = \underbrace{z}_{\substack{ \textsf{Elevation} \\ \textsf{head} }} + \underbrace{ \dfrac{p}{\gamma} }_{ \substack{ \textsf{Pressure} \\ \textsf{head} }} + \underbrace{ \alpha\dfrac{V^2}{2g} }_{ \substack{\textsf{Kinetic} \\ \textsf{head}}}")
 
-        |Parameter | Symbol | Units |
-        |:---------|:------:|:-----:|
-        |Total energy per unit weight |$H$ | Length |
-        |Pressure head |$p/\gamma$ | Length |
-        |Energy coefficient |$\alpha \in [1.0, 1.20] $ | - |
-        |Mean velocity |$V$ | Length/Time |
+        st.markdown(
+            R"""
+            |Parameter | Symbol | Units |
+            |:---------|:------:|:-----:|
+            |Total energy per unit weight |$H$ | Length |
+            |Pressure head |$p/\gamma$ | Length |
+            |Energy coefficient |$\alpha \in [1.0, 1.20] $ | - |
+            |Mean velocity |$V$ | Length/Time |
 
-        &nbsp;
+            &nbsp;
 
-        On a plane surface, the water depth $y$ represents the pressure head $p/\gamma$.
+            On a plane surface, the water depth $y$ represents the pressure head $p/\gamma$.
 
 
-        The **specific energy** is the energy head measured with respect of the channel bottom
+            The **specific energy** is the energy head measured with respect of the channel bottom
+            """
+        )
 
-        $$
-            E = y + \dfrac{V^2}{2g} = y + \dfrac{Q^2}{2gA^2}
-        $$
-        """
-
-        r"""
-        *****
-        ## Specific energy curve
-
-        For a given value of $E$, the discharge can go through either a supercritical depth or
-        a subcritical depth. This pair of depths are known as **alternate depths**.
+        st.latex("E = y + \dfrac{V^2}{2g} = y + \dfrac{Q^2}{2gA^2}")
+         
+        st.divider()
         
-        &nbsp;
-        """
+        st.header("Specific energy curve", anchor=False)
 
-        cols = st.columns([2, 1])
+        st.markdown(R"""
+            For a given value of $E$, the discharge can go through either a supercritical depth or
+            a subcritical depth. This pair of depths are known as **alternate depths**.            
+            """
+        )
+
+        cols = st.columns([2, 1], vertical_alignment="center")
 
         with cols[1]:  ## Controls for plot
-            "&nbsp;"
             width = st.slider("Width -- $b$ [m]", 0.1, 10.0, 3.0, 0.1)
             discharge = st.slider("Discharge -- $Q$ [m³/s]", 1.0, 30.0, 15.0, 0.1)
 
@@ -571,114 +376,126 @@ def main():
 
             st.plotly_chart(fig, use_container_width=True)
 
-        r"""
-        *****
-        ## Critical flow
+        st.divider()
+        st.header("Critical flow", anchor=False)
 
-        Depth at which the specific energy is minimized
+        st.markdown(R"""
+            Depth at which the specific energy is minimized
+            
+            $$
+                \dfrac{dE}{dy} = \dfrac{d}{dy} \left(y + \dfrac{Q^2}{2gA^2}\right) = 0 
+            $$
 
-        $$
-            \dfrac{dE}{dy} = \dfrac{d}{dy} \left(y + \dfrac{Q^2}{2gA^2}\right) = 0 
-        $$
+            $$
+                -\dfrac{Q^2}{gA^3}\dfrac{dA}{dy} + 1 = 0
+            $$"""
+        )
 
-        $$
-            -\dfrac{Q^2}{gA^3}\dfrac{dA}{dy} + 1 = 0
-        $$
+        st.info("Explain why $dA/dy = T$", icon=":material/person_raised_hand:")
+        
+        st.markdown(R"""
+            $$
+                1 - \dfrac{Q^2T}{gA^3} = 0
+            $$
 
-        Why $dA/dy = T$ ?
+            Introducing the hydraulic depth $D_h$,
 
-        $$
-            1 - \dfrac{Q^2T}{gA^3} = 0
-        $$
+            $$
+                1 - \dfrac{Q^2}{g A^2} \dfrac{1}{D_h} = 0 
+            $$
 
-        Introducing the hydraulic depth,
+            Specific energy is minimal when 
+            $$
+                \dfrac{Q^2}{g A^2} \dfrac{1}{D_h} = 1
+            $$
 
-        $$
-            1 - \dfrac{Q^2}{g A^2} \dfrac{1}{D_h} = 0 
-        $$
-
-        Specific energy is minimal when 
-        $$
-            \dfrac{Q^2}{g A^2} \dfrac{1}{D_h} = 1
-        $$
-
-        Or in terms of velocity
-        $$
-            \underbrace{\dfrac{V}{\sqrt{g \, D_h}}}_{\substack{\textsf{Froude} \\ \textsf{number} \\ \mathsf{F_r} }} = 1
-        $$
-
-        """
+            Or in terms of velocity
+            $$
+                \underbrace{\dfrac{V}{\sqrt{g \, D_h}}}_{\substack{\textsf{Froude} \\ \textsf{number} \\ \mathsf{F_r} }} = 1
+            $$
+            """
+        )
 
     elif option == "Froude number":
-        r"""
-        ## Critical depth $y_c$
+        
+        st.header("Critical depth $y_c$", anchor=False)
+        
+        st.markdown(
+            R"""
+            The depth that minimizes the specific energy, i.e., follows that
+            $$
+                \dfrac{Q^2}{g} = A^2 \, D_h
+            $$
 
-        The depth that minimizes the specific energy, i.e., follows that
-        $$
-            \dfrac{Q^2}{g} = A^2 \, D_h
-        $$
+            For a rectangular channel, an explicit equation for the critical depth can be found:
+            $$
+                y_c = \sqrt[3]{\dfrac{Q^2}{g \, b^2}}
+            $$
 
-        For a rectangular channel, an explicit equation for the critical depth can be found:
-        $$
-            y_c = \sqrt[3]{\dfrac{Q^2}{g \, b^2}}
-        $$
+            For trapezoidal and circular channels, a numerical approximation is necessary.
+            """
+        )
 
-        For trapezoidal and circular channels, a numerical approximation is necessary.
-        """
+        st.info("""
+            &nbsp; Check the next section on how to use `scipy.optimize.root` to calculate critical depth in any cross section""",
+            icon="👈"
+        )
 
-        st.info("&nbsp; Check `scipy.optimize.root` to find a solution", icon="👈")
+        st.divider()
 
-        r"""
-        ****
-        ## Froude number $\mathsf{F_r}$
-        """
+        st.header("Froude number $\mathsf{F_r}$", anchor=False)
 
         cols = st.columns(3, gap="medium")
         with cols[0]:  # Subcritical
-            r"""
-            #### Subcritical flow
+            st.markdown(R"""
+                #### Subcritical flow
 
-            $$
-                \begin{align*}
-                    y > y_c \\ \mathsf{F_r} < 1.0
-                \end{align*}
-            $$
-            """
+                $$
+                    \begin{align*}
+                        y > y_c \\ \mathsf{F_r} < 1.0
+                    \end{align*}
+                $$
+                """
+            )
 
         with cols[1]:  # Critical
-            r"""
-            #### Critical flow
+            st.markdown(R"""
+                #### Critical flow
 
-            $$
-                \begin{align*}
-                    y = y_c \\ \mathsf{F_r} = 1.0
-                \end{align*}
-            $$
-            """
+                $$
+                    \begin{align*}
+                        y = y_c \\ \mathsf{F_r} = 1.0
+                    \end{align*}
+                $$
+                """
+            )
 
         with cols[2]:  # Subcritical
-            r"""
-            #### Supercritical flow
+            st.markdown(R"""
+                #### Supercritical flow
 
-            $$
-                \begin{align*}
-                    y < y_c \\ \mathsf{F_r} > 1.0
-                \end{align*}
+                $$
+                    \begin{align*}
+                        y < y_c \\ \mathsf{F_r} > 1.0
+                    \end{align*}
 
-            $$
-            """
+                $$
+                """
+            )
 
         url = "https://www.youtube.com/watch?v=cRnIsqSTX7Q"
         st.video(url)
         st.caption(f"Source: [youtube.com/@emulenews]({url})")
 
+    
+    elif option == "~Critical depth calculation":
+        find_critical_depth()
+    
     else:
         st.error("You should not be here!")
-        r" ### 🚧 Under construction 🚧"
 
 
 def draw_profiles(which: str):
-    from matplotlib.patches import Polygon
 
     So = -1 / 10.0  # 1 + x*S0
     x0, x1, x2 = 1, 3, 8
@@ -855,8 +672,6 @@ def draw_profiles(which: str):
 
 
 def draw_sections(shape: str):
-    from matplotlib.patches import Rectangle, Polygon, Circle
-
     p = Point(0, 0)
     width = 2.0
     height = 1.0
@@ -1133,5 +948,5 @@ def draw_sections(shape: str):
     return fig
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__page__":
+    page_week_05()

@@ -5,11 +5,22 @@ from functools import partial
 from typing import Callable, get_args
 from types import ModuleType
 
-from book.pages import page_week_01, page_week_02, page_week_03, page_week_04
+from book.pages import (
+    page_week_01,
+    page_week_02,
+    page_week_03,
+    page_week_04,
+    page_week_05,
+    page_week_06,
+    page_week_07,
+    page_week_08,
+    page_week_09,
+    page_week_10,
+)
 from book.common import page_config_common, apply_css_style, sidebar_common
 
 
-def generate_list_of_pages(page_week: Callable, nweek: int) -> list[StreamlitPage]:
+def generate_list_of_pages(page_week: Callable) -> list[StreamlitPage]:
     list_of_topics = get_args(page_week.__annotations__["option"])
 
     pages = []
@@ -20,8 +31,8 @@ def generate_list_of_pages(page_week: Callable, nweek: int) -> list[StreamlitPag
                 st.Page(
                     partial(page_week, topic),
                     title=(title := f"{topic}"),
-                    url_path=title.replace(" ", "_"),
-                    icon=":material/article:"
+                    url_path=title.replace(" ", "_").replace("-", "").strip().lower(),
+                    icon=":material/article:",
                 )
             )
 
@@ -30,7 +41,7 @@ def generate_list_of_pages(page_week: Callable, nweek: int) -> list[StreamlitPag
                 st.Page(
                     partial(page_week, topic),
                     title=(title := " - " + topic.replace("~", "")),
-                    url_path=title.replace(" ", "_"),
+                    url_path=title.replace("-", "").strip().replace(" ", "_").lower(),
                     icon="🐍",
                 )
             )
@@ -53,15 +64,24 @@ def main():
     apply_css_style()
     sidebar_common()
 
-    entry_page = st.Page(entrypoint_page, title="Cover", default=True, icon=":material/book_2:")
+    entry_page = st.Page(
+        entrypoint_page, title="Cover", default=True, icon=":material/book_2:"
+    )
 
     nav = st.navigation(
         {
             "Main": [entry_page],
-            "Week 1": generate_list_of_pages(page_week_01, 1),
-            "Week 2": generate_list_of_pages(page_week_02, 2),
-            "Week 3": generate_list_of_pages(page_week_03, 3),
-            "Week 4": generate_list_of_pages(page_week_04, 4),
+            "Week 1 - Basics & introduction": generate_list_of_pages(page_week_01),
+            "Week 2 - Head losses": generate_list_of_pages(page_week_02),
+            "Week 3 - Pipe networks": generate_list_of_pages(page_week_03),
+            "Week 4 - Pumps": generate_list_of_pages(page_week_04),
+            "Week 5 - Open-channel flow": generate_list_of_pages(page_week_05),
+            "Week 6 - More channel flow": generate_list_of_pages(page_week_06),
+            "Week 7 - Hydraulic structures": generate_list_of_pages(page_week_07),
+            "Week 8 - Watersheds and water cycle": generate_list_of_pages(page_week_08),
+            "Week 9 - Hydrology and engineering": generate_list_of_pages(page_week_09),
+            "Week 10 - Basics of probability": generate_list_of_pages(page_week_10),
+
         }
     )
 

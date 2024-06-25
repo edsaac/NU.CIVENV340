@@ -1,185 +1,36 @@
 import streamlit as st
-import pickle
 import requests
 from urllib.parse import urlparse
+
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
 import pandas as pd
 
 import plotly.graph_objects as go
+from typing import Literal
+
+from .subpages import oroville_dam, watershed_delimitation
+from ..common import axis_format
+
+TOC = Literal[
+    "Water cycle",
+    "Drainage basin",
+    "Hyetograph",
+    "Runoff",
+    # "Infiltration",
+    # "Rainfall-runoff models",
+    "Design storm",
+    "IDF curve",
+    "~Oroville Dam",
+    "~Watershed delimitation"
+]
 
 
-def main():
-    with open("assets/page_config.pkl", "rb") as f:
-        st.session_state.page_config = pickle.load(f)
+def page_week_08(option: TOC):
+    st.title(option.replace("~", ""))
 
-    st.set_page_config(**st.session_state.page_config)
-
-    with open("assets/style.css") as f:
-        st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
-
-    axis_format = dict(
-        title_font_size=20,
-        tickfont_size=16,
-        showline=True,
-        color="RGBA(1, 135, 73, 0.3)",
-        tickcolor="RGBA(1, 135, 73, 0.3)",
-        showgrid=True,
-        griddash="dash",
-        linewidth=1,
-        gridcolor="RGBA(1, 135, 73, 0.3)",
-    )
-    #####################################################################
-
-    st.title("CIV-ENV 340: Hydraulics and hydrology")
-    "****"
-
-    with st.sidebar:
-        lottie = """
-        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_x4j4bs6z.json"  background="transparent"  speed="1.9"  style="width: 200px; height: 200px;"  loop  autoplay></lottie-player>
-        """
-        st.html(lottie, width=200, height=200)
-
-        "### Select a topic:"
-        option = st.radio(
-            "Select a topic:",
-            [
-                "Hydraulic structures",
-                "Water cycle",
-                "Drainage basin",
-                "Hyetograph",
-                "Runoff",
-                # "Infiltration",
-                # "Rainfall-runoff models",
-                "Design storm",
-                "IDF curve",
-            ],
-            label_visibility="collapsed",
-        )
-
-        "***"
-        st.image(
-            "https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/syndetics.com/index.php?client=primo&isbn=9780134292380/sc.jpg"
-        )
-
-        r"""
-        #### Class textbook:
-        [🌐](https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9980502032702441) *Houghtalen, Akan & Hwang* (2017). **Fundamentals of hydraulic engineering systems** 5th ed.,
-        Pearson Education Inc., Boston.
-        """
-
-        cols = st.columns(2)
-        with cols[0]:
-            r"""
-            [![Github Repo](https://img.shields.io/static/v1?label=&message=Repository&color=black&logo=github)](https://github.com/edsaac/NU.CIVENV340)
-            """
-        with cols[1]:
-            r"""[![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
-
-    ####################################################################
-
-    if option == "Hydraulic structures":
-        r"""
-        ## Dams & spillways
-        """
-        "### Elements of a dam"
-        url = "https://www.fema.gov/sites/default/files/2020-08/fema_911_pocket_safety_guide_dams_impoundments_2016.pdf"
-        st.caption(
-            "Pocket Safety Guide for Dams and Impoundments (FEMA P-911)<br>"
-            + f"Source: [{urlparse(url).hostname}]({url})",
-            unsafe_allow_html=True,
-        )
-        st.image("assets/img/embankment.png", use_column_width=True)
-
-        r"""
-        &nbsp;
-
-        ### Dam classification
-
-        """
-
-        tabs = st.tabs(["**Gravity**", "**Arch**", "**Embankment**", "**Buttress**"])
-
-        imgs = [
-            "https://upload.wikimedia.org/wikipedia/commons/9/94/Dworshak_Dam.jpg",
-            "https://upload.wikimedia.org/wikipedia/commons/1/1f/Presa_de_El_Atazar_-_01.jpg",
-            "https://upload.wikimedia.org/wikipedia/commons/1/1c/Tataragi_Dam10n4272.jpg",
-            "https://upload.wikimedia.org/wikipedia/commons/9/9d/Lake_Tahoe_Dam-10.jpg",
-        ]
-
-        captions = [
-            "Dworshak Dam (ID, USA)",
-            "Presa de El Atazar (Madrid, España)",
-            "Kurokawa Dam - 多々良木ダム (Asago, Japan)",
-            "Lake Tahow Dam (CA, USA)",
-        ]
-
-        for tab, img_url, caption in zip(tabs, imgs, captions):
-            with tab:
-                st.caption(
-                    rf"""
-                    **{caption}** <br>
-                    Source: [{urlparse(img_url).hostname}]({img_url})
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-                st.image(img_url, use_column_width=True)
-
-        r"""
-        *******
-        ## Stilling basin (outlet erosion control)
-        """
-
-        img_url = "https://media.defense.gov/2019/Oct/17/2002196661/780/780/0/190326-A-A1412-007.JPG"
-        source = "https://www.spa.usace.army.mil/Media/News-Stories/Article/1991774/john-martin-dams-concrete-stilling-basin-in-excellent-condition-after-first-ins/"
-        st.caption(
-            rf"""
-            **John Martin Dam's concrete stilling basin (Highland, UK)** <br>
-            Source: [{urlparse(source).hostname}]({source})
-            """,
-            unsafe_allow_html=True,
-        )
-        st.image(img_url, use_column_width=True)
-
-        url = "https://www.youtube.com/watch?v=TuQUf-nieVY"
-        st.caption(
-            f"**Spillways and outlet works** <br>\n Source: Association of State Dam Safety Officials (ASDSO) [youtube.com/@associationofstatedamsafet8080]({url})",
-            unsafe_allow_html=True,
-        )
-        st.video(url)
-
-        r"""
-        *******
-        ## Culverts
-
-        |Inlet| Outlet| Notes |
-        |:----|:------|:------|
-        |Submerged|Submerged|Pressurized pipe flow|
-        |Submerged|Submerged|Full pipe flow with free-discharge outlet|
-        |Submerged|Unsubmerged|Partial full pipe flow|
-        |Unsubmerged|Unsubmerged|Open-channel flow|
-
-        &nbsp;
-
-        """
-        img_url = "https://upload.wikimedia.org/wikipedia/commons/a/ad/Culvert_under_the_A835_-_geograph.org.uk_-_3466116.jpg"
-        source = "https://www.geograph.org.uk/photo/3466116"
-        st.caption(
-            rf"""
-            **Culvert under the A835 (Highland, UK)** <br>
-            Source: [{urlparse(source).hostname}]({source})
-            """,
-            unsafe_allow_html=True,
-        )
-        st.image(img_url, use_column_width=True)
-
-    elif option == "Water cycle":
-        r"""
-        ## Water cycle
-        """
-
-        img_url = "assets/img/USGS_WaterCycle_English_ONLINE_20230302.png"
+    if option == "Water cycle":
+        img_url = "./book/assets/img/USGS_WaterCycle_English_ONLINE_20230302.png"
         source = (
             "https://labs.waterdata.usgs.gov/visualizations/water-cycle/index.html#/"
         )
@@ -192,8 +43,8 @@ def main():
         )
         st.image(img_url, use_column_width=True)
 
-        "*****"
-        img_url = "https://agupubs.onlinelibrary.wiley.com/cms/asset/1c96a142-6fc9-48ee-b1d1-6f5b41d77329/eft21123-fig-0001-m.jpg"
+        st.divider()
+        img_url = "https://agupubs.onlinelibrary.wiley.com/cms/asset/23f15005-7268-47f1-bda1-4054ff85f657/eft21123-fig-0001-m.jpg"
         source = "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2021EF002613"
 
         st.caption(
@@ -206,12 +57,11 @@ def main():
         st.image(img_url, use_column_width=True)
 
     elif option == "Drainage basin":
-        r"""
-        ## Watersheds
-        """
+        st.header("Watersheds")
 
         img_url = "https://upload.wikimedia.org/wikipedia/commons/0/02/Amazonriverbasin_basemap.png"
         source = "https://commons.wikimedia.org/wiki/File:Amazonriverbasin_basemap.png"
+        
         st.caption(
             rf"""
             **Amazon river basin** <br>
@@ -222,7 +72,8 @@ def main():
         st.image(img_url, use_column_width=True)
 
         with st.expander(
-            "Check **Hydrosheds**, global hydrography derived from spaceborne elevation data"
+            "Check **Hydrosheds**, global hydrography derived from spaceborne elevation data",
+            expanded=True
         ):
             img_url = "https://uploads-ssl.webflow.com/602ebbdd5021f30e81efbad9/62536860d9d1c6fe627d42ce_HydroSHEDS_zoom-p-1080.jpeg"
             source = "https://www.hydrosheds.org/products/hydrosheds"
@@ -235,7 +86,7 @@ def main():
             )
             st.image(img_url, use_column_width=True)
 
-            "****"
+            st.divider()
             _, col, _ = st.columns([1, 10, 1])
             with col:
                 url = "https://doi.org/10.1029/2008eo100001"
@@ -252,7 +103,7 @@ def main():
                     unsafe_allow_html=True,
                 )
 
-        "****"
+        st.divider()
         img_url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/WBD_Base_HUStructure_small.png"
         source = "https://www.usgs.gov/media/images/watershed-boundary-dataset-structure-visualization"
         st.caption(
@@ -276,11 +127,9 @@ def main():
         )
         st.image(img_url, use_column_width=True)
 
-        r"""
-        *******
-        ## Sewage systems
-        """
-        img_url = "assets/img/sewer_system_map_Bogotá.png"
+        st.divider()
+        st.header("Sewage systems")
+        img_url = "./book/assets/img/sewer_system_map_Bogotá.png"
         source = "https://www.acueducto.com.co/wassigue6/MapasGeoportal"
 
         st.caption(
@@ -293,40 +142,28 @@ def main():
 
         st.image(img_url, use_column_width=True)
 
-        "******"
+        st.divider()
+        st.markdown("#### Combined v. separate sewer systems")
+        
         cols = st.columns(2)
+        
         with cols[0]:
             img_url = "https://i0.wp.com/civilengineerspk.com/wp-content/uploads/2014/03/002.jpg"
             source = "https://www.civilengineerspk.com/design-of-sewer-system/"
-
-            st.caption(
-                rf"""
-                **Combined v. separate sewer systems** <br>
-                Dry weather <br>
-                Source: [{urlparse(source).hostname}]({source})
-                """,
-                unsafe_allow_html=True,
-            )
+            
+            st.markdown("**Dry weather**")
+            st.caption(f":red[Dry weather] - Source: [{urlparse(source).hostname}]({source})")
             st.image(img_url, use_column_width=True)
 
         with cols[1]:
             img_url = "https://i0.wp.com/civilengineerspk.com/wp-content/uploads/2014/03/001.jpg"
             source = "https://www.civilengineerspk.com/design-of-sewer-system/"
-
-            st.caption(
-                rf"""
-                **Combined v. separate sewer systems** <br>
-                Wet weather <br>
-                Source: [{urlparse(source).hostname}]({source})
-                """,
-                unsafe_allow_html=True,
-            )
+            st.markdown("**Wet weather**")
+            st.caption(f":blue[Wet weather] - Source: [{urlparse(source).hostname}]({source})")
             st.image(img_url, use_column_width=True)
 
     elif option == "Hyetograph":
-        r"""
-        ## Hyetograph ↦ plot of rainfall intensity over time
-        """
+        st.header("Hyetograph ↦ plot of rainfall intensity over time")
 
         st.info(
             r"""
@@ -337,49 +174,50 @@ def main():
         )
 
         rain = get_hydrologic_data("Precipitation")
-        rain["per-hour"] = rain["value"].rolling(12, center=False).sum()
+        st.dataframe(rain)
+        # rain["per-hour"] = rain["value"].rolling(12, center=False).sum()
 
-        figs = dict()
+        # figs = dict()
 
-        figs["raw"] = go.Figure([go.Bar(x=rain["dateTime"], y=rain["value"])])
+        # figs["raw"] = go.Figure([go.Bar(x=rain["dateTime"], y=rain["value"])])
 
-        figs["per-hour"] = go.Figure([go.Bar(x=rain["dateTime"], y=rain["per-hour"])])
+        # figs["per-hour"] = go.Figure([go.Bar(x=rain["dateTime"], y=rain["per-hour"])])
 
-        titles = ["Total rainfall in 5 min [in]", "Rainfall intensity [in/hr]"]
-        for t, fig in zip(titles, figs.values()):
-            fig.update_layout(
-                title_text="""Data from a USGS rain gauge. <br>Source <a href="https://waterdata.usgs.gov/monitoring-location/414542087380901/#parameterCode=00045&period=P30D">Waterdata - USGS</a>""",
-                height=500,
-                yaxis=dict(title=t, **axis_format),
-                xaxis=dict(title="Datetime", **axis_format),
-                hovermode="closest",
-                hoverlabel=dict(font_size=18),
-            )
+        # titles = ["Total rainfall in 5 min [in]", "Rainfall intensity [in/hr]"]
+        # for t, fig in zip(titles, figs.values()):
+        #     fig.update_layout(
+        #         title_text="""Data from a USGS rain gauge. <br>Source <a href="https://waterdata.usgs.gov/monitoring-location/414542087380901/#parameterCode=00045&period=P30D">Waterdata - USGS</a>""",
+        #         height=500,
+        #         yaxis=dict(title=t, **axis_format),
+        #         xaxis=dict(title="Datetime", **axis_format),
+        #         hovermode="closest",
+        #         hoverlabel=dict(font_size=18),
+        #     )
 
-        tabs = st.tabs(["Raw data", "Aggregated per hour"])
+        # tabs = st.tabs(["Raw data", "Aggregated per hour"])
 
-        for tab, fig in zip(tabs, figs.values()):
-            with tab:
-                st.plotly_chart(fig, use_container_width=True)
+        # for tab, fig in zip(tabs, figs.values()):
+        #     with tab:
+        #         st.plotly_chart(fig, use_container_width=True)
 
-        "*****"
-        cols = st.columns([1, 2])
-        with cols[0]:
-            "&nbsp;\n\n&nbsp;\n\n"
-            st.info("What is an inch of rain?")
+        # "*****"
+        # cols = st.columns([1, 2])
+        # with cols[0]:
+        #     "&nbsp;\n\n&nbsp;\n\n"
+        #     st.info("What is an inch of rain?")
 
-        with cols[1]:
-            img_url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/wss-rain-storm-colorado.jpg"
-            source = "https://www.usgs.gov/media/images/rainstorms-can-be-localized-or-widespread"
+        # with cols[1]:
+        #     img_url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/wss-rain-storm-colorado.jpg"
+        #     source = "https://www.usgs.gov/media/images/rainstorms-can-be-localized-or-widespread"
 
-            st.caption(
-                rf"""
-                **A localized heavy summer rainstorm in Colorado** <br>
-                Source: [{urlparse(source).hostname}]({source})
-                """,
-                unsafe_allow_html=True,
-            )
-            st.image(img_url, use_column_width=True)
+        #     st.caption(
+        #         rf"""
+        #         **A localized heavy summer rainstorm in Colorado** <br>
+        #         Source: [{urlparse(source).hostname}]({source})
+        #         """,
+        #         unsafe_allow_html=True,
+        #     )
+        #     st.image(img_url, use_column_width=True)
 
         r"""
         ******
@@ -524,77 +362,74 @@ def main():
             st.image(img_url, use_column_width=True)
 
     elif option == "Design storm":
-        r"""
-        ## Design storms
+        st.markdown(
+            R"""
+            ## Design storms
 
-        |Parameter|Description|Units|
-        |--------:|:----|:----:|
-        |**Return period**| Average time between occurences of a hydrological event | Years |
-        |**Rainfall intensity**| Rate of precipitation | Length/Time |
-        |**Total rainfall**| Depth of precipitation over the time of the event | Length |
-        |**Average intensity**| Total rainfall divided by the storm duration | Length |
-        |**Spatial distribution**| Total rainfall divided by the storm duration | - |
+            |Parameter|Description|Units|
+            |--------:|:----|:----:|
+            |**Return period**| Average time between occurences of a hydrological event | Years |
+            |**Rainfall intensity**| Rate of precipitation | Length/Time |
+            |**Total rainfall**| Depth of precipitation over the time of the event | Length |
+            |**Average intensity**| Total rainfall divided by the storm duration | Length |
+            |**Spatial distribution**| Total rainfall divided by the storm duration | - |
 
-        &nbsp;
-        """
-
-        url = "https://jeffskwang.github.io/"
-        st.button(
-            "Go to rain/runoff example",
-            on_click=open_page,
-            args=(url,),
-            use_container_width=True,
+            &nbsp;
+            """
         )
 
-        """
-        *****
-        ### Synthetic Block design-storm hyetograph
+        url = "https://jeffskwang.github.io/"
+        st.link_button("⛈️ Go to rain/runoff example", url, use_container_width=True, type="primary")
 
-        - From a IDF curve, identify the return period and duration. The design
-        storm will contain the intensities related to all the durations less than
-        the duration design. 
-        
-        - $\Delta t$ should not be greater than the time of concentration
+        st.markdown(
+            R"""
+            *****
+            ### Synthetic Block design-storm hyetograph
 
-        - The peak intensity of the storm is usually placed between 1/3 and 1/2 the
-        duration of the storm. 
-        
-        *****
-        ### Soil Conservation Service hyetographs
+            - From a IDF curve, identify the return period and duration. The design
+            storm will contain the intensities related to all the durations less than
+            the duration design. 
+            
+            - $\Delta t$ should not be greater than the time of concentration
 
-        Developed for 24-hr storms
+            - The peak intensity of the storm is usually placed between 1/3 and 1/2 the
+            duration of the storm. 
+            
+            *****
+            ### Soil Conservation Service hyetographs
 
-        From the Urban Hydrology for Small Watersheds -
-        USDA - Natural Resources Conservation Service -
-        TR-55 (June 1986): 
+            Developed for 24-hr storms
 
-        > The length of the most intense rainfall period contrib-
-        > uting to the peak runoff rate is related to the time of
-        > concentration for the watershed. In a hydrograph
-        > created with NRCS procedures, the duration of rainfall
-        > that directly contributes to the peak is about 170
-        > percent of the time of concentration. 
+            From the Urban Hydrology for Small Watersheds -
+            USDA - Natural Resources Conservation Service -
+            TR-55 (June 1986): 
 
-        > - Types I and IA represent the Pacific maritime climate
-        > with wet winters and dry summers. 
-        > - Type III represents Gulf of Mexico and Atlantic coastal 
-        > areas where tropical storms bring large 24-hour rainfall amounts. 
-        > - Type II represents the rest of the country. 
-        > 
-        > *For more precise distribution boundaries in a state having more than*
-        > *one type, contact the NRCS State Conservation Engineer*
-        
-        """
+            > The length of the most intense rainfall period contrib-
+            > uting to the peak runoff rate is related to the time of
+            > concentration for the watershed. In a hydrograph
+            > created with NRCS procedures, the duration of rainfall
+            > that directly contributes to the peak is about 170
+            > percent of the time of concentration. 
+
+            > - Types I and IA represent the Pacific maritime climate
+            > with wet winters and dry summers. 
+            > - Type III represents Gulf of Mexico and Atlantic coastal 
+            > areas where tropical storms bring large 24-hour rainfall amounts. 
+            > - Type II represents the rest of the country. 
+            > 
+            > *For more precise distribution boundaries in a state having more than*
+            > *one type, contact the NRCS State Conservation Engineer*
+            
+            """
+        )
 
         st.caption("SCS 24-HR Rainfall distributions")
         cols = st.columns([1, 1.5])
         with cols[0]:
-            scs = pd.read_excel("assets/tables/SCS_24HR_RainfallDistribution.xlsx")
+            scs = pd.read_excel("./book/assets/tables/SCS_24HR_RainfallDistribution.xlsx")
             st.dataframe(scs, use_container_width=True, height=300)
 
         with cols[1]:
-            from matplotlib.ticker import MultipleLocator
-
             fig, ax = plt.subplots()
             colors = ["#1b9e77", "#d95f02", "#7570b3", "#e7298a"]
             for c, t in zip(colors, ["I", "IA", "II", "III"]):
@@ -619,24 +454,26 @@ def main():
             """,
             unsafe_allow_html=True,
         )
-        st.image("assets/img/SCS_24hr_Map.png")
+        st.image("./book/assets/img/SCS_24hr_Map.png")
 
         st.warning(
             "The Soil Conservation Service is now called the Natural Resources Conservation Service (NRCS)"
         )
 
     elif option == "IDF curve":
-        r"""
-        ## IDF: Intensity-Duration-Frequency curves
+        st.markdown(
+            R"""
+            ## IDF: Intensity-Duration-Frequency curves
 
-        $$
-            \textsf{Empirical:} \quad I(t) = \dfrac{a}{\left( t + c \right)^n}
-        $$
-        """
+            $$
+                \textsf{Empirical:} \quad I(t) = \dfrac{a}{\left( t + c \right)^n}
+            $$
+            """
+        )
 
         cols = st.columns([3, 1])
         with cols[0]:
-            st.image("assets/img/IDF curve Ohare IL.png", use_column_width=True)
+            st.image("./book/assets/img/IDF curve Ohare IL.png", use_column_width=True)
         with cols[1]:
             source = "https://hdsc.nws.noaa.gov/hdsc/pfds/pfds_map_cont.html"
             st.caption(
@@ -649,7 +486,7 @@ def main():
                 [Precipitation Frequency Data Server (PFDS)]({source})""",
                 unsafe_allow_html=True,
             )
-            st.image("assets/img/yrs_legend_pds.png")
+            st.image("./book/assets/img/yrs_legend_pds.png")
 
         # cols = st.columns([2,2])
         # with cols[0]:
@@ -658,13 +495,14 @@ def main():
         #     st.image("https://hdsc.nws.noaa.gov/hdsc/pfds/plots/42.0660_-87.7332_ams_IDF_in_ari.png", use_column_width=True)
 
         url = "https://hdsc.nws.noaa.gov/hdsc/pfds/pfds_map_cont.html"
-        st.button(
-            "Go to NOAA Precipitation Frequency Data Server",
-            on_click=open_page,
-            args=(url,),
-            use_container_width=True,
-        )
+        st.link_button("Go to NOAA Precipitation Frequency Data Server", url, use_container_width=True, type="primary")
 
+    elif option == "~Oroville Dam":
+        oroville_dam()
+
+    elif option == "~Watershed delimitation":
+        watershed_delimitation()
+    
     else:
         st.error("You should not be here!")
         r" ### 🚧 Under construction 🚧"
@@ -695,7 +533,7 @@ def get_hydrologic_data(variable):
     data = r.json()
     df = pd.DataFrame(data["value"]["timeSeries"][key]["values"][-1]["value"])
     # st.json(data)
-    # st.dataframe(df)
+    st.dataframe(df)
     df["dateTime"] = pd.to_datetime(
         df["dateTime"], format=r"%Y-%m-%d %H:%M:%S", utc=True
     )
@@ -704,28 +542,8 @@ def get_hydrologic_data(variable):
     return df
 
 
-# @st.cache_data
-# def get_rain_data():
-
-#     from datetime import datetime, timezone
-
-#     url = "https://waterservices.usgs.gov/nwis/iv/?sites=414542087380901&period=P30D&format=json"
-#     r = requests.get(url, stream=True)
-#     data = r.json()
-
-#     # Only extract the values for precipitation
-#     rain = pd.DataFrame(data["value"]["timeSeries"][1]["values"][0]["value"])
-#     rain["dateTime"] = pd.to_datetime(rain["dateTime"], format=r"%Y-%m-%d %H:%M:%S", utc=True)
-#     rain["value"] = pd.to_numeric(rain["value"])
-
-#     print(rain.dtypes)
-#     start_date = datetime(2023,3,22,18,00,00, tzinfo=timezone.utc)
-#     end_date   = datetime(2023,3,23,18,00,00, tzinfo=timezone.utc)
-
-#     return rain[np.logical_and(rain["dateTime"] > start_date, rain["dateTime"] < end_date)]
-
 if __name__ == "__main__":
-    main()
+    page_week_08()
 
 # elif option == "Infiltration":
 #     r"""

@@ -1,156 +1,114 @@
 import streamlit as st
-from streamlit.components.v1 import iframe
 
-import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 from urllib.parse import urlparse
 
+from typing import Literal
 
-def main():
-    with open("assets/page_config.pkl", "rb") as f:
-        st.session_state.page_config = pickle.load(f)
+TOC = Literal[
+    "Hydraulic efficiency",
+    "Non-erodible channels",
+    "Unlined channel design",
+    "Weirs and flumes",
+    "Gaging stations",
+    "Dams and culverts",
+]
 
-    st.set_page_config(**st.session_state.page_config)
+def page_week_07(option: TOC):
+    st.title(option.replace("~", ""))
 
-    with open("assets/style.css") as f:
-        st.markdown(f"<style> {f.read()} </style>", unsafe_allow_html=True)
-
-    #####################################################################
-
-    st.title("CIV-ENV 340: Hydraulics and hydrology")
-    "****"
-
-    with st.sidebar:
-        lottie = """
-        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        <lottie-player src="https://assets3.lottiefiles.com/packages/lf20_c3vfwjj1.json"  background="transparent"  speed="1.5"  style="width: 200px; height: 100px;"  loop  autoplay></lottie-player>
-        """
-        st.html(lottie, width=200, height=100)
-
-        "### Select a topic:"
-        option = st.radio(
-            "Select a topic:",
-            [
-                "Hydraulic efficiency",
-                "Non-erodible channels",
-                "Unlined channel design",
-                "Weirs",
-                "Flumes",
-                "Gaging stations",
-            ],
-            label_visibility="collapsed",
-        )
-
-        "***"
-        st.image(
-            "https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/syndetics.com/index.php?client=primo&isbn=9780134292380/sc.jpg"
-        )
-
-        r"""
-        #### Class textbook:
-        [🌐](https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9980502032702441) *Houghtalen, Akan & Hwang* (2017). **Fundamentals of hydraulic engineering systems** 5th ed.,
-        Pearson Education Inc., Boston.
-        """
-
-        cols = st.columns(2)
-        with cols[0]:
-            r"""
-            [![Github Repo](https://img.shields.io/static/v1?label=&message=Repository&color=black&logo=github)](https://github.com/edsaac/NU.CIVENV340)
-            """
-        with cols[1]:
-            r"""[![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"""
-
-    ####################################################################
     if option == "Hydraulic efficiency":
-        r"""
-        ## Hydraulic efficiency
+        st.markdown(
+            R"""
+            ## Hydraulic efficiency
 
-        $$
-            \textsf{Manning eq.} \quad Q = \dfrac{1}{n} \, A \, R_h^{2/3} \sqrt{S_0}
-        $$
-        
-        For a given Manning coefficient and channel slope, the discharge can be maximized 
-        if the hydraulic radius is maximized, which is achieved if the wetter perimeter is mimized.
+            $$
+                \textsf{Manning eq.} \quad Q = \dfrac{1}{n} \, A \, R_h^{2/3} \sqrt{S_0}
+            $$
+            
+            For a given Manning coefficient and channel slope, the discharge can be maximized 
+            if the hydraulic radius is maximized, which is achieved if the wetter perimeter is mimized.
 
-        $$
-            Q = \dfrac{1}{n} \, \underbrace{A \, R_h^{2/3}}_{\substack{\\🆙}} \sqrt{S_0}
-        $$
+            $$
+                Q = \dfrac{1}{n} \, \underbrace{A \, R_h^{2/3}}_{\substack{\\🆙}} \sqrt{S_0}
+            $$
 
-        The product $A R_h^{2/3}$ is the *section factor for uniform-flow*. Discharge is maximized if this
-        section factor is maximized.
+            The product $A R_h^{2/3}$ is the *section factor for uniform-flow*. Discharge is maximized if this
+            section factor is maximized.
 
-        |Shape | Hydraulically efficient section|
-        |:--------|:-----------|
-        |*Circle* | Half-circle |
-        |*Trapezoid*| Half-hexagon |
-        |*Rectangle* | Half-square |
+            |Shape | Hydraulically efficient section|
+            |:--------|:-----------|
+            |*Circle* | Half-circle |
+            |*Trapezoid*| Half-hexagon |
+            |*Rectangle* | Half-square |
 
-        &nbsp;
+            &nbsp;
 
-        *****
-        ### Maximizing the section factor for uniform flow:
+            *****
+            ### Maximizing the section factor for uniform flow:
 
-        For a trapezoidal section, the cross-section area and the wetter perimeter are given by:
-        $$
-            \begin{array}{rl}
-            A =& (b + my)y  \\
-            \\
-            P_w =& b + 2y \sqrt{1 + m^2}
-            \end{array}
-        $$
-
-        Or, combined,
-
-        $$
-            P_w = \dfrac{A}{y} - my + 2y \sqrt{1 + m^2}
-        $$
-
-        Considering $A$ and $m$ constant, an expression for $b$ as a function of $y$ can be found such that
-        $P_w$ is minimized
-
-        $$
-            \begin{array}{rl}
-                \dfrac{dP_w}{dy} =& \dfrac{d}{dy}\left( \dfrac{A}{y} - my + 2y \sqrt{1 + m^2} \right) = 0 \\
+            For a trapezoidal section, the cross-section area and the wetter perimeter are given by:
+            $$
+                \begin{array}{rl}
+                A =& (b + my)y  \\
                 \\
-                =&  
-                \dfrac{d}{dy}\left( \dfrac{A}{y} \right) - \dfrac{d}{dy}\left(my\right) + \dfrac{d}{dy}\left(2y \sqrt{1 + m^2} \right) \\
-                \\
-                =& - \dfrac{A}{y^2} - m + 2\sqrt{1 + m^2}\\
-                \\
-                =& - \dfrac{(b + my)y}{y^2} - m + 2\sqrt{1 + m^2}\\
-                \\
-                =& - \dfrac{(b + my)}{y} - m + 2\sqrt{1 + m^2}\\
-                \\
-                =& - \dfrac{b}{y} - 2m + 2\sqrt{1 + m^2}\\
+                P_w =& b + 2y \sqrt{1 + m^2}
                 \end{array}
-        $$
+            $$
 
-        This means that in order to minimize the wetted perimeter, the base width must be
-        
-        $$
-            \boxed{b = 2y\left(- m + \sqrt{1 + m^2} \right)}
-        $$
+            Or, combined,
 
-        Thus, the wetted perimeter is
+            $$
+                P_w = \dfrac{A}{y} - my + 2y \sqrt{1 + m^2}
+            $$
 
-        $$
-            \begin{array}{rl}
-            P_w =& b + 2y\sqrt{1+m^2} \\
-                \\
-                =& 2y\left(- m + \sqrt{1 + m^2} \right) + 2y\sqrt{1+m^2}\\
-                \\
-                =& -2ym + 2y \sqrt{1 + m^2} + 2y\sqrt{1+m^2}\\
-                \\
-                =& -2ym + 4y \sqrt{1 + m^2}\\
-            \end{array}
-        $$
+            Considering $A$ and $m$ constant, an expression for $b$ as a function of $y$ can be found such that
+            $P_w$ is minimized
 
-        $$
-            \boxed{P_w = 2y \left( 2\sqrt{1+m^2} - m \right)}
-        $$
+            $$
+                \begin{array}{rl}
+                    \dfrac{dP_w}{dy} =& \dfrac{d}{dy}\left( \dfrac{A}{y} - my + 2y \sqrt{1 + m^2} \right) = 0 \\
+                    \\
+                    =&  
+                    \dfrac{d}{dy}\left( \dfrac{A}{y} \right) - \dfrac{d}{dy}\left(my\right) + \dfrac{d}{dy}\left(2y \sqrt{1 + m^2} \right) \\
+                    \\
+                    =& - \dfrac{A}{y^2} - m + 2\sqrt{1 + m^2}\\
+                    \\
+                    =& - \dfrac{(b + my)y}{y^2} - m + 2\sqrt{1 + m^2}\\
+                    \\
+                    =& - \dfrac{(b + my)}{y} - m + 2\sqrt{1 + m^2}\\
+                    \\
+                    =& - \dfrac{b}{y} - 2m + 2\sqrt{1 + m^2}\\
+                    \end{array}
+            $$
 
-        """
+            This means that in order to minimize the wetted perimeter, the base width must be
+            
+            $$
+                \boxed{b = 2y\left(- m + \sqrt{1 + m^2} \right)}
+            $$
+
+            Thus, the wetted perimeter is
+
+            $$
+                \begin{array}{rl}
+                P_w =& b + 2y\sqrt{1+m^2} \\
+                    \\
+                    =& 2y\left(- m + \sqrt{1 + m^2} \right) + 2y\sqrt{1+m^2}\\
+                    \\
+                    =& -2ym + 2y \sqrt{1 + m^2} + 2y\sqrt{1+m^2}\\
+                    \\
+                    =& -2ym + 4y \sqrt{1 + m^2}\\
+                \end{array}
+            $$
+
+            $$
+                \boxed{P_w = 2y \left( 2\sqrt{1+m^2} - m \right)}
+            $$
+
+            """
+        )
 
         st.pyplot(wetted_perimeter_v_side_slope_plot())
 
@@ -176,28 +134,30 @@ def main():
                 m_optimal = sp.solve(eq, m)
 
         with cont.container():
-            rf"""
-            The most efficient section is that for which $m$ minimizes $P_w$,
+            st.markdown(
+                Rf"""
+                The most efficient section is that for which $m$ minimizes $P_w$,
 
-            $$
-                \begin{{array}}{{rl}}
-                \dfrac{{dP_w}}{{dm}} =& 0 \\
-                \\
-                =& \dfrac{{d}}{{dm}} \left( {sp.latex(P_w)} \right) = 0 \\
-                \\
-                =& {sp.latex(dPdm)} = 0 
-                \end{{array}}
-            $$
+                $$
+                    \begin{{array}}{{rl}}
+                    \dfrac{{dP_w}}{{dm}} =& 0 \\
+                    \\
+                    =& \dfrac{{d}}{{dm}} \left( {sp.latex(P_w)} \right) = 0 \\
+                    \\
+                    =& {sp.latex(dPdm)} = 0 
+                    \end{{array}}
+                $$
 
-            The value of $m$ that satisfies this expression is:
+                The value of $m$ that satisfies this expression is:
 
-            $$
-               m = {sp.latex(m_optimal[0])}
-            $$
-            """
+                $$
+                m = {sp.latex(m_optimal[0])}
+                $$
+                """
+            )
 
     elif option == "Non-erodible channels":
-        "## Non-erodible channels (rigid boundary)"
+        st.markdown("## Non-erodible channels (rigid boundary)")
 
         cols = st.columns(3)
 
@@ -228,61 +188,61 @@ def main():
                 unsafe_allow_html=True,
             )
 
-        r""" 
-        Factors to consider:
-        
-        |Factor | Description|
-        |:--------|:-----------|
-        |**Efficiency**     | Geometric conditions that minimize the wetter perimeter |
-        |**Cost**| Minimize construction costs |
-        |**Practicability** | Available space for construction |
-        |**Minimum permissible velocity** | Lowest velocity that will not result in sedimentation or induce vegetation growth |
-        |**Freeboard** | Vertical distance between the water surface and the top of the channel |
-        
-        &nbsp;
+        st.markdown(
+            R""" 
+            Factors to consider:
+            
+            |Factor | Description|
+            |:--------|:-----------|
+            |**Efficiency**     | Geometric conditions that minimize the wetter perimeter |
+            |**Cost**| Minimize construction costs |
+            |**Practicability** | Available space for construction |
+            |**Minimum permissible velocity** | Lowest velocity that will not result in sedimentation or induce vegetation growth |
+            |**Freeboard** | Vertical distance between the water surface and the top of the channel |
+            
+            &nbsp;
 
-        ******
-        ### Optimal hydraulic section
-        
-        For a trapezoidal section, the wetted perimeter is minimized when:
+            ******
+            ### Optimal hydraulic section
+            
+            For a trapezoidal section, the wetted perimeter is minimized when:
 
-        $$
-            b = 2y \left( \sqrt{1+m^2} - m \right)
-        $$
+            $$
+                b = 2y \left( \sqrt{1+m^2} - m \right)
+            $$
 
-        That means that the cross-sectional area and wetted perimeter can be rewritten in terms of only $y$:
-        
-        $$
-            A = (b + my)y = \left( 2y \left( \sqrt{1+m^2} - m \right) + my \right)y
-        $$
+            That means that the cross-sectional area and wetted perimeter can be rewritten in terms of only $y$:
+            
+            $$
+                A = (b + my)y = \left( 2y \left( \sqrt{1+m^2} - m \right) + my \right)y
+            $$
 
-        $$
-            P_w = b + 2y\sqrt{1+m^2} = 2y \left( 2\sqrt{1+m^2} - m \right)
-        $$
+            $$
+                P_w = b + 2y\sqrt{1+m^2} = 2y \left( 2\sqrt{1+m^2} - m \right)
+            $$
 
-        Now, the Manning equation can be used to find a solution of the water depth $y$ that satisfies 
-        the discharge $Q$ and logitudinal slope $S_0$ conditions.
+            Now, the Manning equation can be used to find a solution of the water depth $y$ that satisfies 
+            the discharge $Q$ and logitudinal slope $S_0$ conditions.
 
-        $$
-            Q = \dfrac{1}{n}\dfrac{A^{5/3}}{P_w^{2/3}} \, \sqrt{S_0}
-        $$
+            $$
+                Q = \dfrac{1}{n}\dfrac{A^{5/3}}{P_w^{2/3}} \, \sqrt{S_0}
+            $$
 
-        Having found a value for $y$, we can calculate $b$ amd add a freeboard to finalize the design. 
+            Having found a value for $y$, we can calculate $b$ amd add a freeboard to finalize the design. 
 
-        *****
-        ### Solving Example 6.12 with `scipy.root`
-        
-        |Condition|Notes|
-        |:--------|:----|
-        |$Q = 15 \textrm{ m³/s}$| Design discharge |
-        |$S_0 = 0.00095 $| Longitudinal slope |
-        |$m = 2.0 $| Side slope |
-        |$n = 0.013$| Concrete |
+            *****
+            ### Solving Example 6.12 with `scipy.root`
+            
+            |Condition|Notes|
+            |:--------|:----|
+            |$Q = 15 \textrm{ m³/s}$| Design discharge |
+            |$S_0 = 0.00095 $| Longitudinal slope |
+            |$m = 2.0 $| Side slope |
+            |$n = 0.013$| Concrete |
 
-        &nbsp;
-
-
-        """
+            &nbsp;
+            """
+        )
 
         cols = st.columns([2, 1])
 
@@ -344,7 +304,7 @@ def main():
                     ),
                 )
 
-        "****** \n\n### 🧩 Solution:"
+        st.markdown("****** \n\n### 🧩 Solution:")
 
         if y_calc.success:
             cols = st.columns(4)
@@ -383,19 +343,21 @@ def main():
 
         else:
             st.error(
-                r"""
-            Something went wrong... 
-            try changing the initial guess for $y$ or the root-finding method.
-            """,
+                R"""
+                Something went wrong... 
+                try changing the initial guess for $y$ or the root-finding method.
+                """,
                 icon="🧪",
             )
 
     elif option == "Unlined channel design":
-        "## Unlined channels"   
-        r"""
-        The principal consideration is that the channel is not eroded under the design
-        flow conditions. 
-        """
+        st.header("Unlined channels")
+        st.markdown(
+            R"""
+            The principal consideration is that the channel is not eroded under the design
+            flow conditions. 
+            """
+        )
 
         url = "https://upload.wikimedia.org/wikipedia/commons/d/da/Water_Capture_Channel_-_geograph.org.uk_-_3833453.jpg"
         source = "https://commons.wikimedia.org/wiki/File:Water_Capture_Channel_-_geograph.org.uk_-_3833453.jpg"
@@ -405,34 +367,36 @@ def main():
             unsafe_allow_html=True,
         )
 
-        "*****"
+        st.divider()
 
         cols = st.columns([1.5, 1])
 
         with cols[0]:
-            r"""
-            ### 🏎️ Maximum permissible velocity
+            st.markdown(
+                R"""
+                ### 🏎️ Maximum permissible velocity
 
-            1. Select material
-                1. Roughness: $n$
-                2. Stable side slopes: $m$
-                3. Maximum velocity: $V_{\rm max}$
-            2. Calculate the hydraulic radius from the Manning equation
-                $$
-                    R_h = \left( \dfrac{n \, V_{\rm max}}{\sqrt{S_0}} \right)^{3/2}
-                $$
-            3. Given a discharge, calculate the cross-sectional area
-                $$
-                    A = \dfrac{Q}{V_{\rm max}}
-                $$
-            4. Calculate the wetted perimeter
-                $$
-                    P_w = \dfrac{A}{R_h}
-                $$
-            5. This way, we obtain a system of two equations to solve for two unknowns, $y$ and $b$
-            6. Adjust dimensions and add a freeboard
+                1. Select material
+                    1. Roughness: $n$
+                    2. Stable side slopes: $m$
+                    3. Maximum velocity: $V_{\rm max}$
+                2. Calculate the hydraulic radius from the Manning equation
+                    $$
+                        R_h = \left( \dfrac{n \, V_{\rm max}}{\sqrt{S_0}} \right)^{3/2}
+                    $$
+                3. Given a discharge, calculate the cross-sectional area
+                    $$
+                        A = \dfrac{Q}{V_{\rm max}}
+                    $$
+                4. Calculate the wetted perimeter
+                    $$
+                        P_w = \dfrac{A}{R_h}
+                    $$
+                5. This way, we obtain a system of two equations to solve for two unknowns, $y$ and $b$
+                6. Adjust dimensions and add a freeboard
 
-            """
+                """
+            )
 
         with cols[1]:
             url = "https://www.publications.usace.army.mil/LinkClick.aspx?fileticket=4uPtDjMGu64%3d&tabid=16439&portalid=76&mid=43544"
@@ -441,29 +405,29 @@ def main():
                 unsafe_allow_html=True,
             )
             st.image(
-                "assets/img/SuggestedMaxPermissibleMeanChannelVel.png",
+                "./book/assets/img/SuggestedMaxPermissibleMeanChannelVel.png",
                 use_column_width=True,
             )
 
-        r"""
-        *****
-        ### Solving Example 6.11 with `scipy.root`
-        
-        Terrain: *stiff clay*
+        st.markdown(
+            R"""
+            *****
+            ### Solving Example 6.11 with `scipy.root`
+            
+            Terrain: *stiff clay*
 
-        |Condition|Notes|
-        |--------:|:----|
-        |$Q = 9.0 \textrm{ m³/s}$| Design discharge |
-        |$S_0 = 0.00280 $| Longitudinal slope |
-        |$m = 1.0 $| Side slope |
-        |$n = 0.022$| Clean and smooth soil|
-        |$V_{\rm max} = 6 \, {\rm ft/s} = 1.83 \, {\rm m/s}$| Recommended value for clay |
+            |Condition|Notes|
+            |--------:|:----|
+            |$Q = 9.0 \textrm{ m³/s}$| Design discharge |
+            |$S_0 = 0.00280 $| Longitudinal slope |
+            |$m = 1.0 $| Side slope |
+            |$n = 0.022$| Clean and smooth soil|
+            |$V_{\rm max} = 6 \, {\rm ft/s} = 1.83 \, {\rm m/s}$| Recommended value for clay |
 
-
-        &nbsp;
-
-
-        """
+            
+            &nbsp;
+            """
+        )
 
         cols = st.columns([2, 1])
 
@@ -548,7 +512,7 @@ def main():
                     method=method,
                 )
 
-        "****** \n\n### 🧩 Solution:"
+        st.markdown("****** \n\n### 🧩 Solution:")
 
         if geometry_calc.success:
             st.info(geometry_calc.message, icon="🥳")
@@ -588,52 +552,52 @@ def main():
 
         else:
             st.error(
-                r"""
-            Something went wrong... 
-            try changing the initial guess for $y$ or the root-finding method.
-            """,
+                R"""
+                Something went wrong... 
+                try changing the initial guess for $y$ or the root-finding method.
+                """,
                 icon="🧪",
             )
 
-        r"""
-        ******
-        ### Tractive force
-        
-        The base criterion is that the shear force exerted by the flow does not exceed the permissible tractive
-        force $\tau_p$ of the channel material. 
+        st.markdown(    
+            R"""
+            ******
+            ### Tractive force
+            
+            The base criterion is that the shear force exerted by the flow does not exceed the permissible tractive
+            force $\tau_p$ of the channel material. 
 
-        $$
-            \textsf{No erosion if:} \quad \tau_b = \gamma R_h S_0 < \tau_p
-        $$
+            $$
+                \textsf{No erosion if:} \quad \tau_b = \gamma R_h S_0 < \tau_p
+            $$
 
-        """
-    # elif option=="Flow measurement devices [Pipes]":
-    #     r"""
-    #     ## Pipes
+            """
+        )
 
-    #     """
 
-    elif option == "Weirs":
-        r"""
-        ## Weirs
+    elif option == "Weirs and flumes":
+        st.markdown(
+            R"""
+            ## Weirs
 
-        ### Sharp-crested weir
+            ### Sharp-crested weir
 
-        In general,
+            In general,
 
-        $$
-            {\substack{\textsf{Uncontracted} \\ \textsf{horizontal weir}}}: \quad Q = CLH^{3/2}
-        $$
+            $$
+                {\substack{\textsf{Uncontracted} \\ \textsf{horizontal weir}}}: \quad Q = CLH^{3/2}
+            $$
 
-        |Parameter|Description|Units|
-        |--------:|:----|:----:|
-        |$ Q $| Discharge | Volume/Time |
-        |$ C $| Discharge coefficient | Length$^{0.5}$/Time |
-        |$ L $| Length of the weir crest| Length |
+            |Parameter|Description|Units|
+            |--------:|:----|:----:|
+            |$ Q $| Discharge | Volume/Time |
+            |$ C $| Discharge coefficient | Length$^{0.5}$/Time |
+            |$ L $| Length of the weir crest| Length |
 
-        &nbsp;
+            &nbsp;
 
-        """
+            """
+        )
 
         url = "https://upload.wikimedia.org/wikipedia/commons/3/3e/Floodgate_drum.JPG"
         source = "https://es.wikipedia.org/wiki/Vertedero_hidr%C3%A1ulico#/media/Archivo:Floodgate_drum.JPG"
@@ -654,56 +618,59 @@ def main():
         )
         st.image(url, use_column_width=True)
 
-        r"""
-        Some important types and equations:
-        
-        |USBR type|Equation|Notes|
-        |--------:|:----|:----:|
-        |**Standard contracted horizontal**| $$ Q = C(L - 0.2H)H^{3/2} $$ | $$ C = \begin{cases} 3.33 \quad \textsf{(BG)} \\ 1.84 \quad \textsf{(SI)} \end{cases}$$ |
-        |**Standard 90° V-notch**| $$ Q = CH^{2.48} $$ | $$ C = \begin{cases} 2.49 \quad \textsf{(BG)} \\ 1.34 \quad \textsf{(SI)} \end{cases}$$ |
-        |**Standard trapezoidal** (Cipolletti) | $$ Q = CLH^{3/2} $$ | $$ C = \begin{cases} 3.36 \quad \textsf{(BG)} \\ 1.858 \quad \textsf{(SI)} \end{cases}$$ |
-        
-        """
-        r"""
-        *****
-        ### Broad-crested weir
+        st.markdown(
+            R"""
+            Some important types and equations:
+            
+            |USBR type|Equation|Notes|
+            |--------:|:----|:----:|
+            |**Standard contracted horizontal**| $$ Q = C(L - 0.2H)H^{3/2} $$ | $$ C = \begin{cases} 3.33 \quad \textsf{(BG)} \\ 1.84 \quad \textsf{(SI)} \end{cases}$$ |
+            |**Standard 90° V-notch**| $$ Q = CH^{2.48} $$ | $$ C = \begin{cases} 2.49 \quad \textsf{(BG)} \\ 1.34 \quad \textsf{(SI)} \end{cases}$$ |
+            |**Standard trapezoidal** (Cipolletti) | $$ Q = CLH^{3/2} $$ | $$ C = \begin{cases} 3.36 \quad \textsf{(BG)} \\ 1.858 \quad \textsf{(SI)} \end{cases}$$ |
+            
 
-        It's an elevated obstruction that allows critical flow to develop. It can be analyzed as a balance
-        of momentum:
+            *****
+            ### Broad-crested weir
 
-        $$
-            \overbrace{\rho q \left( \dfrac{q}{y_2} - \dfrac{q}{y_1} \right)}^\textsf{Momentum flux}
-            = 
-            \dfrac{\gamma}{2} 
-            \left( 
-                \underbrace{y_1^2 }_{\substack{\textsf{Upstream} \\ \textsf{pressure}}}
-                - 
-                \underbrace{y_2^2 }_{\substack{\textsf{Downstream} \\ \textsf{pressure}}}
-                - 
-                \underbrace{h(2y_1 - h)}_{\substack{\textsf{Obstruction} \\ \textsf{force}}}
-            \right)
-        $$
+            It's an elevated obstruction that allows critical flow to develop. It can be analyzed as a balance
+            of momentum:
 
-        &nbsp;
+            $$
+                \overbrace{\rho q \left( \dfrac{q}{y_2} - \dfrac{q}{y_1} \right)}^\textsf{Momentum flux}
+                = 
+                \dfrac{\gamma}{2} 
+                \left( 
+                    \underbrace{y_1^2 }_{\substack{\textsf{Upstream} \\ \textsf{pressure}}}
+                    - 
+                    \underbrace{y_2^2 }_{\substack{\textsf{Downstream} \\ \textsf{pressure}}}
+                    - 
+                    \underbrace{h(2y_1 - h)}_{\substack{\textsf{Obstruction} \\ \textsf{force}}}
+                \right)
+            $$
 
-        | Parameter | Description   | Units  |
-        |:---------:|:--------:|:------------------:|
-        |$ q = Q/b $  | Discharge per unit width  | Volume/Time/Length |
-        |$ y_1 $  | Upstream depth  | Length |
-        |$ y_2 $  | Downstream depth (over the weir)  | Length | 
-        |$ h $  | Weir height  | Length | 
+            &nbsp;
 
-        &nbsp;
+            | Parameter | Description   | Units  |
+            |:---------:|:--------:|:------------------:|
+            |$ q = Q/b $  | Discharge per unit width  | Volume/Time/Length |
+            |$ y_1 $  | Upstream depth  | Length |
+            |$ y_2 $  | Downstream depth (over the weir)  | Length | 
+            |$ h $  | Weir height  | Length | 
 
-        """
-        url = "https://wiki.tuflow.com/images/3/3d/Broad-crested_weir.jpg"
+            &nbsp;
+
+            """
+        )
+
+        url = "https://wiki.tuflow.com/w/thumb.php?f=Broad-crested_weir.jpg&width=640"
         source = "https://wiki.tuflow.com/index.php?title=File:Broad-crested_weir.jpg"
         st.caption(
             f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True
         )
         st.image(url, use_column_width=True)
 
-        "*****"
+        st.divider()
+
         _, col, _ = st.columns([1, 3, 1])
         with col:
             url = "https://usbr.gov/tsc/techreferences/mands/wmm/index.htm"
@@ -720,12 +687,15 @@ def main():
                 unsafe_allow_html=True,
             )
 
-    elif option == "Flumes":
-        r"""
-        ## Critical flow flume
+        st.markdown(
+            R"""
+            *****
 
-        ### Parshall flume
-        """
+            ## Critical flow flume
+
+            ### Parshall flume
+            """
+        )
 
         url = "https://upload.wikimedia.org/wikipedia/commons/d/d8/Parshall_Flume.svg"
         source = "https://en.wikipedia.org/wiki/Parshall_flume#/media/File:Parshall_Flume.svg"
@@ -734,26 +704,24 @@ def main():
             f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True
         )
 
-        r"""
-        $$
-            Q = CH_a^n
-        $$
-        """
+        st.latex(R"Q = CH_a^n")
 
         cols = st.columns(2)
         with cols[0]:
-            r"""
+            st.markdown(
+                R"""
 
-            | Parameter | Description   | Units  |
-            |:---------:|:--------:|:------------------:|
-            |$ Q $  | Discharge | $\mathrm{ft^3/s}$ |
-            |$ H_a $  | Measuring head  | $\mathrm{ft}$ |
-            |$ C $  | Empirical coefficient for Parshall flume | 🤔 |
-            |$ n $  | Empirical exponent for Parshall flume  | - |
+                | Parameter | Description   | Units  |
+                |:---------:|:--------:|:------------------:|
+                |$ Q $  | Discharge | $\mathrm{ft^3/s}$ |
+                |$ H_a $  | Measuring head  | $\mathrm{ft}$ |
+                |$ C $  | Empirical coefficient for Parshall flume | 🤔 |
+                |$ n $  | Empirical exponent for Parshall flume  | - |
 
-            """
+                """
+            )
 
-        "&nbsp;"
+        st.markdown("&nbsp;")
 
         with cols[1]:
             with st.expander("📋 Coefficients and exponents for Parshall flume"):
@@ -764,31 +732,33 @@ def main():
                     unsafe_allow_html=True,
                 )
 
-                r"""
-                | Throat width ($W$) | Coefficient ($C$) | Exponent ($n$) |
-                | :----------: | :---------------: | :------------: |
-                | 1 in         | 0.338             | 1.55           |
-                | 2 in         | 0.676             | 1.55           |
-                | 3 in         | 0.992             | 1.55           |
-                | 6 in         | 2.06              | 1.58           |
-                | 9 in         | 3.07              | 1.53           |
-                | 1 ft         | 3.95              | 1.55           |
-                | 2 ft         | 8.00              | 1.55           |
-                | 3 ft         | 12.00             | 1.57           |
-                | 4 ft         | 16.00             | 1.58           |
-                | 5 ft         | 20.00             | 1.59           |
-                | 6 ft         | 24.00             | 1.59           |
-                | 7 ft         | 28.00             | 1.60           |
-                | 8 ft         | 32.00             | 1.61           |
-                | 10 ft        | 39.38             | 1.60           |
-                | 12 ft        | 46.75             | 1.60           |
-                | 15 ft        | 57.81             | 1.60           |
-                | 20 ft        | 76.25             | 1.60           |
-                | 25 ft        | 94.69             | 1.60           |
-                | 30 ft        | 113.13            | 1.60           |
-                | 40 ft        | 150.00            | 1.60           |
-                | 50 ft        | 186.88            | 1.60           |        
-                """
+                st.markdown(
+                    R"""
+                    | Throat width ($W$) | Coefficient ($C$) | Exponent ($n$) |
+                    | :----------: | :---------------: | :------------: |
+                    | 1 in         | 0.338             | 1.55           |
+                    | 2 in         | 0.676             | 1.55           |
+                    | 3 in         | 0.992             | 1.55           |
+                    | 6 in         | 2.06              | 1.58           |
+                    | 9 in         | 3.07              | 1.53           |
+                    | 1 ft         | 3.95              | 1.55           |
+                    | 2 ft         | 8.00              | 1.55           |
+                    | 3 ft         | 12.00             | 1.57           |
+                    | 4 ft         | 16.00             | 1.58           |
+                    | 5 ft         | 20.00             | 1.59           |
+                    | 6 ft         | 24.00             | 1.59           |
+                    | 7 ft         | 28.00             | 1.60           |
+                    | 8 ft         | 32.00             | 1.61           |
+                    | 10 ft        | 39.38             | 1.60           |
+                    | 12 ft        | 46.75             | 1.60           |
+                    | 15 ft        | 57.81             | 1.60           |
+                    | 20 ft        | 76.25             | 1.60           |
+                    | 25 ft        | 94.69             | 1.60           |
+                    | 30 ft        | 113.13            | 1.60           |
+                    | 40 ft        | 150.00            | 1.60           |
+                    | 50 ft        | 186.88            | 1.60           |        
+                    """
+                )
 
         cols = st.columns(2)
 
@@ -811,15 +781,17 @@ def main():
             )
             st.image(url, use_column_width=True)
 
-        "&nbsp;"
+        st.markdown("&nbsp;")
 
         cols = st.columns(2)
 
         with cols[0]:
-            r"""
-            Depending on the flume width and the ratio $H_b/H_a$, a Parshall flume is either
-            operating under **submerged or free flow conditions**
-            """
+            st.markdown(
+                R"""
+                Depending on the flume width and the ratio $H_b/H_a$, a Parshall flume is either
+                operating under **submerged or free flow conditions**
+                """
+            )
 
         with cols[1]:
             with st.expander("📋 Threshold for submergence"):
@@ -830,16 +802,18 @@ def main():
                     unsafe_allow_html=True,
                 )
 
-                r"""
-                |Flume width|Submerged if|
-                |-----:|:-----|
-                |1, 2 or 3in| $\cfrac{H_b}{H_a} > 0.50 $ |
-                |6 or 9in| $\cfrac{H_b}{H_a} > 0.60 $ | 
-                |1ft to 8ft| $\cfrac{H_b}{H_a} > 0.70 $ | 
-                |10ft to 50ft| $\cfrac{H_b}{H_a} > 0.80 $|
-                """
+                st.markdown(
+                    R"""
+                    |Flume width|Submerged if|
+                    |-----:|:-----|
+                    |1, 2 or 3in| $\cfrac{H_b}{H_a} > 0.50 $ |
+                    |6 or 9in| $\cfrac{H_b}{H_a} > 0.60 $ | 
+                    |1ft to 8ft| $\cfrac{H_b}{H_a} > 0.70 $ | 
+                    |10ft to 50ft| $\cfrac{H_b}{H_a} > 0.80 $|
+                    """
+                )
 
-        "****"
+        st.divider()
         _, col, _ = st.columns([1, 3, 1])
         with col:
             url = "https://usbr.gov/tsc/techreferences/mands/wmm/index.htm"
@@ -864,41 +838,35 @@ def main():
             unsafe_allow_html=True,
         )
         st.image(url, use_column_width=True)
-
-        r"""
-        ## Gaging stations
         
-        $$
-            \textsf{Stage-discharge relation} \quad Q = C \, y^n
-        $$
+        url = "https://waterdata.usgs.gov/monitoring-location/04079000/#parameterCode=00065&period=P30D"
+        st.link_button("📡 Check the USGS **Waterdata portal**", url=url, use_container_width=True, type="primary")
 
-        | Parameter | Description   | Units  |
-        |:---------:|:--------:|:------------------:|
-        |$ Q $  | Discharge | Volume/Time |
-        |$ y $  | Measured stage (depth) | Length |
-        |$ C $  | Fitting coefficient | Volume/Time/Length$^n$ |
-        |$ n $  | Fitting exponent | - |
+        st.markdown(
+            R"""
+            #### Converting stage into discharge:
+                        
+            $$
+                \textsf{Stage-discharge relation} \quad Q = C \, y^n
+            $$
 
-        &nbsp;
-        """
+            | Parameter | Description   | Units  |
+            |:---------:|:--------:|:------------------:|
+            |$ Q $  | Discharge | Volume/Time |
+            |$ y $  | Measured stage (depth) | Length |
+            |$ C $  | Fitting coefficient | Volume/Time/Length$^n$ |
+            |$ n $  | Fitting exponent | - |
+            """
+        )
 
-        with st.expander("📡 **USGS data example**:"):
-            url = "https://waterdata.usgs.gov/monitoring-location/04079000/#parameterCode=00065&period=P30D"
-            source = "https://waterdata.usgs.gov/monitoring-location/04079000/#parameterCode=00065&period=P30D"
-            iframe(url, height=600, width=800, scrolling=True)
-            st.caption(
-                f"Source: [{urlparse(source).hostname}]({source})",
-                unsafe_allow_html=True,
-            )
-
+        
         url = "https://www.usgs.gov/special-topics/water-science-school/science/how-streamflow-measured#overview"
-        st.caption(f"Also check: How Streamflow is Measured [usgs.gov]({url})")
+        st.caption(f"Also check: How Streamflow is Measured at [usgs.gov]({url})")
         cols = st.columns(3)
 
         with cols[0]:
-            r"""
-            ### 1. Measuring stream stage
-            """
+            st.subheader("1. Measuring stream stage")
+
             url = "https://thebridge.agu.org/files/2018/05/CurrentRiverMissouri.jpg"
             source = "https://thebridge.agu.org/2018/05/17/streamgages-infrastructure-to-protect-infrastructure/"
             st.caption(
@@ -908,9 +876,8 @@ def main():
             st.image(url, use_column_width=True)
 
         with cols[1]:
-            r"""
-            ### 2. Measuring discharge
-            """
+            st.subheader("2. Measuring discharge")
+            
             url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/Lowell_Alvin_ADCP4.JPG"
             source = "https://www.usgs.gov/media/images/measuring-boise-river-streamflow-adcp-1"
             st.caption(
@@ -920,9 +887,8 @@ def main():
             st.image(url, use_column_width=True)
 
         with cols[2]:
-            r"""
-            ### 3. Finding $C$ and $n$
-            """
+            st.subheader("3. Finding $C$ and $n$")
+            
             url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/discharge.jpg"
             source = "https://www.usgs.gov/media/images/usgs-stage-discharge-relation-example"
             st.caption(
@@ -956,6 +922,112 @@ def main():
                 unsafe_allow_html=True,
             )
 
+    elif option == "Dams and culverts":
+        st.markdown(
+            R"""
+            ## Dams & spillways
+
+            ### Elements of a dam
+            """
+        )
+        url = "https://www.fema.gov/sites/default/files/2020-08/fema_911_pocket_safety_guide_dams_impoundments_2016.pdf"
+        st.caption(
+            "Pocket Safety Guide for Dams and Impoundments (FEMA P-911)<br>"
+            + f"Source: [{urlparse(url).hostname}]({url})",
+            unsafe_allow_html=True,
+        )
+        st.image("./book/assets/img/embankment.png", use_column_width=True)
+
+        st.markdown(
+            R"""
+            &nbsp;
+
+            ### Dam classification
+
+            """
+        )
+
+        tabs = st.tabs(["**Gravity**", "**Arch**", "**Embankment**", "**Buttress**"])
+
+        imgs = [
+            "https://upload.wikimedia.org/wikipedia/commons/9/94/Dworshak_Dam.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/1/1f/Presa_de_El_Atazar_-_01.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/1/1c/Tataragi_Dam10n4272.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/9/9d/Lake_Tahoe_Dam-10.jpg",
+        ]
+
+        captions = [
+            "Dworshak Dam (ID, USA)",
+            "Presa de El Atazar (Madrid, España)",
+            "Kurokawa Dam - 多々良木ダム (Asago, Japan)",
+            "Lake Tahow Dam (CA, USA)",
+        ]
+
+        for tab, img_url, caption in zip(tabs, imgs, captions):
+            with tab:
+                st.caption(
+                    rf"""
+                    **{caption}** <br>
+                    Source: [{urlparse(img_url).hostname}]({img_url})
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+                st.image(img_url, use_column_width=True)
+
+        st.markdown(
+            R"""
+            *******
+            ## Stilling basin (outlet erosion control)
+            """
+        )
+
+        img_url = "https://media.defense.gov/2019/Oct/17/2002196661/780/780/0/190326-A-A1412-007.JPG"
+        source = "https://www.spa.usace.army.mil/Media/News-Stories/Article/1991774/john-martin-dams-concrete-stilling-basin-in-excellent-condition-after-first-ins/"
+        st.caption(
+            rf"""
+            **John Martin Dam's concrete stilling basin (Highland, UK)** <br>
+            Source: [{urlparse(source).hostname}]({source})
+            """,
+            unsafe_allow_html=True,
+        )
+        st.image(img_url, use_column_width=True)
+
+        url = "https://www.youtube.com/watch?v=TuQUf-nieVY"
+        st.caption(
+            f"**Spillways and outlet works** <br>\n Source: Association of State Dam Safety Officials (ASDSO) [youtube.com/@associationofstatedamsafet8080]({url})",
+            unsafe_allow_html=True,
+        )
+        st.video(url)
+
+        st.markdown(
+            R"""
+            *******
+            ## Culverts
+
+            |Inlet| Outlet| Notes |
+            |:----|:------|:------|
+            |Submerged|Submerged|Pressurized pipe flow|
+            |Submerged|Submerged|Full pipe flow with free-discharge outlet|
+            |Submerged|Unsubmerged|Partial full pipe flow|
+            |Unsubmerged|Unsubmerged|Open-channel flow|
+
+            &nbsp;
+
+            """
+        )
+    
+        img_url = "https://upload.wikimedia.org/wikipedia/commons/a/ad/Culvert_under_the_A835_-_geograph.org.uk_-_3466116.jpg"
+        source = "https://www.geograph.org.uk/photo/3466116"
+        st.caption(
+            rf"""
+            **Culvert under the A835 (Highland, UK)** <br>
+            Source: [{urlparse(source).hostname}]({source})
+            """,
+            unsafe_allow_html=True,
+        )
+        st.image(img_url, use_column_width=True)
+
     else:
         st.error("You should not be here!")
 
@@ -976,7 +1048,7 @@ def wetted_perimeter_v_side_slope_plot():
     ax.set_xlim(0, 3.0)
     ax.set_ylim(bottom=0)
 
-    annot = r"""
+    annot = R"""
     Hydraulically efficient section:
     $\dfrac{b}{y} = 2( -m +\sqrt{1 + m^2} )$
     """
@@ -992,5 +1064,5 @@ def wetted_perimeter_v_side_slope_plot():
     return fig
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__page__":
+    page_week_07()
