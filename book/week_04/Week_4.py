@@ -949,6 +949,3 @@ def pump_and_pipeline():
 
     return fig
 
-
-if __name__ == "__page__":
-    page_week_04()

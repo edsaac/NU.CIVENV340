@@ -2,10 +2,12 @@ import streamlit as st
 import numpy as np
 from scipy.stats import beta
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from urllib.parse import urlparse
 from typing import Literal
 
 from .subpages import rating_curve
+
 
 TOC = Literal[
     "Infiltration",
@@ -20,7 +22,7 @@ TOC = Literal[
 
 def page_week_09(option: TOC):
     st.title(option.replace("~", ""))
-
+    print(mpl.matplotlib_fname())
     if option == "Infiltration":
         img_url = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/images/4-9.png"
         source = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/hydrograph_method.htm"
@@ -196,37 +198,38 @@ def page_week_09(option: TOC):
         )
 
     elif option == "SCS Curve Number":
-        r"""
-        ## Soil Conservation Service Method
-        
-        $$
-            R 
-            = 
-            \begin{cases}
-            \begin{array}{ccl}
-            0 & \quad & P \leq I_a
-            \\
-            \dfrac{\left( P - I_a \right)^2}{P - I_a + S}
-            & \quad & P > I_a
-            \end{array}
-            \end{cases}
-        $$
+        st.markdown(
+            R"""
+            ## Soil Conservation Service Method
+            
+            $$
+                R 
+                = 
+                \begin{cases}
+                \begin{array}{ccl}
+                0 & \quad & P \leq I_a
+                \\
+                \dfrac{\left( P - I_a \right)^2}{P - I_a + S}
+                & \quad & P > I_a
+                \end{array}
+                \end{cases}
+            $$
 
-        |Parameter|Description|Units|
-        |:--------:|:----|:----:|
-        |$R$| Rainfall excess → Runoff | Inches |
-        |$P$| Cumulative rainfall | Inches |
-        |$I_a = 0.2S$| Initial abstraction | Length |
-        |$S = \dfrac{1000}{\texttt{CN}} - 10$| Soil-moisture storage deficit | - |
-        |$\texttt{CN}$| Curve Number | - |
+            |Parameter|Description|Units|
+            |:--------:|:----|:----:|
+            |$R$| Rainfall excess → Runoff | Inches |
+            |$P$| Cumulative rainfall | Inches |
+            |$I_a = 0.2S$| Initial abstraction | Length |
+            |$S = \dfrac{1000}{\texttt{CN}} - 10$| Soil-moisture storage deficit | - |
+            |$\texttt{CN}$| Curve Number | - |
 
-        &nbsp;
-        """
+            &nbsp;
+            """)
 
         st.pyplot(plot_curve_number())
 
         st.divider()
-        st.subheader("$\texttt{CN}$: Curve Number")
+        st.subheader(R"$\texttt{CN}$: Curve Number")
 
         with open("./book/assets/tables/SCS_curve_number.html") as f:
             cn_table = f.read()
@@ -621,7 +624,6 @@ def plot_hydrograph():
     ax.spines.top.set_visible(False)
     ax.spines.right.set_visible(False)
     ax.spines.left.set_edgecolor("gray")
-    ax.set_facecolor("#ffff1100")
 
     # Precipitation
     ax = axs[0]
@@ -681,6 +683,3 @@ def plot_curve_number():
 
     return fig
 
-
-if __name__ == "__page__":
-    page_week_09()

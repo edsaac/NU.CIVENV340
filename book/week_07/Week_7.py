@@ -472,7 +472,7 @@ def page_week_07(option: TOC):
                 from scipy.optimize import root
 
                 def unlined_channel_calculate(
-                    GEOMETRY: float,  # [ Depth [m], Base width [m] ]
+                    GEOMETRY: tuple[float],  # [ Depth [m], Base width [m] ]
                     Q: float,  # Discharge [m³/s]
                     Vmax: float,  # Max permissible vel [m/s]
                     n: float,  # Mannint coefficient [-]
@@ -1064,5 +1064,3 @@ def wetted_perimeter_v_side_slope_plot():
     return fig
 
 
-if __name__ == "__page__":
-    page_week_07()

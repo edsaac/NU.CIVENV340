@@ -542,9 +542,6 @@ def get_hydrologic_data(variable):
     return df
 
 
-if __name__ == "__main__":
-    page_week_08()
-
 # elif option == "Infiltration":
 #     r"""
 #     ## Infiltration and groundwater recharge

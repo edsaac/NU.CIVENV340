@@ -716,5 +716,3 @@ def get_image(url: str):
     return img
 
 
-if __name__ == "__page__":
-    page_week_02()

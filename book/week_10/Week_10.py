@@ -414,5 +414,3 @@ def page_week_10(option: TOC):
             """)
 
 
-if __name__ == "__page__":
-    page_week_10()
