@@ -316,13 +316,13 @@ def page_week_07(option: TOC):
             P_w = 2 * y * (2 * np.sqrt(1 + side_slope**2) - side_slope)
 
             with cols[0]:
-                st.metric("$\; y$", f"{y:.2f} m")
+                st.metric(R"$\; y$", f"{y:.2f} m")
             with cols[1]:
-                st.metric("$\; b$", f"{b:.2f} m")
+                st.metric(R"$\; b$", f"{b:.2f} m")
             with cols[2]:
-                st.metric("$\; A$", f"{A:.2f} m²")
+                st.metric(R"$\; A$", f"{A:.2f} m²")
             with cols[3]:
-                st.metric("$\; P_w$", f"{P_w:.2f} m")
+                st.metric(R"$\; P_w$", f"{P_w:.2f} m")
 
             g = 9.81
             V = discharge / A
@@ -524,13 +524,13 @@ def page_week_07(option: TOC):
             P_w = b + 2 * y * np.sqrt(1 + side_slope**2)
 
             with cols[0]:
-                st.metric("$\; y$", f"{y:.2f} m")
+                st.metric(R"$\; y$", f"{y:.2f} m")
             with cols[1]:
-                st.metric("$\; b$", f"{b:.2f} m")
+                st.metric(R"$\; b$", f"{b:.2f} m")
             with cols[2]:
-                st.metric("$\; A$", f"{A:.2f} m²")
+                st.metric(R"$\; A$", f"{A:.2f} m²")
             with cols[3]:
-                st.metric("$\; P_w$", f"{P_w:.2f} m")
+                st.metric(R"$\; P_w$", f"{P_w:.2f} m")
 
             g = 9.81
             Rh = A / P_w
@@ -540,13 +540,13 @@ def page_week_07(option: TOC):
             Fr = V / np.sqrt(g * Dh)
 
             with cols[0]:
-                st.metric("$\; R_h$", f"{Rh:.2f} m")
+                st.metric(R"$\; R_h$", f"{Rh:.2f} m")
             with cols[1]:
-                st.metric("$\; T$", f"{T:.2f} m")
+                st.metric(R"$\; T$", f"{T:.2f} m")
             with cols[2]:
-                st.metric("$\; D_h$", f"{Dh:.2f} m")
+                st.metric(R"$\; D_h$", f"{Dh:.2f} m")
             with cols[3]:
-                st.metric("$\; F_r$", f"{Fr:.2f}")
+                st.metric(R"$\; F_r$", f"{Fr:.2f}")
 
             st.warning("Don't forget to add a freeboard!")
 
@@ -1043,8 +1043,8 @@ def wetted_perimeter_v_side_slope_plot():
 
     fig, ax = plt.subplots()
     ax.plot(m, Pw, c="seagreen", lw=5)
-    ax.set_ylabel("Wetted perimeter $\quad \dfrac{P_w}{y}$ [-]", fontdict=dict(size=14))
-    ax.set_xlabel("Side slope $\quad m$ [-]", fontdict=dict(size=14))
+    ax.set_ylabel(R"Wetted perimeter $\quad \dfrac{P_w}{y}$ [-]", fontdict=dict(size=14))
+    ax.set_xlabel(R"Side slope $\quad m$ [-]", fontdict=dict(size=14))
     ax.set_xlim(0, 3.0)
     ax.set_ylim(bottom=0)
 

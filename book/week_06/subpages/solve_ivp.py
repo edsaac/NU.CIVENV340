@@ -144,7 +144,7 @@ def solve_ivp():
 
         with critdepth_container.container():
             if critical_depth.success:
-                st.metric("$\; y_c$", f"{critical_depth.x[0]:.2f} m")
+                st.metric(R"$\; y_c$", f"{critical_depth.x[0]:.2f} m")
 
     st.markdown(
         R"""

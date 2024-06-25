@@ -786,7 +786,7 @@ def page_week_06(option: TOC):
         with cols[0]:
             st.divider()
             if normal_depth.success:
-                st.metric("*Solved* $\; y_n$", f"{normal_depth.x[0]:.2f} m")
+                st.metric(R"*Solved* $\; y_n$", f"{normal_depth.x[0]:.2f} m")
             else:
                 st.error(
                     R"""

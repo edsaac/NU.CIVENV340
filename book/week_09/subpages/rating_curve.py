@@ -165,7 +165,7 @@ def rating_curve():
 
     st.divider()
     st.header("Fitting an equation")
-    st.latex("\log{Q} \propto H \implies Q = a \exp(b\,H) + c")
+    st.latex(R"\log{Q} \propto H \implies Q = a \exp(b\,H) + c")
 
     with st.echo():
 

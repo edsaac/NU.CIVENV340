@@ -84,7 +84,7 @@ def page_week_04(option: TOC):
             )
 
             static_head = st.slider(
-                "Tank elevations -- $H_\mathsf{SH}$ [m]",
+                R"Tank elevations -- $H_\mathsf{SH}$ [m]",
                 -10.0,
                 90.0,
                 (30.0, 67.0),

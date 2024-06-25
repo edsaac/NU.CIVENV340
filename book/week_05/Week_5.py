@@ -72,13 +72,13 @@ def page_week_05(option: TOC):
 
             cols = st.columns(3)
             with cols[0]:
-                st.latex("y_1 < y_2")
+                st.latex(R"y_1 < y_2")
 
             with cols[1]:
-                st.latex("\dfrac{V^2_1}{2g} > \dfrac{V^2_2}{2g}")
+                st.latex(R"\dfrac{V^2_1}{2g} > \dfrac{V^2_2}{2g}")
 
             with cols[2]:
-                st.latex("S_0 \neq S_w \neq S_e")
+                st.latex(R"S_0 \neq S_w \neq S_e")
 
         with tabs[3]:  ## RVF
             url = "https://www.youtube.com/watch?v=nX6aemsdFIo"
@@ -244,7 +244,7 @@ def page_week_05(option: TOC):
             """
         )
 
-        st.latex("E = y + \dfrac{V^2}{2g} = y + \dfrac{Q^2}{2gA^2}")
+        st.latex(R"E = y + \dfrac{V^2}{2g} = y + \dfrac{Q^2}{2gA^2}")
          
         st.divider()
         
@@ -443,7 +443,7 @@ def page_week_05(option: TOC):
 
         st.divider()
 
-        st.header("Froude number $\mathsf{F_r}$", anchor=False)
+        st.header(R"Froude number $\mathsf{F_r}$", anchor=False)
 
         cols = st.columns(3, gap="medium")
         with cols[0]:  # Subcritical
