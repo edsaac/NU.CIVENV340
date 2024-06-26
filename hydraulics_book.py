@@ -6,7 +6,7 @@ from book.common import page_config_common, apply_css_style, sidebar_common, bad
 
 def entrypoint_page():
 
-    st.title("🌊 Hydraulics with Python 🌊", anchor="Hydraulics with Python")
+    st.title("🌊 Hydraulics and Hydrology with Python 🌊", anchor="Hydraulics and Hydrology with Python")
     st.markdown("&nbsp;")
     
     left_col, right_col = st.columns([2, 1])
