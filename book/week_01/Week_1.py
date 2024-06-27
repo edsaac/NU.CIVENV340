@@ -8,7 +8,6 @@ from typing import Literal
 from book.common import axis_format
 
 TOC = Literal[
-    "Systems of units",
     "Water properties",
     "Fluid classification",
     "Pressure and head",
@@ -20,289 +19,247 @@ TOC = Literal[
 def page_week_01(
     option: TOC,
 ):
-    st.title(option.replace("~", ""))
+    st.title(option.replace("~", ""), anchor=False)
 
-    if option == "Systems of units":
-        tabs = st.tabs(["**Normal conditions**", "**Standard conditions**"])
+    if option == "Water properties":
 
-        with tabs[0]:
-            st.markdown(R"""
-
-                | Parameter           | Symbol | Units       | SI                                | BG                                     |
-                |:--------------------|:------:|:-----------:|:---------------------------------:|:--------------------------------------:|
-                |Temperature          | $T$    | Temperature | $20.2 \, \degree\textrm{C}$       | $68.4 \, \degree\textrm{F}$            |
-                |Atmospheric pressure | $p_{\rm atm}$    | Force/Area  | $1.014 \times 10^{5} \, \textrm{Pa}$ | $14.7 \, \textrm{lb}/\textrm{in}^2$ |
-                |Atmospheric pressure | $p_{\rm atm}/\gamma$ | Lenght  | $10.3 \, \textrm{m H}_2\textrm{O}$   | $33.8 \, \textrm{ft H}_2\textrm{O}$ |
-                |Gravitational acceleration| $g$ | Lenght/Time²  | $9.81 \, \textrm{m}/\textrm{s}^2$| $32.2 \, \textrm{ft}/\textrm{s}^2$ |
-
-                ****
-
-                | Water property    | Symbol   | Units              | SI                                                 | BG                                                   |
-                |:---------         |:--------:|:------------------:|:--------------------------------------------------:|:----------------------------------------------------:|
-                |Specific weight    | $\gamma$ | Force/Lenght       | $9790                \, \textrm{N}/\textrm{m}^3$   | $62.3                \, \textrm{lb}/\textrm{ft}^3$   |
-                |Density            | $\rho$   | Mass/Volume        | $998                 \, \textrm{kg}/\textrm{m}^3$  | $1.94                \, \textrm{slug}/\textrm{ft}^3$ |
-                |Viscosity          | $\mu$    | Force · Time/Area  | $1.00 \times 10^{-3} \, \textrm{N s}/\textrm{m}^2$ | $2.09 \times 10^{-5} \, \textrm{lb s}/\textrm{ft}^2$ |
-                |Kinematic viscosity| $\nu$    | Area/Time          | $1.00 \times 10^{-6} \, \textrm{m}^2/\textrm{s}$   | $1.08 \times 10^{-5} \, \textrm{ft}^2/\textrm{s}$    |
-                |Surface tension    | $\sigma$ | Force/Lenght       | $7.13 \times 10^{-2} \, \textrm{N}/\textrm{m}$     | $4.89 \times 10^{-3} \, \textrm{lb}/\textrm{ft}^{-3}$|
-                |Vapor pressure     |   -      | Force/Area         | $2.37 \times 10^{3}  \, \textrm{N}/\textrm{m}^2$   | $3.44 \times 10^{-1} \, \textrm{lb}/\textrm{in}^2$   |
-                """)
-
-        with tabs[1]:
-            st.markdown(R"""
-
-                | Parameter           | Symbol | Units       | SI                                | BG                                     |
-                |:--------------------|:------:|:-----------:|:---------------------------------:|:--------------------------------------:|
-                |Temperature          | $T$    | Temperature | $4 \, \degree\textrm{C}$       | $39.2 \, \degree\textrm{F}$            |
-                |Atmospheric pressure | $p_{\rm atm}$    | Force/Area  | $1.014 \times 10^{5} \, \textrm{Pa}$ | $14.7 \, \textrm{lb}/\textrm{in}^2$ |
-                |Atmospheric pressure | $p_{\rm atm}/\gamma$ | Lenght  | ❓   | ❓ |
-                |Gravitational acceleration| $g$ | Lenght/Time²  | $9.81 \, \textrm{m}/\textrm{s}^2$| $32.2 \, \textrm{ft}/\textrm{s}^2$ |
-
-                ****
-
-                | Water property    | Symbol   | Units              | SI                                                 | BG                                                   |
-                |:---------         |:--------:|:------------------:|:--------------------------------------------------:|:----------------------------------------------------:|
-                |Specific weight    | $\gamma$ | Force/Lenght       | $9810                \, \textrm{N}/\textrm{m}^3$   | $62.4                \, \textrm{lb}/\textrm{ft}^3$   |
-                |Density            | $\rho$   | Mass/Volume        | $1000                 \, \textrm{kg}/\textrm{m}^3$ | $1.94                \, \textrm{slug}/\textrm{ft}^3$ |
-                |Viscosity          | $\mu$    | Force · Time/Area  | $1.57 \times 10^{-3} \, \textrm{N s}/\textrm{m}^2$ | $3.28 \times 10^{-5} \, \textrm{lb s}/\textrm{ft}^2$ |
-                |Kinematic viscosity| $\nu$    | Area/Time          | $1.57 \times 10^{-6} \, \textrm{m}^2/\textrm{s}$   | $1.69 \times 10^{-5} \, \textrm{ft}^2/\textrm{s}$    |
-                |Surface tension    | $\sigma$ | Force/Lenght       | $7.36 \times 10^{-2} \, \textrm{N}/\textrm{m}$     | $5.04 \times 10^{-3} \, \textrm{lb}/\textrm{ft}^{-3}$|
-                |Vapor pressure     |   -      | Force/Area         | $8.21 \times 10^{2}  \, \textrm{N}/\textrm{m}^2$   | $1.19 \times 10^{-1} \, \textrm{lb}/\textrm{in}^2$   |
-                """)
-
-    elif option == "Water properties":
         water_props_path = "./book/week_01/properties.xlsx"
 
-        st.markdown(
-            R"""
-            ## Density $\rho_{(T)}$
-            """
-        )
+        tabs = st.tabs(["Density", "Viscosity", "Vapor pressure"])
 
-        density = pd.read_excel(water_props_path, sheet_name="Density_water")
-        density["Density (kg/m3)"] = density["Density (g/cm3)"] * 1.0e3
-
-        fig = go.Figure(
-            [
-                go.Scatter(
-                    x=density["Temperature (C)"],
-                    y=density["Density (kg/m3)"],
-                    name="Water density",
-                    hovertemplate="T = %{x} °C <br><b>ρ = %{y} kg/m³</b>",
-                    line=dict(width=5, color="#018749"),
-                )
-            ]
-        )
-
-        fig.update_layout(
-            title_text="""Standard Density of Water as a Function of Temperature<br><i>Data retrieved from the <a href="https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9982163963102441">CRC Handbook of Chemistry and Physics Online</a></i>""",
-            yaxis=dict(title="Density [kg/m³]", **axis_format),
-            xaxis=dict(title="Temperature [°C]", **axis_format),
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
-
-        st.markdown(
-            R"""
-            ****
-            ## Dynamic Viscosity $\mu(T)$
-
-            $$
-                \tau = \mu \dfrac{\partial u}{\partial y} 
-            $$
-            """
-        )
-
-        with st.expander("🖼️ **Viscosity diagram**"):
-            st.image(
-                "https://upload.wikimedia.org/wikipedia/commons/9/93/Laminar_shear.svg",
-                use_column_width=True,
+        with tabs[0]:
+            st.markdown(
+                R"""
+                ### Density $\rho_{(T)}$
+                """
             )
-            st.caption("*Source* [🛸](https://en.wikipedia.org/wiki/Viscosity)")
 
-        viscosity = pd.read_excel(water_props_path, sheet_name="Viscosity")
-        viscosity["Water viscosity (μ) [SI]"] = (
-            viscosity["Water viscosity (μ) [SI]"] * 1e-3
-        )  # Convert to N.s/m²
-        viscosity["Air viscosity (μ) [SI]"] = (
-            viscosity["Air viscosity (μ) [SI]"] * 1e-5
-        )  # Convert to N.s/m²
+            density = pd.read_excel(water_props_path, sheet_name="Density_water")
+            density["Density (kg/m3)"] = density["Density (g/cm3)"] * 1.0e3
 
-        fig = go.Figure(
-            [
-                go.Scatter(
-                    x=viscosity["Temp (C)"],
-                    y=viscosity["Water viscosity (μ) [SI]"],
-                    name="Water",
-                    hovertemplate="T = %{x} °C <br><b>μ = %{y:.2e} N.s/m²</b>",
-                    line=dict(width=2, color="blue"),
-                    marker=dict(size=6),
-                ),
-                go.Scatter(
-                    x=viscosity["Temp (C)"],
-                    y=viscosity["Air viscosity (μ) [SI]"],
-                    name="Air",
-                    hovertemplate="T = %{x} °C <br><b>μ = %{y:.2e} N.s/m²</b>",
-                    line=dict(width=2, color="red"),
-                    marker=dict(size=6),
-                ),
-            ]
-        )
+            fig = go.Figure(
+                [
+                    go.Scatter(
+                        x=density["Temperature (C)"],
+                        y=density["Density (kg/m3)"],
+                        name="Water density",
+                        hovertemplate="T = %{x} °C <br><b>ρ = %{y} kg/m³</b>",
+                        line=dict(width=5, color="#018749"),
+                    )
+                ]
+            )
 
-        fig.update_layout(
-            height=700,
-            title=dict(
-                text="""Viscosities of water and air<br><i>Data retrieved from Table 1.3 - <i>Class textbook</i>""",
-                font_color="#444",
-            ),
-            yaxis=dict(title="Viscosity [N.s/m²]", type="log", **axis_format),
-            xaxis=dict(title="Temperature [°C]", **axis_format),
-            legend=dict(
-                title="Fluid",
-                font=dict(size=18),
-                orientation="v",
-                bordercolor="gainsboro",
-                borderwidth=1,
-                yanchor="top",
-                y=0.96,
-                xanchor="right",
-                x=0.96,
-            ),
-            hovermode="x",
-            hoverlabel=dict(font_size=18),
-        )
+            fig.update_layout(
+                title_text="""Standard Density of Water as a Function of Temperature<br><i>Data retrieved from the <a href="https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9982163963102441">CRC Handbook of Chemistry and Physics Online</a></i>""",
+                yaxis=dict(title="Density [kg/m³]", **axis_format),
+                xaxis=dict(title="Temperature [°C]", **axis_format),
+            )
 
-        st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True)
 
-        st.info(
-            """
-            - What is a `poise`? 
-            - Who was JLM Poiseuille? 🇫🇷
-            """
-        )
+        with tabs[1]:
+            st.markdown(
+                R"""
+                ### Dynamic viscosity $\mu(T)$
 
-        st.markdown(
-            R"""
-            ****
-            ## Kinematic Viscosity $\nu_{(T)}$
+                $$
+                    \tau = \mu \dfrac{\partial u}{\partial y} 
+                $$
+                """
+            )
 
-            $$
-                \nu = \dfrac{\mu}{\rho}
-            $$
-
-            """
-        )
-
-        viscosity = pd.read_excel(water_props_path, sheet_name="Viscosity")
-        viscosity["Kinematic water viscosity (ν) [SI]"] = (
-            viscosity["Kinematic water viscosity (ν) [SI]"] * 1e-6
-        )  # Convert to N.s/m²
-        viscosity["Kinematic air viscosity (ν) [SI]"] = (
-            viscosity["Kinematic air viscosity (ν) [SI]"] * 1e-6
-        )  # Convert to N.s/m²
-
-        fig = go.Figure(
-            [
-                go.Scatter(
-                    x=viscosity["Temp (C)"],
-                    y=viscosity["Kinematic water viscosity (ν) [SI]"],
-                    name="Water",
-                    hovertemplate="T = %{x} °C <br><b>ν = %{y:.2e} m²/s</b>",
-                    line=dict(width=2, color="blue"),
-                    marker=dict(size=6),
-                ),
-                go.Scatter(
-                    x=viscosity["Temp (C)"],
-                    y=viscosity["Kinematic air viscosity (ν) [SI]"],
-                    name="Air",
-                    hovertemplate="T = %{x} °C <br><b>ν = %{y:.2e} m²/s</b>",
-                    line=dict(width=2, color="red"),
-                    marker=dict(size=6),
-                ),
-            ]
-        )
-
-        fig.update_layout(
-            height=700,
-            title=dict(
-                text="""Viscosities of water and air<br><i>Data retrieved from Table 1.3 - <i>Class textbook</i>""",
-                font_color="#444",
-            ),
-            yaxis=dict(title="Kinematic viscosity [m²/s]", **axis_format),
-            xaxis=dict(title="Temperature [°C]", **axis_format),
-            legend=dict(
-                title="Fluid",
-                font=dict(size=18),
-                orientation="v",
-                bordercolor="gainsboro",
-                borderwidth=1,
-                yanchor="top",
-                y=0.50,
-                xanchor="center",
-                x=0.96,
-            ),
-            hovermode="x",
-            hoverlabel=dict(font_size=18),
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
-
-        st.info(
-            """
-            - What is a `stokes`? 
-            - Who was GG Stoke? 🇬🇧 
-            """
-        )
-
-        st.markdown(
-            R"""
-            ****
-            ## Vapor pressure
-            """
-        )
-
-        vapor = pd.read_excel(water_props_path, sheet_name="vapor_pressure")
-        vapor["Vapor pressure (mH2O)"] = vapor["Vapor pressure (atm)"] * 10.3326
-
-        units = st.radio("Units", ["(atm)", "(mH2O)"], horizontal=True)
-
-        fig = go.Figure(
-            [
-                go.Scatter(
-                    x=vapor["Temperature"],
-                    y=vapor[f"Vapor pressure {units}"],
-                    name="Water",
-                    hovertemplate="T = %{x} °C <br><b>p<sub>v</sub> = %{y:.2f}"
-                    + f"{units} </b>",
-                    line=dict(width=4, color="blue"),
-                    marker=dict(size=6),
+            with st.expander("🖼️ **Viscosity diagram**"):
+                st.image(
+                    "https://upload.wikimedia.org/wikipedia/commons/9/93/Laminar_shear.svg",
+                    use_column_width=True,
                 )
-            ]
-        )
+                st.caption("*Source* [🛸](https://en.wikipedia.org/wiki/Viscosity)")
 
-        fig.update_layout(
-            height=700,
-            title=dict(
-                text="""Vapor pressure of water<br> <i>Data retrieved from the <a href="https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9982163963102441">CRC Handbook of Chemistry and Physics Online</a></i>""",
-                font_color="#444",
-            ),
-            yaxis=dict(title=f"Vapor pressure {units}", **axis_format),
-            xaxis=dict(title="Temperature [°C]", **axis_format),
-            legend=dict(
-                title="Fluid",
-                font=dict(size=18),
-                orientation="v",
-                bordercolor="gainsboro",
-                borderwidth=1,
-                yanchor="top",
-                y=0.50,
-                xanchor="center",
-                x=0.96,
-            ),
-            hovermode="x",
-            hoverlabel=dict(font_size=18),
-        )
+            viscosity = pd.read_excel(water_props_path, sheet_name="Viscosity")
+            viscosity["Water viscosity (μ) [SI]"] = (
+                viscosity["Water viscosity (μ) [SI]"] * 1e-3
+            )  # Convert to N.s/m²
+            viscosity["Air viscosity (μ) [SI]"] = (
+                viscosity["Air viscosity (μ) [SI]"] * 1e-5
+            )  # Convert to N.s/m²
 
-        st.plotly_chart(fig, use_container_width=True)  # ?
+            fig = go.Figure(
+                [
+                    go.Scatter(
+                        x=viscosity["Temp (C)"],
+                        y=viscosity["Water viscosity (μ) [SI]"],
+                        name="Water",
+                        hovertemplate="T = %{x} °C <br><b>μ = %{y:.2e} N.s/m²</b>",
+                        line=dict(width=2, color="blue"),
+                        marker=dict(size=6),
+                    ),
+                    go.Scatter(
+                        x=viscosity["Temp (C)"],
+                        y=viscosity["Air viscosity (μ) [SI]"],
+                        name="Air",
+                        hovertemplate="T = %{x} °C <br><b>μ = %{y:.2e} N.s/m²</b>",
+                        line=dict(width=2, color="red"),
+                        marker=dict(size=6),
+                    ),
+                ]
+            )
+
+            fig.update_layout(
+                height=700,
+                title=dict(
+                    text="""Viscosities of water and air<br><i>Data retrieved from Table 1.3 - <i>Class textbook</i>""",
+                    font_color="#444",
+                ),
+                yaxis=dict(title="Viscosity [N.s/m²]", type="log", **axis_format),
+                xaxis=dict(title="Temperature [°C]", **axis_format),
+                legend=dict(
+                    title="Fluid",
+                    font=dict(size=18),
+                    orientation="v",
+                    bordercolor="gainsboro",
+                    borderwidth=1,
+                    yanchor="top",
+                    y=0.96,
+                    xanchor="right",
+                    x=0.96,
+                ),
+                hovermode="x",
+                hoverlabel=dict(font_size=18),
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+
+            st.info(
+                """
+                - What is a `poise`? 
+                - Who was JLM Poiseuille? 🇫🇷
+                """
+            )
+
+            st.divider()
+
+            st.markdown(
+                R"""
+                ## Kinematic viscosity $\nu_{(T)}$
+
+                $$
+                    \nu = \dfrac{\mu}{\rho}
+                $$
+
+                """
+            )
+
+            viscosity = pd.read_excel(water_props_path, sheet_name="Viscosity")
+            viscosity["Kinematic water viscosity (ν) [SI]"] = (
+                viscosity["Kinematic water viscosity (ν) [SI]"] * 1e-6
+            )  # Convert to N.s/m²
+            viscosity["Kinematic air viscosity (ν) [SI]"] = (
+                viscosity["Kinematic air viscosity (ν) [SI]"] * 1e-6
+            )  # Convert to N.s/m²
+
+            fig = go.Figure(
+                [
+                    go.Scatter(
+                        x=viscosity["Temp (C)"],
+                        y=viscosity["Kinematic water viscosity (ν) [SI]"],
+                        name="Water",
+                        hovertemplate="T = %{x} °C <br><b>ν = %{y:.2e} m²/s</b>",
+                        line=dict(width=2, color="blue"),
+                        marker=dict(size=6),
+                    ),
+                    go.Scatter(
+                        x=viscosity["Temp (C)"],
+                        y=viscosity["Kinematic air viscosity (ν) [SI]"],
+                        name="Air",
+                        hovertemplate="T = %{x} °C <br><b>ν = %{y:.2e} m²/s</b>",
+                        line=dict(width=2, color="red"),
+                        marker=dict(size=6),
+                    ),
+                ]
+            )
+
+            fig.update_layout(
+                height=700,
+                title=dict(
+                    text="""Viscosities of water and air<br><i>Data retrieved from Table 1.3 - <i>Class textbook</i>""",
+                    font_color="#444",
+                ),
+                yaxis=dict(title="Kinematic viscosity [m²/s]", **axis_format),
+                xaxis=dict(title="Temperature [°C]", **axis_format),
+                legend=dict(
+                    title="Fluid",
+                    font=dict(size=18),
+                    orientation="v",
+                    bordercolor="gainsboro",
+                    borderwidth=1,
+                    yanchor="top",
+                    y=0.50,
+                    xanchor="center",
+                    x=0.96,
+                ),
+                hovermode="x",
+                hoverlabel=dict(font_size=18),
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+
+            st.info(
+                """
+                - What is a `stokes`? 
+                - Who was GG Stoke? 🇬🇧 
+                """
+            )
+
+        with tabs[2]:
+            st.markdown(
+                R"""
+                ### Vapor pressure
+                """
+            )
+
+            vapor = pd.read_excel(water_props_path, sheet_name="vapor_pressure")
+            vapor["Vapor pressure (mH2O)"] = vapor["Vapor pressure (atm)"] * 10.3326
+
+            units = st.radio("Units", ["(atm)", "(mH2O)"], horizontal=True)
+
+            fig = go.Figure(
+                [
+                    go.Scatter(
+                        x=vapor["Temperature"],
+                        y=vapor[f"Vapor pressure {units}"],
+                        name="Water",
+                        hovertemplate="T = %{x} °C <br><b>p<sub>v</sub> = %{y:.2f}"
+                        + f"{units} </b>",
+                        line=dict(width=4, color="blue"),
+                        marker=dict(size=6),
+                    )
+                ]
+            )
+
+            fig.update_layout(
+                height=700,
+                title=dict(
+                    text="""Vapor pressure of water<br> <i>Data retrieved from the <a href="https://search.library.northwestern.edu/permalink/01NWU_INST/h04e76/alma9982163963102441">CRC Handbook of Chemistry and Physics Online</a></i>""",
+                    font_color="#444",
+                ),
+                yaxis=dict(title=f"Vapor pressure {units}", **axis_format),
+                xaxis=dict(title="Temperature [°C]", **axis_format),
+                legend=dict(
+                    title="Fluid",
+                    font=dict(size=18),
+                    orientation="v",
+                    bordercolor="gainsboro",
+                    borderwidth=1,
+                    yanchor="top",
+                    y=0.50,
+                    xanchor="center",
+                    x=0.96,
+                ),
+                hovermode="x",
+                hoverlabel=dict(font_size=18),
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
 
     elif option == "Fluid classification":
         st.markdown(
@@ -394,7 +351,7 @@ def page_week_01(
     elif option == "Pressure and head":
         st.markdown(
             R"""
-            ## Absolute and gauge pressure
+            #### Absolute and gauge pressure
 
             $$
                 p = p_{\rm abs} - p_{\rm atm}
@@ -403,18 +360,16 @@ def page_week_01(
             """
         )
 
-        with st.expander("**Diagram:**"):
-            st.image(
-                "https://www.engineeringtoolbox.com/docs/documents/587/absolute_gauge_pressure.png",
-                use_column_width=True,
-            )
-            st.caption(
-                "*Source* [🛸](https://www.engineeringtoolbox.com/docs/documents/587/absolute_gauge_pressure.png)"
-            )
+        st.image(
+            "https://www.engineeringtoolbox.com/docs/documents/587/absolute_gauge_pressure.png",
+        )
+        st.caption(
+            "*Source:* [engineeringtoolbox.com](https://www.engineeringtoolbox.com/docs/documents/587/absolute_gauge_pressure.png)"
+        )
 
         st.markdown(
-            r"""
-            ### Barometric formula
+            R"""
+            **Barometric formula**
 
             $$
                 \dfrac{p_{\rm atm}}{p_{\rm atm, 0}} \approx \exp\left( - \dfrac{ghM}{T_0 R_0} \right) 
@@ -486,7 +441,7 @@ def page_week_01(
         st.markdown(
             R"""
 
-            ## Flow rate and mean velocity
+            #### Flow rate and mean velocity
 
             $$
                 Q = V\,A
@@ -500,7 +455,7 @@ def page_week_01(
 
             &nbsp;
 
-            ## Reynolds number $R_e$
+            #### Reynolds number $R_e$
 
             $$
                 R_e = \dfrac{uL}{\nu} = \underbrace{\dfrac{VD}{\nu}}_{\textsf{For circular pipes}} = \dfrac{4Q}{\pi D \nu}
@@ -515,7 +470,7 @@ def page_week_01(
         st.markdown(
             R"""
             ******
-            ## Mass conservation
+            #### Mass conservation
 
             The discharge between two sections in a pipe must be the same
 
@@ -523,7 +478,7 @@ def page_week_01(
                 Q_1 = Q_2
             $$
             
-            ## Energy conservation
+            #### Energy conservation
             """
         )
 
@@ -580,8 +535,6 @@ def page_week_01(
     elif option == "Problem types":
         st.markdown(
             R"""
-            ## Problem types
-
             $$
                 h_1 + \dfrac{p_1}{\gamma} + \dfrac{V_1^2}{2g} = h_2 + \dfrac{p_2}{\gamma} + \dfrac{V_2^2}{2g} + h_L(V,D,L,e)
             $$

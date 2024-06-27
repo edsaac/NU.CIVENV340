@@ -13,6 +13,7 @@ from book.week_07.Week_7 import page_week_07
 from book.week_08.Week_8 import page_week_08
 from book.week_09.Week_9 import page_week_09
 from book.week_10.Week_10 import page_week_10
+from book.extra import appendices
 
 __all__ = ["all_pages"]
 
@@ -27,6 +28,7 @@ all_sections = {
     "Week 8 - Watersheds and water cycle": page_week_08,
     "Week 9 - Hydrology and engineering": page_week_09,
     "Week 10 - Basics of probability": page_week_10,
+    "Appendices": appendices,
 }
 
 
