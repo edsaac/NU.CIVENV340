@@ -39,18 +39,26 @@ def generate_pages(page_week: Callable) -> dict[str, StreamlitPage]:
 
     for i, topic in enumerate(list_of_topics, start=1):
         if not topic.startswith("~"):
+            title = f"{topic}"
+            url_path = title.replace(" ", "_").replace("-", "").strip().lower()
+            # print(title, url_path)
+
             pages[topic] = st.Page(
                 partial(page_week, topic),
-                title=(title := f"{topic}"),
-                url_path=title.replace(" ", "_").replace("-", "").strip().lower(),
+                title=title,
+                url_path=url_path,
                 icon=":material/article:",
             )
 
         else:
+            title = " - " + topic.replace("~", "")
+            url_path = title.replace("-", "").strip().replace(" ", "_").lower()
+            # print(title, url_path)
+
             pages[topic] = st.Page(
                 partial(page_week, topic),
-                title=(title := " - " + topic.replace("~", "")),
-                url_path=title.replace("-", "").strip().replace(" ", "_").lower(),
+                title=title,
+                url_path=url_path,
                 icon="🐍",
             )
 

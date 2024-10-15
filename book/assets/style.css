@@ -14,10 +14,17 @@ tr .math {
     font-size: 1.2rem;
 }
 
-[data-testid="stSidebar"] {
+/* [data-testid="stSidebar"] {
     background-color: #4E2A84;
 }
 
+[data-testid="stNavSectionHeader"] {
+    color: white;
+}
+
+[data-testid="stSidebarNavLink"] span {
+    color: snow;
+} */
 
 [data-testid="stSidebar"] p {
     font-size: 1.0rem;

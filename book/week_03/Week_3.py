@@ -12,7 +12,7 @@ from typing import Literal
 from .subpages import making_epanet, adjacency_matrix
 
 TOC = Literal[
-    "Pipes in series/parallel",
+    "Pipes in series and parallel",
     "Branched systems",
     "Looped networks",
     "Newton method",
@@ -24,7 +24,7 @@ TOC = Literal[
 def page_week_03(option: TOC):
     st.title(option.replace("~", ""))
 
-    if option == "Pipes in series/parallel":
+    if option == "Pipes in series and parallel":
         cols = st.columns(2)
         with cols[1]:
             st.pyplot(pipes_in_series())
@@ -589,7 +589,7 @@ def page_week_03(option: TOC):
 
                 return error
 
-        st.subheader("### 🍠 Find the root ", anchor=False)
+        st.subheader("🍠 Find the root ", anchor=False)
 
         with st.echo():
             solution = root(
@@ -617,13 +617,13 @@ def page_week_03(option: TOC):
 
         st.divider()
         st.warning("What was the pressure in the junction?")
-    
+
     elif option == "~Building an EPANET":
         making_epanet()
-    
+
     elif option == "~Adjacency matrix":
         adjacency_matrix()
-        
+
     else:
         r"### 🚧 Under construction 🚧"
 
@@ -954,5 +954,3 @@ def write_network_equations():
             """
 
     return None
-
-

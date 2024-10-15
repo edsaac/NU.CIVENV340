@@ -2,10 +2,10 @@
 gatherUsageStats = false
 
 [theme]
-base="light"
-primaryColor="#4E2A84"
-backgroundColor="snow"
-secondaryBackgroundColor="#B6ACD150"
+base = "light"
+primaryColor = "#4E2A84"
+backgroundColor = "snow"
+secondaryBackgroundColor = "#d2cddf"
 
 [runner]
 magicEnabled = true
