@@ -16,13 +16,14 @@ __all__ = [
     "get_image_as_bytes",
     "get_image_as_PIL",
     "build_graph",
-    "swamme_jain"
+    "swamme_jain",
 ]
 
 badges = {
     "this_repo": "[![Book github repository](https://img.shields.io/static/v1?label=&message=Repository&color=black&logo=github)](https://github.com/edsaac/NU.CIVENV340)",
-    "other_stuff": "[![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.github.io)"
+    "other_stuff": "[![Other stuff](https://img.shields.io/static/v1?label=&message=Other+stuff&color=white&logo=streamlit)](https://edsaac.me)",
 }
+
 
 def sidebar_common():
     with st.sidebar:
@@ -147,6 +148,7 @@ def build_graph(nodes_df, edges_df):
     ax.set_aspect("equal")
 
     return G, fig
+
 
 def _swamme_jain(relative_roughness: float, reynolds_number: float):
     fcalc = 0.25 / np.power(
