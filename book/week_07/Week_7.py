@@ -15,6 +15,7 @@ TOC = Literal[
     "Dams and culverts",
 ]
 
+
 def page_week_07(option: TOC):
     st.title(option.replace("~", ""))
 
@@ -28,7 +29,7 @@ def page_week_07(option: TOC):
             $$
             
             For a given Manning coefficient and channel slope, the discharge can be maximized 
-            if the hydraulic radius is maximized, which is achieved if the wetter perimeter is mimized.
+            if the hydraulic radius is maximized, which is achieved if the wetter perimeter is minimized.
 
             $$
                 Q = \dfrac{1}{n} \, \underbrace{A \, R_h^{2/3}}_{\substack{\\🆙}} \sqrt{S_0}
@@ -310,9 +311,7 @@ def page_week_07(option: TOC):
             cols = st.columns(4)
             y = y_calc.x[0]
             b = 2 * y * (np.sqrt(side_slope**2 + 1) - side_slope)
-            A = (
-                2 * y * (np.sqrt(side_slope**2 + 1) - side_slope) + side_slope * y
-            ) * y
+            A = (2 * y * (np.sqrt(side_slope**2 + 1) - side_slope) + side_slope * y) * y
             P_w = 2 * y * (2 * np.sqrt(1 + side_slope**2) - side_slope)
 
             with cols[0]:
@@ -559,7 +558,7 @@ def page_week_07(option: TOC):
                 icon="🧪",
             )
 
-        st.markdown(    
+        st.markdown(
             R"""
             ******
             ### Tractive force
@@ -573,7 +572,6 @@ def page_week_07(option: TOC):
 
             """
         )
-
 
     elif option == "Weirs and flumes":
         st.markdown(
@@ -838,9 +836,14 @@ def page_week_07(option: TOC):
             unsafe_allow_html=True,
         )
         st.image(url, use_column_width=True)
-        
+
         url = "https://waterdata.usgs.gov/monitoring-location/04079000/#parameterCode=00065&period=P30D"
-        st.link_button("📡 Check the USGS **Waterdata portal**", url=url, use_container_width=True, type="primary")
+        st.link_button(
+            "📡 Check the USGS **Waterdata portal**",
+            url=url,
+            use_container_width=True,
+            type="primary",
+        )
 
         st.markdown(
             R"""
@@ -859,7 +862,6 @@ def page_week_07(option: TOC):
             """
         )
 
-        
         url = "https://www.usgs.gov/special-topics/water-science-school/science/how-streamflow-measured#overview"
         st.caption(f"Also check: How Streamflow is Measured at [usgs.gov]({url})")
         cols = st.columns(3)
@@ -877,7 +879,7 @@ def page_week_07(option: TOC):
 
         with cols[1]:
             st.subheader("2. Measuring discharge")
-            
+
             url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/Lowell_Alvin_ADCP4.JPG"
             source = "https://www.usgs.gov/media/images/measuring-boise-river-streamflow-adcp-1"
             st.caption(
@@ -888,7 +890,7 @@ def page_week_07(option: TOC):
 
         with cols[2]:
             st.subheader("3. Finding $C$ and $n$")
-            
+
             url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/discharge.jpg"
             source = "https://www.usgs.gov/media/images/usgs-stage-discharge-relation-example"
             st.caption(
@@ -1016,7 +1018,7 @@ def page_week_07(option: TOC):
 
             """
         )
-    
+
         img_url = "https://upload.wikimedia.org/wikipedia/commons/a/ad/Culvert_under_the_A835_-_geograph.org.uk_-_3466116.jpg"
         source = "https://www.geograph.org.uk/photo/3466116"
         st.caption(
@@ -1043,7 +1045,9 @@ def wetted_perimeter_v_side_slope_plot():
 
     fig, ax = plt.subplots()
     ax.plot(m, Pw, c="seagreen", lw=5)
-    ax.set_ylabel(R"Wetted perimeter $\quad \dfrac{P_w}{y}$ [-]", fontdict=dict(size=14))
+    ax.set_ylabel(
+        R"Wetted perimeter $\quad \dfrac{P_w}{y}$ [-]", fontdict=dict(size=14)
+    )
     ax.set_xlabel(R"Side slope $\quad m$ [-]", fontdict=dict(size=14))
     ax.set_xlim(0, 3.0)
     ax.set_ylim(bottom=0)
@@ -1062,5 +1066,3 @@ def wetted_perimeter_v_side_slope_plot():
     )
 
     return fig
-
-
