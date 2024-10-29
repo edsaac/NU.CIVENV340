@@ -1,0 +1,19 @@
+{
+    "Brass": 0.0015,
+    "Concrete, Steel forms, smooth": 0.18,
+    "Concrete, Good joints, average": 0.36,
+    "Concrete, Rough, visible form marks": 0.60,
+    "Copper": 0.0015,
+    "Corrugated metal (CMP)": 45.0,
+    "Iron, Asphalt lined": 0.12,
+    "Iron, Cast": 0.26,
+    "Iron, Ductile, DIP - cement mortar lined": 0.12,
+    "Iron, Galvanized": 0.15,
+    "Iron, Wrought": 0.045,
+    "PVC - Polyvinyl chloride": 0.0015,
+    "HDPE  - Polyethylene, high density": 0.0015,
+    "Steel, Enamel coated": 0.0048,
+    "Steel, Riveted": 0.9,
+    "Steel, Seamless": 0.004,
+    "Steel, Commercial": 0.045
+}

@@ -1,0 +1,92 @@
+.math {
+    font-size: 1.2rem;
+}
+
+tr .math {
+    font-size: 1.0rem;
+}
+
+[data-baseweb="accordion"] .math {
+    font-size: 0.66rem;
+}
+
+[data-testid="stMarkdownContainer"] p {
+    font-size: 1.2rem;
+}
+
+/* [data-testid="stSidebar"] {
+    background-color: #4E2A84;
+}
+
+[data-testid="stNavSectionHeader"] {
+    color: white;
+}
+
+[data-testid="stSidebarNavLink"] span {
+    color: snow;
+} */
+
+[data-testid="stSidebar"] p {
+    font-size: 1.0rem;
+}
+
+/* [data-testid="stSidebarNavItems"] {
+    max-height: 70vh;
+} */
+
+
+div.glideDataEditor {
+    display: block;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h1 {
+    font-size: 2.2rem;
+    text-align: center;
+}
+
+iframe {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 2%;
+}
+
+[data-testid="stCaptionContainer"] {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 5px;
+}
+
+[data-testid="stImage"] {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+[data-testid="stCheckbox"] {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+}
+
+[data-testid="stHeader"] {
+    background-color: rgba(078, 042, 132, 0.5);
+    visibility: collapse;
+    display: none;
+}
