@@ -36,6 +36,8 @@ def sidebar_common():
 
 
 page_config_common = dict(
+    page_title="edsaac.me · Hydraulics and Hydrology",
+    page_icon="🌊",
     layout="wide",
     menu_items={
         "Get help": "https://canvas.northwestern.edu/courses/189865",
