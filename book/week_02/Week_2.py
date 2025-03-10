@@ -26,7 +26,6 @@ TOC = Literal[
 def page_week_02(
     option: TOC,
 ):
-
     st.title(option.replace("~", ""))
 
     if option == "Friction head loss":
@@ -124,9 +123,7 @@ def page_week_02(
                 """
             )
 
-            with st.expander(
-                "🧮 How to solve this *implicit* equation?", expanded=False
-            ):
+            with st.expander("🧮 How to solve this *implicit* equation?", expanded=False):
                 cols = st.columns(2)
                 with cols[0]:
                     eD = st.number_input(
@@ -147,7 +144,9 @@ def page_week_02(
                         key="cw_Re",
                     )
 
-                st.latex(R"f = \left[-2\log\left( \dfrac{e}{3.7\,D} + \dfrac{2.51}{R_e \, \sqrt{f}} \right)\right]^{-2}")
+                st.latex(
+                    R"f = \left[-2\log\left( \dfrac{e}{3.7\,D} + \dfrac{2.51}{R_e \, \sqrt{f}} \right)\right]^{-2}"
+                )
 
                 cols = st.columns([1, 0.5, 1])
                 with cols[1]:
@@ -222,11 +221,9 @@ def page_week_02(
 
         st.image(
             "https://upload.wikimedia.org/wikipedia/commons/d/d9/Moody_EN.svg",
-            use_column_width=True,
+            use_container_width=True,
         )
-        st.caption(
-            "*Source* [🛸](https://commons.wikimedia.org/wiki/File:Moody_EN.svg)"
-        )
+        st.caption("*Source* [🛸](https://commons.wikimedia.org/wiki/File:Moody_EN.svg)")
 
         st.markdown(
             R"""
@@ -247,7 +244,7 @@ def page_week_02(
         with cols[1]:
             st.image(
                 "https://media.springernature.com/full/springer-static/image/chp%3A10.1007%2F978-3-030-34086-5_1/MediaObjects/483272_1_En_1_Fig4_HTML.png?as=webp",
-                use_column_width=True,
+                use_container_width=True,
             )
             st.caption(
                 "*Source* [CS James (2019), Hydraulic Structures. Springer 🛸](https://link.springer.com/chapter/10.1007/978-3-030-34086-5_1)"
@@ -286,7 +283,7 @@ def page_week_02(
 
                 st.image(
                     "https://images.pexels.com/photos/5752926/pexels-photo-5752926.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-                    use_column_width=True,
+                    use_container_width=True,
                 )
                 st.caption(
                     "*Photo of a man with a cap posing near pipes* [🛸 pexels.com](https://www.pexels.com/photo/photo-of-a-man-with-a-cap-posing-near-pipes-5752926/)"
@@ -300,7 +297,7 @@ def page_week_02(
                 """
                 st.image(
                     "https://images.pexels.com/photos/5589898/pexels-photo-5589898.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-                    use_column_width=True,
+                    use_container_width=True,
                 )
                 st.caption(
                     "*Woman posing among pipes* [🛸 pexels.com](https://www.pexels.com/photo/woman-posing-among-pipes-5589898/)"
@@ -444,9 +441,7 @@ def page_week_02(
 
         diameter /= 1000
         discharge = np.linspace(0.001, 0.005, 50)
-        hf_dw = (
-            0.0826 * f_dw * length / np.power(diameter, 5) * np.power(discharge, 2.0)
-        )
+        hf_dw = 0.0826 * f_dw * length / np.power(diameter, 5) * np.power(discharge, 2.0)
         hf_hw = (
             10.7
             * length
@@ -454,11 +449,7 @@ def page_week_02(
             * np.power(discharge, 1.85)
         )
         hf_mn = (
-            10.3
-            * np.power(n_man, 2)
-            * length
-            / np.power(diameter, 5.33)
-            * np.power(discharge, 2.0)
+            10.3 * np.power(n_man, 2) * length / np.power(diameter, 5.33) * np.power(discharge, 2.0)
         )
 
         discharge *= 1000.0
@@ -530,7 +521,7 @@ def page_week_02(
 
         for col, img in zip(cols, accesories_img_sources):
             with col:
-                st.image(img, use_column_width=True)
+                st.image(img, use_container_width=True)
                 st.caption(f"*Source* [🛸 https://www.pexels.com/]({img})")
 
         st.markdown(
@@ -584,7 +575,7 @@ def page_week_02(
         for col, img in zip(cols, accesories_img_sources):
             with col:
                 st.caption(f"*Source:* [🏡]({img})")
-                st.image(img, use_column_width=True)
+                st.image(img, use_container_width=True)
 
         st.markdown(
             r"""
@@ -598,7 +589,7 @@ def page_week_02(
         with cols[0]:
             st.image(
                 "https://images.pexels.com/photos/10041326/pexels-photo-10041326.jpeg?auto=compress&cs=tinysrgb&w=420&h=250&dpr=2",
-                use_column_width=True,
+                use_container_width=True,
             )
             st.caption(
                 "*Source* [🛸 pexels.com](https://images.pexels.com/photos/10041326/pexels-photo-10041326.jpeg)"
@@ -629,9 +620,8 @@ def page_week_02(
 
                 """
             )
-    
+
     elif option == "Momentum and forces":
-        
         st.markdown(
             R"""
             ## Momentum balance:
@@ -642,43 +632,39 @@ def page_week_02(
 
             """
         )
-        
+
         cols = st.columns(2)
 
         with cols[0]:
             st.subheader("Thrust blocks", anchor=False)
 
-            url = (
-                "https://www.meyerfire.com/uploads/1/6/0/7/16072416/97-550-v2_orig.jpg"
-            )
+            url = "https://www.meyerfire.com/uploads/1/6/0/7/16072416/97-550-v2_orig.jpg"
 
-            source = (
-                "https://www.meyerfire.com/blog/a-new-thrust-block-calculator-part-i"
-            )
+            source = "https://www.meyerfire.com/blog/a-new-thrust-block-calculator-part-i"
 
-            st.image(get_image(url), use_column_width=True)
+            st.image(get_image(url), use_container_width=True)
             st.caption(f"*Source* [🛸 {urlparse(source).hostname}]({source})")
 
             url = "https://www.ausflowsydney.com.au/wp-content/uploads/2018/07/6.-MaW-water-bends-1-e1546557720956.jpg"
             source = "https://www.ausflowsydney.com.au/6-maw-water-bends/"
-            st.image(get_image(url), use_column_width=True)
+            st.image(get_image(url), use_container_width=True)
             st.caption(f"*Source* [🛸 {urlparse(source).hostname}]({source})")
 
         with cols[1]:
             st.subheader("Pipe restraints", anchor=False)
             url = "https://kannsupply.ca/wp-content/uploads/2020/02/1300C-Pipe-Restraint-4-42-1-scaled.jpeg"
             source = "https://kannsupply.ca/kann-products/1300c-pipe-restraint-4-42-2/"
-            st.image(get_image(url), use_column_width=True)
+            st.image(get_image(url), use_container_width=True)
             st.caption(f"*Source* [🛸 {urlparse(url).hostname}]({source})")
 
             url = "https://images.assetsdelivery.com/compings_v2/designbydx/designbydx1505/designbydx150500087.jpg"
             source = "https://www.stocklib.com/media-40298637/failure-of-joint-restraint-ductile-water-pipe-600-mm-diameter.html"
-            st.image(get_image(url), use_column_width=True)
+            st.image(get_image(url), use_container_width=True)
             st.caption(f"*Source* [🛸 {urlparse(url).hostname}]({source})")
 
     elif option == "~Using scipy.root":
         using_scipy_root()
-    
+
     elif option == "~Compare f equations":
         compare_f_equations()
 
@@ -689,14 +675,9 @@ def page_week_02(
         st.error("You should not be here!")
 
 
-def colebook_white(
-    relative_roughness: float, reynolds_number: float, fguess: float = 0.01
-):
+def colebook_white(relative_roughness: float, reynolds_number: float, fguess: float = 0.01):
     fcalc = 1.0 / np.power(
-        -2.0
-        * np.log10(
-            relative_roughness / 3.7 + 2.51 / (reynolds_number * np.sqrt(fguess))
-        ),
+        -2.0 * np.log10(relative_roughness / 3.7 + 2.51 / (reynolds_number * np.sqrt(fguess))),
         2,
     )
     return fcalc
@@ -714,5 +695,3 @@ def get_image(url: str):
     r = requests.get(url, stream=True)
     img = Image.open(BytesIO(r.content))
     return img
-
-

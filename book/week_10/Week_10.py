@@ -37,9 +37,7 @@ def page_week_10(option: TOC):
             """)
 
         img_url = "https://upload.wikimedia.org/wikipedia/commons/f/f9/Largenumbers.svg"
-        source = (
-            "https://en.wikipedia.org/wiki/Expected_value#/media/File:Largenumbers.svg"
-        )
+        source = "https://en.wikipedia.org/wiki/Expected_value#/media/File:Largenumbers.svg"
 
         st.caption(
             rf"""
@@ -48,7 +46,7 @@ def page_week_10(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
         st.markdown(R"""
             **For a continous process:**
@@ -255,7 +253,7 @@ def page_week_10(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
         st.divider()
         st.markdown(R"""
@@ -289,7 +287,7 @@ def page_week_10(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
         st.divider()
 
         st.markdown(R"""
@@ -305,9 +303,7 @@ def page_week_10(option: TOC):
 
         peaks["greater?"] = np.greater(peaks["peak_va"], 20_000)
 
-        st.dataframe(
-            peaks[["peak_va", "greater?"]], use_container_width=True, height=250
-        )
+        st.dataframe(peaks[["peak_va", "greater?"]], use_container_width=True, height=250)
 
         fig, ax = plt.subplots()
         ax.bar(peaks.index, peaks["peak_va"], width=timedelta(365))
@@ -353,7 +349,7 @@ def page_week_10(option: TOC):
         fig, ax = plt.subplots()
         # levels = np.arange(0.05, 1.00, 0.10)
         levels = [risk_value]
-        cs = ax.contour(nn, tt, risk, levels=levels, colors="k")#, label=r"$\bar{R}$")
+        cs = ax.contour(nn, tt, risk, levels=levels, colors="k")  # , label=r"$\bar{R}$")
         img = ax.pcolormesh(nn, tt, risk, vmin=0.00, vmax=1.00, alpha=0.5, cmap="jet")
         plt.colorbar(img, label=r"$\bar{R}$", shrink=0.5)
         ax.clabel(
@@ -412,5 +408,3 @@ def page_week_10(option: TOC):
             |Hydrologic design value | $L$   | - | 
 
             """)
-
-

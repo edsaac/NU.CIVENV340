@@ -29,8 +29,11 @@ DIRMAP = (
 
 TIF_PATH = "./book/assets/dem/clipped.tif"
 
-@st.experimental_fragment
+
+@st.fragment
 def watershed_delimitation():
+    st.warning("Under maintenance...")
+
     cols = st.columns(2)
 
     with cols[0]:
@@ -71,7 +74,6 @@ def watershed_delimitation():
             #     (src.height / downscaled_data.shape[-2]),
             # )
 
-
     ####################################
     ### Page layout
     ####################################
@@ -91,53 +93,43 @@ def watershed_delimitation():
     ####################################
     ### Processing
     ####################################
-    grid, dem, fdir, acc = pysheds_workflow(TIF_PATH)
+    # grid, dem, fdir, acc = pysheds_workflow(TIF_PATH)
 
     ####################################
     ### Contents // Static
     ####################################
     with pour_point_container.container(border=True):
-            st.markdown("*Pour point location*")
+        st.markdown("*Pour point location*")
 
-            cols = st.columns(2)
-            with cols[0]:
-                y = st.number_input(
-                    "Latitude",
-                    bottom,
-                    top,
-                    33.1032,
-                    0.1,
-                    format="%.3f",
-                    help="Latitude of the pour point for basin delimitation, e.g., 33.805",
-                    disabled=True,
-                )
+        cols = st.columns(2)
+        with cols[0]:
+            y = st.number_input(
+                "Latitude",
+                bottom,
+                top,
+                33.1032,
+                0.1,
+                format="%.3f",
+                help="Latitude of the pour point for basin delimitation, e.g., 33.805",
+                disabled=True,
+            )
 
-            with cols[1]:
-                x = st.number_input(
-                    "Longitude",
-                    left,
-                    right,
-                    -83.7943,
-                    0.1,
-                    format="%.3f",
-                    help="Longitude of the pour point for basin delimitation, e.g., -84.500",
-                    disabled=True
-                )
+        with cols[1]:
+            x = st.number_input(
+                "Longitude",
+                left,
+                right,
+                -83.7943,
+                0.1,
+                format="%.3f",
+                help="Longitude of the pour point for basin delimitation, e.g., -84.500",
+                disabled=True,
+            )
 
-            pour_point = (x, y)
+        pour_point = (x, y)
 
     with map_container.container():
         st.subheader("General location", divider="rainbow")
-        # tiles = st.selectbox(
-        #     "🌌 Pick a map style:",
-        #     [
-        #         "OpenStreetMap",
-        #         "CartoDB Positron",
-        #         "CartoDB Dark_Matter",
-        #     ],
-        #     index=0,
-        # )
-
         midpoint = Point(mean([bottom, top]), mean([left, right]))
         m = folium.Map(location=midpoint, zoom_start=8, tiles="OpenStreetMap")
         fg = folium.FeatureGroup("Pour point")
@@ -161,155 +153,157 @@ def watershed_delimitation():
 
         fg.add_child(marker)
 
-        st_folium(m, feature_group_to_add=fg, use_container_width=True, height=500, returned_objects=[])
-
-    with dem_container.container():
-        st.subheader("DEM: Digital Elevation Model", divider=True)
-
-        tabs = st.tabs(["Heatmap", "Hillshade", "Contours"])
-
-        with tabs[0]:
-            st.pyplot(plot_map(dem, grid))
-
-        with tabs[1]:
-            st.pyplot(plot_hillshade(dem, grid))
-
-        with tabs[2]:
-            st.pyplot(plot_contours(downscaled_data[0], grid))
-
-        st.markdown(
-            Rf"""
-            **🖼️ DEM properties**
-            
-            *Size:* {width} × {height} px
-
-            *Bounds:* 
-            - W: {left:.2f}° to {right:.2f}°
-            - N: {bottom:.2f}° to {top:.2f}°
-
-            *No Data:* {nodata}
-            """
+        st_folium(
+            m, feature_group_to_add=fg, use_container_width=True, height=500, returned_objects=[]
         )
 
-        st.info(
-            """
-            Also check:
-            - USGS topographic maps at [ngmdb.usgs.gov/topoview/](https://ngmdb.usgs.gov/topoview/)
-            - Opentopography - High-Resolution Topography Data and Tools at [opentopography.org](https://opentopography.org/)
-            """
-        )
+    return
 
-    with flow_container.container():
-        st.subheader("Flow accumulation", divider="rainbow")
-        clipped_catch, branches, dist = pysheds_delineate(pour_point, grid, fdir, acc)
-        st.pyplot(plot_accumulation(acc, grid))
+    # with dem_container.container():
+    #     st.subheader("DEM: Digital Elevation Model", divider=True)
 
-        
+    #     tabs = st.tabs(["Heatmap", "Hillshade", "Contours"])
 
-    ####################################
-    ### Contents // Dynamic
-    ####################################
+    #     with tabs[0]:
+    #         st.pyplot(plot_map(dem, grid))
 
-    with network_container.container():
-        st.subheader("Flow direction", divider="rainbow")
+    #     with tabs[1]:
+    #         st.pyplot(plot_hillshade(dem, grid))
 
-        st.markdown("**D8 algorithm:**")
+    #     with tabs[2]:
+    #         st.pyplot(plot_contours(downscaled_data[0], grid))
 
-        cols = st.columns(3, vertical_alignment="center")
+    #     st.markdown(
+    #         Rf"""
+    #         **🖼️ DEM properties**
 
-        with cols[0]:
-            st.html(
-                r"""
-                <style type="text/css">
-                .tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
-                .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-                overflow:hidden;padding:10px 5px;word-break:normal;}
-                .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-                font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-                .tg .tg-amwm{font-weight:bold;text-align:center;vertical-align:top}
-                </style>
-                <table class="tg" style="undefined;table-layout: fixed; width: 153px">
-                <colgroup>
-                <col style="width: 51px">
-                <col style="width: 51px">
-                <col style="width: 51px">
-                </colgroup>
-                <tbody>
-                <tr>
-                    <td class="tg-amwm">NW</td>
-                    <td class="tg-amwm">N</td>
-                    <td class="tg-amwm">NE</td>
-                </tr>
-                <tr>
-                    <td class="tg-amwm">W</td>
-                    <td class="tg-amwm"></td>
-                    <td class="tg-amwm">E</td>
-                </tr>
-                <tr>
-                    <td class="tg-amwm">SW</td>
-                    <td class="tg-amwm">S</td>
-                    <td class="tg-amwm">SE</td>
-                </tr>
-                </tbody>
-                </table>
-                """
-            )
+    #         *Size:* {width} × {height} px
 
-        with cols[1]:
-            st.html(
-                r"""
-                <style type="text/css">
-                .tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
-                .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-                overflow:hidden;padding:10px 5px;word-break:normal;}
-                .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-                font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-                .tg .tg-amwm{font-weight:bold;text-align:center;vertical-align:top}
-                </style>
-                <table class="tg" style="undefined;table-layout: fixed; width: 153px">
-                <colgroup>
-                <col style="width: 51px">
-                <col style="width: 51px">
-                <col style="width: 51px">
-                </colgroup>
-                <tbody>
-                <tr>
-                    <td class="tg-amwm">32</td>
-                    <td class="tg-amwm">64</td>
-                    <td class="tg-amwm">128</td>
-                </tr>
-                <tr>
-                    <td class="tg-amwm">16</td>
-                    <td class="tg-amwm"></td>
-                    <td class="tg-amwm">1</td>
-                </tr>
-                <tr>
-                    <td class="tg-amwm">8</td>
-                    <td class="tg-amwm">4</td>
-                    <td class="tg-amwm">2</td>
-                </tr>
-                </tbody>
-                </table>
-                """,
-            )
+    #         *Bounds:*
+    #         - W: {left:.2f}° to {right:.2f}°
+    #         - N: {bottom:.2f}° to {top:.2f}°
 
-        with cols[2]:
-            st.image(
-                "https://jeffskwang.github.io/assets/rain/foutput.gif",
-                use_column_width=True,
-            )
-            st.caption("Source: [J. Kwang](https://jeffskwang.github.io/)")
+    #         *No Data:* {nodata}
+    #         """
+    #     )
 
-        st.pyplot(plot_network(branches, grid, pour_point))
+    #     st.info(
+    #         """
+    #         Also check:
+    #         - USGS topographic maps at [ngmdb.usgs.gov/topoview/](https://ngmdb.usgs.gov/topoview/)
+    #         - Opentopography - High-Resolution Topography Data and Tools at [opentopography.org](https://opentopography.org/)
+    #         """
+    #     )
 
-    with delineated_container.container():
-        st.subheader("Delineated catchment", divider="rainbow")
-        st.markdown(Rf"Pour point coordinates: {pour_point[1]}° N, {pour_point[0]}° W""")
-        st.pyplot(plot_catchment(clipped_catch, dem, grid, pour_point))
+    # with flow_container.container():
+    #     st.subheader("Flow accumulation", divider="rainbow")
+    #     clipped_catch, branches, dist = pysheds_delineate(pour_point, grid, fdir, acc)
+    #     st.pyplot(plot_accumulation(acc, grid))
 
-    with distance_container.container():
-        st.subheader("Distance to pour point", divider="rainbow")
-        st.pyplot(plot_distance(dist, grid))
+    # ####################################
+    # ### Contents // Dynamic
+    # ####################################
+
+    # with network_container.container():
+    #     st.subheader("Flow direction", divider="rainbow")
+
+    #     st.markdown("**D8 algorithm:**")
+
+    #     cols = st.columns(3, vertical_alignment="center")
+
+    #     with cols[0]:
+    #         st.html(
+    #             r"""
+    #             <style type="text/css">
+    #             .tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+    #             .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+    #             overflow:hidden;padding:10px 5px;word-break:normal;}
+    #             .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+    #             font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+    #             .tg .tg-amwm{font-weight:bold;text-align:center;vertical-align:top}
+    #             </style>
+    #             <table class="tg" style="undefined;table-layout: fixed; width: 153px">
+    #             <colgroup>
+    #             <col style="width: 51px">
+    #             <col style="width: 51px">
+    #             <col style="width: 51px">
+    #             </colgroup>
+    #             <tbody>
+    #             <tr>
+    #                 <td class="tg-amwm">NW</td>
+    #                 <td class="tg-amwm">N</td>
+    #                 <td class="tg-amwm">NE</td>
+    #             </tr>
+    #             <tr>
+    #                 <td class="tg-amwm">W</td>
+    #                 <td class="tg-amwm"></td>
+    #                 <td class="tg-amwm">E</td>
+    #             </tr>
+    #             <tr>
+    #                 <td class="tg-amwm">SW</td>
+    #                 <td class="tg-amwm">S</td>
+    #                 <td class="tg-amwm">SE</td>
+    #             </tr>
+    #             </tbody>
+    #             </table>
+    #             """
+    #         )
+
+    #     with cols[1]:
+    #         st.html(
+    #             r"""
+    #             <style type="text/css">
+    #             .tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+    #             .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+    #             overflow:hidden;padding:10px 5px;word-break:normal;}
+    #             .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+    #             font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+    #             .tg .tg-amwm{font-weight:bold;text-align:center;vertical-align:top}
+    #             </style>
+    #             <table class="tg" style="undefined;table-layout: fixed; width: 153px">
+    #             <colgroup>
+    #             <col style="width: 51px">
+    #             <col style="width: 51px">
+    #             <col style="width: 51px">
+    #             </colgroup>
+    #             <tbody>
+    #             <tr>
+    #                 <td class="tg-amwm">32</td>
+    #                 <td class="tg-amwm">64</td>
+    #                 <td class="tg-amwm">128</td>
+    #             </tr>
+    #             <tr>
+    #                 <td class="tg-amwm">16</td>
+    #                 <td class="tg-amwm"></td>
+    #                 <td class="tg-amwm">1</td>
+    #             </tr>
+    #             <tr>
+    #                 <td class="tg-amwm">8</td>
+    #                 <td class="tg-amwm">4</td>
+    #                 <td class="tg-amwm">2</td>
+    #             </tr>
+    #             </tbody>
+    #             </table>
+    #             """,
+    #         )
+
+    #     with cols[2]:
+    #         st.image(
+    #             "https://jeffskwang.github.io/assets/rain/foutput.gif",
+    #             use_container_width=True,
+    #         )
+    #         st.caption("Source: [J. Kwang](https://jeffskwang.github.io/)")
+
+    #     st.pyplot(plot_network(branches, grid, pour_point))
+
+    # with delineated_container.container():
+    #     st.subheader("Delineated catchment", divider="rainbow")
+    #     st.markdown(Rf"Pour point coordinates: {pour_point[1]}° N, {pour_point[0]}° W" "")
+    #     st.pyplot(plot_catchment(clipped_catch, dem, grid, pour_point))
+
+    # with distance_container.container():
+    #     st.subheader("Distance to pour point", divider="rainbow")
+    #     st.pyplot(plot_distance(dist, grid))
 
 
 @st.cache_resource
@@ -333,15 +327,14 @@ def pysheds_workflow(file_location: str):
 
     return grid, dem, fdir, acc
 
+
 @st.cache_resource
 def pysheds_delineate(pour_point: tuple[float], _grid, _fdir, _acc):
     # Snap pour point to high accumulation cell
     x_snap, y_snap = _grid.snap_to_mask(_acc > 1000, pour_point)
 
     # Delineate the catchment
-    catch = _grid.catchment(
-        x=x_snap, y=y_snap, fdir=_fdir, dirmap=DIRMAP, xytype="coordinate"
-    )
+    catch = _grid.catchment(x=x_snap, y=y_snap, fdir=_fdir, dirmap=DIRMAP, xytype="coordinate")
 
     # Clip the bounding box to the catchment
     # grid.clip_to(catch)
@@ -356,6 +349,7 @@ def pysheds_delineate(pour_point: tuple[float], _grid, _fdir, _acc):
     )
 
     return clipped_catch, branches, dist
+
 
 @st.cache_data
 def plot_map(_dem, _grid):

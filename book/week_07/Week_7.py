@@ -164,8 +164,10 @@ def page_week_07(option: TOC):
 
         with cols[0]:
             url = "https://upload.wikimedia.org/wikipedia/commons/2/2f/Trapezoidal_artificial_water_channel.png"
-            source = "https://commons.wikimedia.org/wiki/File:Trapezoidal_artificial_water_channel.png"
-            st.image(url, use_column_width=True)
+            source = (
+                "https://commons.wikimedia.org/wiki/File:Trapezoidal_artificial_water_channel.png"
+            )
+            st.image(url, use_container_width=True)
             st.caption(
                 f"Trapezoidal section <br> Source: [{urlparse(source).hostname}]({source})",
                 unsafe_allow_html=True,
@@ -173,8 +175,10 @@ def page_week_07(option: TOC):
 
         with cols[1]:
             url = "https://upload.wikimedia.org/wikipedia/commons/8/81/V-Section_artificial_water_channel_02.png"
-            source = "https://commons.wikimedia.org/wiki/File:V-Section_artificial_water_channel_02.png"
-            st.image(url, use_column_width=True)
+            source = (
+                "https://commons.wikimedia.org/wiki/File:V-Section_artificial_water_channel_02.png"
+            )
+            st.image(url, use_container_width=True)
             st.caption(
                 f"Triangular section <br> Source: [{urlparse(source).hostname}]({source})",
                 unsafe_allow_html=True,
@@ -182,8 +186,10 @@ def page_week_07(option: TOC):
 
         with cols[2]:
             url = "https://upload.wikimedia.org/wikipedia/commons/e/e7/Semi-circular_artificial_water_channel.png"
-            source = "https://commons.wikimedia.org/wiki/File:Semi-circular_artificial_water_channel.png"
-            st.image(url, use_column_width=True)
+            source = (
+                "https://commons.wikimedia.org/wiki/File:Semi-circular_artificial_water_channel.png"
+            )
+            st.image(url, use_container_width=True)
             st.caption(
                 f"Circular section <br> Source: [{urlparse(source).hostname}]({source})",
                 unsafe_allow_html=True,
@@ -265,9 +271,7 @@ def page_week_07(option: TOC):
             side_slope = st.number_input(
                 "Side slope -- $m$ [-]", 0.0, 10.0, 2.0, 0.1, format="%.1f"
             )
-            initial_guess = st.number_input(
-                "Initial guess for $y$", 0.01, 50.0, 1.0, format="%.2f"
-            )
+            initial_guess = st.number_input("Initial guess for $y$", 0.01, 50.0, 1.0, format="%.2f")
             method = st.selectbox("Root finding method:", ["hybr", "lm"])
 
         with cols[0]:
@@ -287,9 +291,7 @@ def page_week_07(option: TOC):
                     Pw = 2 * y * (2 * auxm - m)
 
                     ## Manning equation
-                    Qcalc = (
-                        1.0 / n * np.power(A, 5 / 3) / np.power(Pw, 2 / 3) * np.sqrt(S0)
-                    )
+                    Qcalc = 1.0 / n * np.power(A, 5 / 3) / np.power(Pw, 2 / 3) * np.sqrt(S0)
 
                     error = Q - Qcalc
                     return error
@@ -360,7 +362,7 @@ def page_week_07(option: TOC):
 
         url = "https://upload.wikimedia.org/wikipedia/commons/d/da/Water_Capture_Channel_-_geograph.org.uk_-_3833453.jpg"
         source = "https://commons.wikimedia.org/wiki/File:Water_Capture_Channel_-_geograph.org.uk_-_3833453.jpg"
-        st.image(url, use_column_width=True)
+        st.image(url, use_container_width=True)
         st.caption(
             f"Unlined channel <br> Source: [{urlparse(source).hostname}]({source})",
             unsafe_allow_html=True,
@@ -405,7 +407,7 @@ def page_week_07(option: TOC):
             )
             st.image(
                 "./book/assets/img/SuggestedMaxPermissibleMeanChannelVel.png",
-                use_column_width=True,
+                use_container_width=True,
             )
 
         st.markdown(
@@ -431,9 +433,7 @@ def page_week_07(option: TOC):
         cols = st.columns([2, 1])
 
         with cols[1]:
-            discharge = st.number_input(
-                "Discharge $Q$ [m³/s]", 0.0, 100.0, 9.0, 0.1, format="%.1f"
-            )
+            discharge = st.number_input("Discharge $Q$ [m³/s]", 0.0, 100.0, 9.0, 0.1, format="%.1f")
             n_manning = st.number_input(
                 "Mannning coef. -- $n$ [-]", 0.010, 0.070, 0.022, 0.001, format="%.3f"
             )
@@ -599,22 +599,18 @@ def page_week_07(option: TOC):
 
         url = "https://upload.wikimedia.org/wikipedia/commons/3/3e/Floodgate_drum.JPG"
         source = "https://es.wikipedia.org/wiki/Vertedero_hidr%C3%A1ulico#/media/Archivo:Floodgate_drum.JPG"
-        st.caption(
-            f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True
-        )
-        st.image(url, use_column_width=True)
+        st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+        st.image(url, use_container_width=True)
 
         # url = "https://upload.wikimedia.org/wikipedia/commons/5/55/Dreieckswehr02.jpeg"
         # source = "https://fr.wikipedia.org/wiki/Seuil_(barrage)#/media/Fichier:Dreieckswehr02.jpeg"
         # st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
-        # st.image(url, use_column_width=True)
+        # st.image(url, use_container_width=True)
 
         url = "https://instrumentationtools.com/wp-content/uploads/2018/01/Weirs-and-flumes-flow-measurement.jpg?ezimgfmt=ng:webp/ngcb2"
         source = "https://instrumentationtools.com/weirs-and-flumes/"
-        st.caption(
-            f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True
-        )
-        st.image(url, use_column_width=True)
+        st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+        st.image(url, use_container_width=True)
 
         st.markdown(
             R"""
@@ -662,10 +658,8 @@ def page_week_07(option: TOC):
 
         url = "https://wiki.tuflow.com/w/thumb.php?f=Broad-crested_weir.jpg&width=640"
         source = "https://wiki.tuflow.com/index.php?title=File:Broad-crested_weir.jpg"
-        st.caption(
-            f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True
-        )
-        st.image(url, use_column_width=True)
+        st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
+        st.image(url, use_container_width=True)
 
         st.divider()
 
@@ -697,10 +691,8 @@ def page_week_07(option: TOC):
 
         url = "https://upload.wikimedia.org/wikipedia/commons/d/d8/Parshall_Flume.svg"
         source = "https://en.wikipedia.org/wiki/Parshall_flume#/media/File:Parshall_Flume.svg"
-        st.image(url, use_column_width=True)
-        st.caption(
-            f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True
-        )
+        st.image(url, use_container_width=True)
+        st.caption(f"Source: [{urlparse(source).hostname}]({source})", unsafe_allow_html=True)
 
         st.latex(R"Q = CH_a^n")
 
@@ -768,7 +760,7 @@ def page_week_07(option: TOC):
                 f"Source: [{urlparse(source).hostname}]({source})",
                 unsafe_allow_html=True,
             )
-            st.image(url, use_column_width=True)
+            st.image(url, use_container_width=True)
 
         with cols[1]:
             url = "https://instrumentationtools.com/wp-content/uploads/2018/01/Parshall-flume-measuring-flow.jpg?ezimgfmt=ng:webp/ngcb2"
@@ -777,7 +769,7 @@ def page_week_07(option: TOC):
                 f"Source: [{urlparse(source).hostname}]({source})",
                 unsafe_allow_html=True,
             )
-            st.image(url, use_column_width=True)
+            st.image(url, use_container_width=True)
 
         st.markdown("&nbsp;")
 
@@ -830,12 +822,14 @@ def page_week_07(option: TOC):
 
     elif option == "Gaging stations":
         url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/S_Fk_SpreadQm_2.jpg"
-        source = "https://www.usgs.gov/media/images/streamflow-measurement-s-fk-spread-creek-wy-13012475"
+        source = (
+            "https://www.usgs.gov/media/images/streamflow-measurement-s-fk-spread-creek-wy-13012475"
+        )
         st.caption(
             f"**Streamflow measurement in S Fk Spread Creek, WY (13012475)**<br>Source: [{urlparse(source).hostname}]({source})",
             unsafe_allow_html=True,
         )
-        st.image(url, use_column_width=True)
+        st.image(url, use_container_width=True)
 
         url = "https://waterdata.usgs.gov/monitoring-location/04079000/#parameterCode=00065&period=P30D"
         st.link_button(
@@ -875,7 +869,7 @@ def page_week_07(option: TOC):
                 f"**USGS streamgage on the Current River in Montauk State Park in Missouri**<br>Source: [{urlparse(source).hostname}]({source})",
                 unsafe_allow_html=True,
             )
-            st.image(url, use_column_width=True)
+            st.image(url, use_container_width=True)
 
         with cols[1]:
             st.subheader("2. Measuring discharge")
@@ -886,7 +880,7 @@ def page_week_07(option: TOC):
                 f"**Acoustic Doppler current profiler (ADCP) to measure streamflow on the Boise River**<br>Source: [{urlparse(source).hostname}]({source})",
                 unsafe_allow_html=True,
             )
-            st.image(url, use_column_width=True)
+            st.image(url, use_container_width=True)
 
         with cols[2]:
             st.subheader("3. Finding $C$ and $n$")
@@ -897,7 +891,7 @@ def page_week_07(option: TOC):
                 f"**Discharge relation example**<br>Source: [{urlparse(source).hostname}]({source})",
                 unsafe_allow_html=True,
             )
-            st.image(url, use_column_width=True)
+            st.image(url, use_container_width=True)
 
             url = "https://ars.els-cdn.com/content/image/3-s2.0-B9780128193426000075-f02-09-9780128193426.jpg"
             source = "https://doi.org/10.1016/B978-0-12-819342-6.00007-5"
@@ -905,7 +899,7 @@ def page_week_07(option: TOC):
                 f"**Discharge relation example**<br>Soulis (2021): [{urlparse(source).hostname}]({source})",
                 unsafe_allow_html=True,
             )
-            st.image(url, use_column_width=True)
+            st.image(url, use_container_width=True)
 
         "******"
         _, col, _ = st.columns([1, 3, 1])
@@ -938,7 +932,7 @@ def page_week_07(option: TOC):
             + f"Source: [{urlparse(url).hostname}]({url})",
             unsafe_allow_html=True,
         )
-        st.image("./book/assets/img/embankment.png", use_column_width=True)
+        st.image("./book/assets/img/embankment.png", use_container_width=True)
 
         st.markdown(
             R"""
@@ -975,7 +969,7 @@ def page_week_07(option: TOC):
                     unsafe_allow_html=True,
                 )
 
-                st.image(img_url, use_column_width=True)
+                st.image(img_url, use_container_width=True)
 
         st.markdown(
             R"""
@@ -984,7 +978,9 @@ def page_week_07(option: TOC):
             """
         )
 
-        img_url = "https://media.defense.gov/2019/Oct/17/2002196661/780/780/0/190326-A-A1412-007.JPG"
+        img_url = (
+            "https://media.defense.gov/2019/Oct/17/2002196661/780/780/0/190326-A-A1412-007.JPG"
+        )
         source = "https://www.spa.usace.army.mil/Media/News-Stories/Article/1991774/john-martin-dams-concrete-stilling-basin-in-excellent-condition-after-first-ins/"
         st.caption(
             rf"""
@@ -993,7 +989,7 @@ def page_week_07(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
         url = "https://www.youtube.com/watch?v=TuQUf-nieVY"
         st.caption(
@@ -1028,7 +1024,7 @@ def page_week_07(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
     else:
         st.error("You should not be here!")
@@ -1045,9 +1041,7 @@ def wetted_perimeter_v_side_slope_plot():
 
     fig, ax = plt.subplots()
     ax.plot(m, Pw, c="seagreen", lw=5)
-    ax.set_ylabel(
-        R"Wetted perimeter $\quad \dfrac{P_w}{y}$ [-]", fontdict=dict(size=14)
-    )
+    ax.set_ylabel(R"Wetted perimeter $\quad \dfrac{P_w}{y}$ [-]", fontdict=dict(size=14))
     ax.set_xlabel(R"Side slope $\quad m$ [-]", fontdict=dict(size=14))
     ax.set_xlim(0, 3.0)
     ax.set_ylim(bottom=0)
@@ -1061,8 +1055,6 @@ def wetted_perimeter_v_side_slope_plot():
     m_optimal = np.sqrt(3) / 3
     ax.axvline(m_optimal, ls=":", c="gray")
 
-    ax.text(
-        m_optimal, 0.2, "There is a $m$ value \n that minimizes $P_w$", color="gray"
-    )
+    ax.text(m_optimal, 0.2, "There is a $m$ value \n that minimizes $P_w$", color="gray")
 
     return fig

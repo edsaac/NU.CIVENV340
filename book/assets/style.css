@@ -6,6 +6,12 @@ tr .math {
     font-size: 1.0rem;
 }
 
+[data-testid="stHeader"] {
+    background-color: rgba(078, 042, 132, 0.5);
+    visibility: collapse;
+    display: none;
+}
+
 [data-baseweb="accordion"] .math {
     font-size: 0.66rem;
 }
@@ -14,26 +20,9 @@ tr .math {
     font-size: 1.2rem;
 }
 
-/* [data-testid="stSidebar"] {
-    background-color: #4E2A84;
-}
-
-[data-testid="stNavSectionHeader"] {
-    color: white;
-}
-
-[data-testid="stSidebarNavLink"] span {
-    color: snow;
-} */
-
 [data-testid="stSidebar"] p {
     font-size: 1.0rem;
 }
-
-/* [data-testid="stSidebarNavItems"] {
-    max-height: 70vh;
-} */
-
 
 div.glideDataEditor {
     display: block;
@@ -65,19 +54,6 @@ iframe {
     margin-right: auto;
 }
 
-img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 5px;
-}
-
-[data-testid="stImage"] {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 [data-testid="stCheckbox"] {
     text-align: center;
     margin-left: auto;
@@ -85,8 +61,18 @@ img {
     justify-content: center;
 }
 
-[data-testid="stHeader"] {
-    background-color: rgba(078, 042, 132, 0.5);
-    visibility: collapse;
-    display: none;
+
+div.st-key-intro_information div[data-testid="stFullScreenFrame"] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div.st-key-intro_information div.st-key-intro_badges div[data-testid="stMarkdown"] {
+    text-align: center;
+}
+
+div[data-testid="stFullScreenFrame"] {
+    display: flex;
+    justify-content: center;
 }

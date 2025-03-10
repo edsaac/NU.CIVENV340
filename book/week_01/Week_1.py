@@ -22,7 +22,6 @@ def page_week_01(
     st.title(option.replace("~", ""), anchor=False)
 
     if option == "Water properties":
-
         water_props_path = "./book/week_01/properties.xlsx"
 
         tabs = st.tabs(["Density", "Viscosity", "Vapor pressure"])
@@ -71,7 +70,7 @@ def page_week_01(
             with st.expander("🖼️ **Viscosity diagram**"):
                 st.image(
                     "https://upload.wikimedia.org/wikipedia/commons/9/93/Laminar_shear.svg",
-                    use_column_width=True,
+                    use_container_width=True,
                 )
                 st.caption("*Source* [🛸](https://en.wikipedia.org/wiki/Viscosity)")
 
@@ -293,11 +292,9 @@ def page_week_01(
         with st.expander("🖼️ **Non-newtonian fluids**"):
             st.image(
                 "https://upload.wikimedia.org/wikipedia/commons/8/89/Rheology_of_time_independent_fluids.svg",
-                use_column_width=True,
+                use_container_width=True,
             )
-            st.caption(
-                "*Source* [🛸](https://en.wikipedia.org/wiki/Non-Newtonian_fluid)"
-            )
+            st.caption("*Source* [🛸](https://en.wikipedia.org/wiki/Non-Newtonian_fluid)")
 
         st.markdown(
             R"""
@@ -488,7 +485,7 @@ def page_week_01(
         ):
             st.pyplot(gradelines_sketch())
             st.caption("*Source* [🤙🏻](https://edsaac.github.io)")
-            # st.image("https://www.pipeflow.com/public/PipeFlowExpertSoftwareHelp/desktop/PipeFlowExpertUserGuide_files/image371.jpg", use_column_width=True)
+            # st.image("https://www.pipeflow.com/public/PipeFlowExpertSoftwareHelp/desktop/PipeFlowExpertUserGuide_files/image371.jpg", use_container_width=True)
             # st.caption("*Source* [🛸](https://www.pipeflow.com/public/PipeFlowExpertSoftwareHelp/desktop/Energy_and_Hydraulic_Grade_Lines.htm)")
 
         st.markdown(
@@ -590,9 +587,9 @@ def page_week_01(
     else:
         st.error("You should not be here!")
 
+
 @st.cache_resource
 def gradelines_sketch():
-
     fig, ax = plt.subplots()
 
     # Draw the pipe
@@ -712,5 +709,3 @@ def gradelines_sketch():
     ax.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
 
     return fig
-
-

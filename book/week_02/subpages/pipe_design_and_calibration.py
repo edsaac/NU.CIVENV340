@@ -49,9 +49,7 @@ def pipe_design_and_calibration():
 
         def swamme_jain(relative_roughness: float, reynolds_number: float):
             fcalc = 0.25 / np.power(
-                np.log10(
-                    relative_roughness / 3.7 + 5.74 / np.power(reynolds_number, 0.9)
-                ),
+                np.log10(relative_roughness / 3.7 + 5.74 / np.power(reynolds_number, 0.9)),
                 2,
             )
             return fcalc
@@ -118,9 +116,7 @@ def pipe_design_and_calibration():
             R"Pressure drop -- $\Delta p$ [psi]", 0.1, 100.0, 40.0, 0.1, format="%.1f"
         )
 
-        initial_guess = st.number_input(
-            R"Initial guess for $D$", 0.01, 10.0, 1.0, format="%.2f"
-        )
+        initial_guess = st.number_input(R"Initial guess for $D$", 0.01, 10.0, 1.0, format="%.2f")
 
         method = st.selectbox("Root finding method:", ["hybr", "lm"])
 
@@ -147,15 +143,13 @@ def pipe_design_and_calibration():
     cols = st.columns(2)
 
     with cols[0]:
-        st.metric(
-            "*Initial guess* D", f"{initial_guess:.3f} ft = {initial_guess*12:.2f} in"
-        )
+        st.metric("*Initial guess* D", f"{initial_guess:.3f} ft = {initial_guess * 12:.2f} in")
 
     with cols[1]:
         if diameter_design.success:
             st.metric(
                 "*Solution*",
-                f"{diameter_design.x[0]:.3f} ft = {diameter_design.x[0]*12:.2f} in",
+                f"{diameter_design.x[0]:.3f} ft = {diameter_design.x[0] * 12:.2f} in",
             )
 
         else:
@@ -179,13 +173,13 @@ def pipe_design_and_calibration():
     with cols[0]:
         st.image(
             "https://www.commercial-industrial-supply.com/wordpress/wp-content/uploads/2020/11/sch40-pvc-piping-dim-chart.jpg",
-            use_column_width=True,
+            use_container_width=True,
         )
 
     with cols[1]:
         st.image(
             "https://www.commercial-industrial-supply.com/wordpress/wp-content/uploads/2020/11/sch80-pvc-piping-dim-chart.jpg",
-            use_column_width=True,
+            use_container_width=True,
         )
 
     # "For example, [charlottepipe.com](https://www.charlottepipe.com/Documents/PL_Tech_Man/Charlotte_Plastics_Tech_Manual.pdf)!"

@@ -15,7 +15,7 @@ def entrypoint_page():
     left_col, right_col = st.columns([2, 1])
 
     with right_col:
-        with st.container(border=True):
+        with st.container(border=True, key="intro_information"):
             st.image("./book/assets/img/in_class_l.jpg", caption="During a lecture")
 
             st.html(
@@ -35,9 +35,8 @@ def entrypoint_page():
                 """
             )
 
-            left_subcol, right_subcol = st.columns(2)
-            left_subcol.markdown(badges["this_repo"])
-            right_subcol.markdown(badges["other_stuff"])
+            with st.container(key="intro_badges"):
+                st.markdown(badges["this_repo"] + " " + badges["other_stuff"])
 
     with left_col:
         st.markdown(
@@ -102,9 +101,7 @@ def main():
 
 if __name__ == "__main__":
     if not st.session_state.get("set_mplrc", False):
-        os.environ["MATPLOTLIBRC"] = (
-            os.getcwd() + "/book/assets/matplotlib/matplotlibrc"
-        )
+        os.environ["MATPLOTLIBRC"] = os.getcwd() + "/book/assets/matplotlib/matplotlibrc"
         st.session_state.set_mplrc = True
 
     main()

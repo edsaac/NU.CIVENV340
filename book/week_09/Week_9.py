@@ -16,7 +16,7 @@ TOC = Literal[
     "Design runoff",
     "Time of concentration",
     "Rational method",
-    "~Rating curve"
+    "~Rating curve",
 ]
 
 
@@ -24,8 +24,10 @@ def page_week_09(option: TOC):
     st.title(option.replace("~", ""))
     print(mpl.matplotlib_fname())
     if option == "Infiltration":
-        img_url = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/images/4-9.png"
-        source = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/hydrograph_method.htm"
+        img_url = (
+            "https://onlinemanuals.txdot.gov/TxDOTOnlineManuals/TxDOTManuals/hyd/images/4-9.png"
+        )
+        source = "https://onlinemanuals.txdot.gov/TxDOTOnlineManuals/TxDOTManuals/hyd/hydrograph_method.htm"
         st.caption(
             rf"""
             **Water mass balance** <br>
@@ -33,7 +35,7 @@ def page_week_09(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
         st.markdown(
             R"""
@@ -95,12 +97,10 @@ def page_week_09(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
         st.divider()
-        st.warning(
-            "Infiltration rate and hydraulic conductivity are similar, but distinct! "
-        )
+        st.warning("Infiltration rate and hydraulic conductivity are similar, but distinct! ")
 
     elif option == "Green & Ampt model":
         img_url = "https://www.hec.usace.army.mil/confluence/hmsdocs/hmstrm/files/19695384/138249905/1/1680200741692/image-2023-3-30_11-25-41.png"
@@ -112,7 +112,7 @@ def page_week_09(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
         st.markdown(
             R"""
@@ -224,7 +224,8 @@ def page_week_09(option: TOC):
             |$\texttt{CN}$| Curve Number | - |
 
             &nbsp;
-            """)
+            """
+        )
 
         st.pyplot(plot_curve_number())
 
@@ -278,7 +279,7 @@ def page_week_09(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
         img_url = "https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41597-019-0155-x/MediaObjects/41597_2019_155_Fig3_HTML.png"
         source = "https://www.nature.com/articles/s41597-019-0155-x"
@@ -290,7 +291,7 @@ def page_week_09(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
     elif option == "Design runoff":
         st.markdown(
@@ -497,9 +498,7 @@ def page_week_09(option: TOC):
 
         with cols[1]:
             img_url = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/images/4-8.png"
-            source = (
-                "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/rational_method.htm"
-            )
+            source = "http://onlinemanuals.txdot.gov/txdotmanuals/hyd/rational_method.htm"
             st.caption(
                 rf"""
                 **Rational method steps** <br>
@@ -507,7 +506,7 @@ def page_week_09(option: TOC):
                 """,
                 unsafe_allow_html=True,
             )
-            st.image(img_url, use_column_width=True)
+            st.image(img_url, use_container_width=True)
 
         st.markdown(
             R"""
@@ -521,7 +520,7 @@ def page_week_09(option: TOC):
             """
         )
 
-        img_url = "assets/img/Runoff_coeffs.png"
+        img_url = "book/assets/img/Runoff_coeffs.png"
         source = "https://virginiadot.org/business/resources/LocDes/DrainageManual/chapter6.pdf"
         st.caption(
             rf"""
@@ -530,7 +529,7 @@ def page_week_09(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
         st.warning(
             r"""
@@ -541,13 +540,11 @@ def page_week_09(option: TOC):
     elif option == "~Rating curve":
         rating_curve()
 
-
     else:
         st.error("You should not be here!")
 
 
 def plot_hydrograph():
-
     α, β = 2.0, 5.0
     mean, var = beta.stats(α, β, moments="mv")
     x = np.linspace(beta.ppf(0.01, α, β), beta.ppf(0.999, α, β), 100)
@@ -656,9 +653,7 @@ def plot_curve_number():
 
     fig, ax = plt.subplots(figsize=[8, 6])
 
-    ax.set_prop_cycle(
-        plt.cycler("color", plt.cm.cividis(np.linspace(0, 1, len(curve_numbers))))
-    )
+    ax.set_prop_cycle(plt.cycler("color", plt.cm.cividis(np.linspace(0, 1, len(curve_numbers)))))
 
     for cn in curve_numbers:
         storage_deficit = 1000.0 / cn - 10
@@ -682,4 +677,3 @@ def plot_curve_number():
     ax.set_xlabel("Rainfall \t $P$ [in]", fontsize=14)
 
     return fig
-

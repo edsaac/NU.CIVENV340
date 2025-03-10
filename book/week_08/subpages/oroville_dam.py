@@ -59,7 +59,7 @@ def oroville_dam():
         with tab:
             _, col, _ = st.columns([1, 2, 1])
             with col:
-                st.image(url, use_column_width=True)
+                st.image(url, use_container_width=True)
 
     st.markdown(
         R"""
@@ -78,13 +78,15 @@ def oroville_dam():
 
     for img, col in zip(imgs, cols):
         with col:
-            st.image(img, use_column_width=True)
+            st.image(img, use_container_width=True)
 
     st.divider()
 
     with st.expander("**Infographic**", expanded=True):
         source = "https://cdec.water.ca.gov/reservoir.html"
-        img = "https://upload.wikimedia.org/wikipedia/commons/9/92/Lake_Oroville_events_timeline.jpg"
+        img = (
+            "https://upload.wikimedia.org/wikipedia/commons/9/92/Lake_Oroville_events_timeline.jpg"
+        )
 
         st.markdown(
             R"""
@@ -95,7 +97,7 @@ def oroville_dam():
             unsafe_allow_html=True,
         )
 
-        st.image(img, use_column_width=True)
+        st.image(img, use_container_width=True)
 
     st.markdown(
         R"""
@@ -118,7 +120,7 @@ def oroville_dam():
             unsafe_allow_html=True,
         )
 
-        st.image(img, use_column_width=True)
+        st.image(img, use_container_width=True)
 
     with cols[1]:
         img = "https://nid.sec.usace.army.mil/assets/images/TieHack2018WY02030WYDamSafety.jpg"
@@ -133,7 +135,7 @@ def oroville_dam():
         )
 
         lilcols = st.columns(3)
-        st.image(img, use_column_width=True)
+        st.image(img, use_container_width=True)
 
         with lilcols[0]:
             st.metric("Total Dams", "> 90,000")

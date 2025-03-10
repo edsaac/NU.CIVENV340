@@ -32,7 +32,6 @@ TOC = Literal[
 
 
 def page_week_06(option: TOC):
-    
     st.title(option.replace("~", ""))
 
     if option == "Smooth transitions":
@@ -195,7 +194,7 @@ def page_week_06(option: TOC):
             """
         )
         st.pyplot(draw_step())
-        
+
         st.markdown(
             R"""
             Assuming that the energy losses through the step are negligible,
@@ -346,7 +345,7 @@ def page_week_06(option: TOC):
 
     elif option == "Jumps and momentum conservation":
         st.header("Hydraulic jumps")
-        
+
         cols = st.columns(2)
 
         with cols[0]:
@@ -373,7 +372,7 @@ def page_week_06(option: TOC):
             """
         )
         st.pyplot(draw_hydraulic_jump())
-        
+
         st.markdown(
             R"""
             ******
@@ -643,8 +642,7 @@ def page_week_06(option: TOC):
             st.plotly_chart(fig, use_container_width=True)
 
     elif option == "Uniform flow":
-
-        st.markdown(        
+        st.markdown(
             R"""
             - The water depth $y$, the cross-sectional area $A$, the discharge $Q$ and the velocity profile $V(y,z)$
             remain constant over the channel lenght
@@ -698,7 +696,7 @@ def page_week_06(option: TOC):
             $$
             """
         )
-        
+
         st.info(
             R"""
             - Who was Antoine de Chézy? 🇫🇷
@@ -725,9 +723,7 @@ def page_week_06(option: TOC):
         with cols[0]:  ## Channel options
             st.markdown("#### Parameters")
 
-            width = st.number_input(
-                "Width -- $b$ [m]", 0.1, 50.0, 3.0, 1.0, format="%.2f"
-            )
+            width = st.number_input("Width -- $b$ [m]", 0.1, 50.0, 3.0, 1.0, format="%.2f")
             discharge = st.number_input(
                 "Discharge -- $Q$ [m³/s]", 0.1, 200.0, 25.3, 1.0, format="%.1f"
             )
@@ -763,11 +759,7 @@ def page_week_06(option: TOC):
                     wetted_perim = width + 2 * depth
                     hydr_radius = area / wetted_perim
                     calculated_discharge = (
-                        k
-                        / n_manning
-                        * area
-                        * np.power(hydr_radius, 2 / 3)
-                        * np.sqrt(slope)
+                        k / n_manning * area * np.power(hydr_radius, 2 / 3) * np.sqrt(slope)
                     )
 
                     return discharge - calculated_discharge
@@ -811,7 +803,7 @@ def page_week_06(option: TOC):
         )
 
     elif option == "Gradually varied flow":
-        st.markdown(    
+        st.markdown(
             R"""
             ## Gradually Varied Flow (GVF)
             
@@ -934,7 +926,6 @@ def page_week_06(option: TOC):
             if Fr == 1:
                 _, lilcol, _ = st.columns([1, 2, 1], vertical_alignment="center")
                 with lilcol:
-                    
                     st.error(
                         R"""
                         ## 🛑 **Critical flow**
@@ -967,12 +958,14 @@ def page_week_06(option: TOC):
         )
 
     elif option == "Rivers":
-        st.subheader(R"🏞️ $\quad \textsf{Water} + \textsf{sediments} + \textsf{movement} = \textsf{river}$", anchor=False)
+        st.subheader(
+            R"🏞️ $\quad \textsf{Water} + \textsf{sediments} + \textsf{movement} = \textsf{river}$",
+            anchor=False,
+        )
 
         url = "https://upload.wikimedia.org/wikipedia/commons/a/ad/Missouri-River-Morning-Drone-Shot.webm"
         st.caption(
-            "**Missouri River:**<br>"
-            + f"*Source:* [*{urlparse(url).hostname}*]({url})",
+            "**Missouri River:**<br>" + f"*Source:* [*{urlparse(url).hostname}*]({url})",
             unsafe_allow_html=True,
         )
         st.video(url)
@@ -990,7 +983,7 @@ def page_week_06(option: TOC):
             + f"*Source:* [*{urlparse(url).hostname}*]({url})",
             unsafe_allow_html=True,
         )
-        st.image(url, use_column_width=True)
+        st.image(url, use_container_width=True)
 
         url = "https://live.staticflickr.com/1567/23631659763_498c8ed16d_o_d.jpg"
         st.caption(
@@ -998,7 +991,7 @@ def page_week_06(option: TOC):
             + f"*Source:* [*{urlparse(url).hostname}*]({url})",
             unsafe_allow_html=True,
         )
-        st.image(url, use_column_width=True)
+        st.image(url, use_container_width=True)
 
         url = "https://www.publicdomainpictures.net/pictures/30000/velka/fast-flowing-river.jpg"
         st.caption(
@@ -1006,7 +999,7 @@ def page_week_06(option: TOC):
             + f"*Source:* [*{urlparse(url).hostname}*]({url})",
             unsafe_allow_html=True,
         )
-        st.image(url, use_column_width=True)
+        st.image(url, use_container_width=True)
 
         url = "https://live.staticflickr.com/1568/24232357896_9d9bc78f9c_o_d.jpg"
         st.caption(
@@ -1014,7 +1007,7 @@ def page_week_06(option: TOC):
             + f"*Source:* [*{urlparse(url).hostname}*]({url})",
             unsafe_allow_html=True,
         )
-        st.image(url, use_column_width=True)
+        st.image(url, use_container_width=True)
 
         url = "https://upload.wikimedia.org/wikipedia/commons/2/2b/120408_Pheriche_Pano_4k.jpg"
         st.caption(
@@ -1022,17 +1015,15 @@ def page_week_06(option: TOC):
             + f"*Source:* [*{urlparse(url).hostname}*]({url})",
             unsafe_allow_html=True,
         )
-        st.image(url, use_column_width=True)
+        st.image(url, use_container_width=True)
 
-        url = (
-            "https://upload.wikimedia.org/wikipedia/commons/4/49/Rio_Negro_meanders.JPG"
-        )
+        url = "https://upload.wikimedia.org/wikipedia/commons/4/49/Rio_Negro_meanders.JPG"
         st.caption(
             "**Khumbu Khola valley (Nepal):** Valley width v. flooding plain width v. channel width <br>"
             + f"*Source:* [*{urlparse(url).hostname}*]({url})",
             unsafe_allow_html=True,
         )
-        st.image(url, use_column_width=True)
+        st.image(url, use_container_width=True)
 
         url = "https://upload.wikimedia.org/wikipedia/commons/3/31/Sandbar_on_the_Mississippi%2C_New_Orleans.jpg"
         st.caption(
@@ -1040,7 +1031,7 @@ def page_week_06(option: TOC):
             + f"*Source:* [*{urlparse(url).hostname}*]({url})",
             unsafe_allow_html=True,
         )
-        st.image(url, use_column_width=True)
+        st.image(url, use_container_width=True)
 
         url = "https://upload.wikimedia.org/wikipedia/commons/e/eb/SantaremTejo.jpg"
         st.caption(
@@ -1048,7 +1039,7 @@ def page_week_06(option: TOC):
             + f"*Source:* [*{urlparse(url).hostname}*]({url})",
             unsafe_allow_html=True,
         )
-        st.image(url, use_column_width=True)
+        st.image(url, use_container_width=True)
 
         url = "https://upload.wikimedia.org/wikipedia/commons/3/35/Takato_Dam_discharge.jpg"
         st.caption(
@@ -1056,17 +1047,15 @@ def page_week_06(option: TOC):
             + f"*Source:* [*{urlparse(url).hostname}*]({url})",
             unsafe_allow_html=True,
         )
-        st.image(url, use_column_width=True)
+        st.image(url, use_container_width=True)
 
-        url = (
-            "https://upload.wikimedia.org/wikipedia/commons/3/31/StauseeMooserboden.jpg"
-        )
+        url = "https://upload.wikimedia.org/wikipedia/commons/3/31/StauseeMooserboden.jpg"
         st.caption(
             "**Stausee Mooserboden**, seen from Hoher Tenn, Austria.<br>"
             + f"*Source:* [*{urlparse(url).hostname}*]({url})",
             unsafe_allow_html=True,
         )
-        st.image(url, use_column_width=True)
+        st.image(url, use_container_width=True)
 
         st.divider()
         _, col, _ = st.columns([1, 3, 1])
@@ -1124,7 +1113,7 @@ def page_week_06(option: TOC):
                 + f"*Source:* [*{urlparse(source).hostname}*]({source})",
                 unsafe_allow_html=True,
             )
-            st.image(url, use_column_width=True)
+            st.image(url, use_container_width=True)
 
         with tabs[1]:  # Gravel
             url = "https://s0.geograph.org.uk/geophotos/01/06/64/1066461_89c35f88.jpg"
@@ -1134,7 +1123,7 @@ def page_week_06(option: TOC):
                 + f"*Source:* [*{urlparse(source).hostname}*]({source})",
                 unsafe_allow_html=True,
             )
-            st.image(url, use_column_width=True)
+            st.image(url, use_container_width=True)
 
         with tabs[2]:  # Sand
             url = "https://upload.wikimedia.org/wikipedia/commons/3/3b/Sand_at_the_banks_of_Arno_river.jpg"
@@ -1144,7 +1133,7 @@ def page_week_06(option: TOC):
                 + f"*Source:* [*{urlparse(source).hostname}*]({source})",
                 unsafe_allow_html=True,
             )
-            st.image(url, use_column_width=True)
+            st.image(url, use_container_width=True)
 
         with tabs[3]:  # Silt
             url = "https://upload.wikimedia.org/wikipedia/commons/c/c3/Mossy_Cave_area_-_Bryce_Canyon_National_Park.jpg"
@@ -1154,7 +1143,7 @@ def page_week_06(option: TOC):
                 + f"*Source:* [*{urlparse(source).hostname}*]({source})",
                 unsafe_allow_html=True,
             )
-            st.image(url, use_column_width=True)
+            st.image(url, use_container_width=True)
 
         with tabs[4]:  # Clay
             url = "https://upload.wikimedia.org/wikipedia/commons/b/bb/Sediment_Spews_from_Connecticut_River.jpg"
@@ -1164,7 +1153,7 @@ def page_week_06(option: TOC):
                 + f"*Source:* [*{urlparse(source).hostname}*]({source})",
                 unsafe_allow_html=True,
             )
-            st.image(url, use_column_width=True)
+            st.image(url, use_container_width=True)
 
         st.markdown(
             R"""
@@ -1204,10 +1193,9 @@ def page_week_06(option: TOC):
                 + f"*Source:* [*{urlparse(source).hostname}*]({source})",
                 unsafe_allow_html=True,
             )
-            st.image(url, use_column_width=True)
+            st.image(url, use_container_width=True)
 
     elif option == "Lane's diagram":
-        
         st.markdown(
             R"""
 
@@ -1231,7 +1219,7 @@ def page_week_06(option: TOC):
 
         with st.expander("**⚖️ Lane's balance**", expanded=True):
             url = "https://www.researchgate.net/profile/Massimo-Rinaldi-2/publication/283538764/figure/fig14/AS:613448840929287@1523269009117/Lanes-balance-one-of-the-most-recognized-conceptual-models-and-graphics-in-Fluvial.png"
-            st.image(url, use_column_width=True)
+            st.image(url, use_container_width=True)
             st.caption(f"Source: [researchgate.net / *Rinaldi et al. 2015*]({url})")
 
     elif option == "Shear stress":
@@ -1240,7 +1228,7 @@ def page_week_06(option: TOC):
             "**Shields Diagram** <br> Source: [Shields, 1936](https://repository.tudelft.nl/islandora/object/uuid:a66ea380-ffa3-449b-b59f-38a35b2c6658?collection=research)",
             unsafe_allow_html=True,
         )
-        st.image(img, use_column_width=True)
+        st.image(img, use_container_width=True)
 
         st.markdown(
             R"""
@@ -1365,7 +1353,7 @@ def page_week_06(option: TOC):
 
     elif option == "~Solve IVP":
         solve_ivp()
-    
+
     else:
         st.error("You should not be here!")
 
@@ -1373,9 +1361,7 @@ def page_week_06(option: TOC):
 def draw_shields():
     fig, ax = plt.subplots()
     Re_star = np.geomspace(1, 1_000, 100)
-    tau_crit = 0.22 * np.power(Re_star, -0.6) + 0.06 * np.exp(
-        -17.77 * np.power(Re_star, -0.6)
-    )
+    tau_crit = 0.22 * np.power(Re_star, -0.6) + 0.06 * np.exp(-17.77 * np.power(Re_star, -0.6))
     tau_susp = np.exp(
         -2.891394
         + 0.95296 * np.log(Re_star)
@@ -1441,9 +1427,7 @@ def draw_contraction():
 
     water_surface = Side(x=side_down.x, y=np.array([2, 2, 1, 1]))
 
-    fig, axs = plt.subplots(
-        2, 1, sharex=True, figsize=[8, 10], gridspec_kw=dict(hspace=-0.2)
-    )
+    fig, axs = plt.subplots(2, 1, sharex=True, figsize=[8, 10], gridspec_kw=dict(hspace=-0.2))
 
     ax = axs[0]  ## Profile view
     ax.set_ylabel("Profile view", loc="center")
@@ -1476,9 +1460,7 @@ def draw_contraction():
     for i, x in enumerate(water_surface.x[1:3], start=1):
         ## Sections
         ax.plot([x] * 2, [-4, 4], ls="dotted", lw=1, c="gray")
-        ax.text(
-            x, 4.2, f"Section\n{i}", ha="center", fontdict=dict(size=10, color="gray")
-        )
+        ax.text(x, 4.2, f"Section\n{i}", ha="center", fontdict=dict(size=10, color="gray"))
 
         ## Depth
         ax.plot(
@@ -1523,9 +1505,7 @@ def draw_contraction():
         y=-2,
         lw=1.5,
         c="gray",
-        path_effects=[
-            pe.withTickedStroke(offset=(0, 0), angle=-45, spacing=6, length=3)
-        ],
+        path_effects=[pe.withTickedStroke(offset=(0, 0), angle=-45, spacing=6, length=3)],
     )
 
     ax.text(
@@ -1552,9 +1532,7 @@ def draw_contraction():
         side_down.y,
         lw=1.5,
         c="gray",
-        path_effects=[
-            pe.withTickedStroke(offset=(0, 0), angle=-45, spacing=6, length=3)
-        ],
+        path_effects=[pe.withTickedStroke(offset=(0, 0), angle=-45, spacing=6, length=3)],
     )
 
     # ax.fill_between(side_down.x, side_down.y, side_down.y - 0.4,
@@ -1565,9 +1543,7 @@ def draw_contraction():
         side_up.y,
         lw=1.5,
         c="gray",
-        path_effects=[
-            pe.withTickedStroke(offset=(0, 0), angle=45, spacing=6, length=3)
-        ],
+        path_effects=[pe.withTickedStroke(offset=(0, 0), angle=45, spacing=6, length=3)],
     )
 
     # ax.fill_between(side_up.x, side_up.y, side_up.y + 0.4,
@@ -1577,9 +1553,7 @@ def draw_contraction():
     for i, x in enumerate(side_down.x[1:3], start=1):
         ## Sections
         ax.plot([x] * 2, [-4, 4], ls="dotted", lw=1, c="gray")
-        ax.text(
-            x, 4.2, f"Section\n{i}", ha="center", fontdict=dict(size=10, color="gray")
-        )
+        ax.text(x, 4.2, f"Section\n{i}", ha="center", fontdict=dict(size=10, color="gray"))
 
         ## Width
         ax.plot(
@@ -1645,9 +1619,7 @@ def draw_step():
         bottom.y,
         c="0.50",
         lw=1.5,
-        path_effects=[
-            pe.withTickedStroke(offset=(0, 0), angle=-45, spacing=6, length=1.3)
-        ],
+        path_effects=[pe.withTickedStroke(offset=(0, 0), angle=-45, spacing=6, length=1.3)],
     )
     ax.text(
         bottom.x[0],
@@ -1701,9 +1673,7 @@ def draw_step():
     for i, x in enumerate(bottom.x[1:3], start=1):
         ## Sections
         ax.plot([x] * 2, [-4, 4], ls="dotted", lw=1, c="gray")
-        ax.text(
-            x, 4.2, f"Section\n{i}", ha="center", fontdict=dict(size=10, color="gray")
-        )
+        ax.text(x, 4.2, f"Section\n{i}", ha="center", fontdict=dict(size=10, color="gray"))
 
         ## Depth
         ax.plot(
@@ -1766,15 +1736,15 @@ def draw_step():
 
 
 def realistic_water(ax: plt.Axes, p: Point, size: float):
-    img = get_image_as_PIL("https://cdn4.iconfinder.com/data/icons/water-waves-design/1470/tornado_blue_water_wave_spiral_hurricane_logo-512.png")
+    img = get_image_as_PIL(
+        "https://cdn4.iconfinder.com/data/icons/water-waves-design/1470/tornado_blue_water_wave_spiral_hurricane_logo-512.png"
+    )
     imagebox = OffsetImage(img, zoom=size, cmap="bone_r")
     ax.add_artist(AnnotationBbox(imagebox, p, frameon=False, zorder=1))
 
 
 def draw_hydraulic_jump():
-    bottom = Side(
-        x=np.array([0, 4, 6, 8, 10, 15]), y=np.array([-2, -2, -2, -2, -2, -2])
-    )
+    bottom = Side(x=np.array([0, 4, 6, 8, 10, 15]), y=np.array([-2, -2, -2, -2, -2, -2]))
 
     water_surface = Side(x=bottom.x, y=np.array([-1, -1, -1, 2, 2, 2]))
 
@@ -1793,9 +1763,7 @@ def draw_hydraulic_jump():
         bottom.y,
         c="0.50",
         lw=1.5,
-        path_effects=[
-            pe.withTickedStroke(offset=(0, 0), angle=-45, spacing=6, length=1.5)
-        ],
+        path_effects=[pe.withTickedStroke(offset=(0, 0), angle=-45, spacing=6, length=1.5)],
     )
 
     ax.text(
@@ -1859,9 +1827,7 @@ def draw_hydraulic_jump():
     for i, x in enumerate([4, 10], start=2):
         ## Sections
         ax.plot([x] * 2, [-4, 5.5], ls="dotted", lw=1, c="gray")
-        ax.text(
-            x, 5.6, f"Section\n{i-1}", ha="center", fontdict=dict(size=10, color="gray")
-        )
+        ax.text(x, 5.6, f"Section\n{i - 1}", ha="center", fontdict=dict(size=10, color="gray"))
 
         ## Depth
         ax.plot(
@@ -1876,7 +1842,7 @@ def draw_hydraulic_jump():
         ax.text(
             x + 0.2,
             (bottom.y[i] + water_surface.y[i]) / 2,
-            rf"$y_{i-1}$",
+            rf"$y_{i - 1}$",
             ha="left",
             va="center",
             fontdict=dict(color="darkslategray", size=12),
@@ -1895,7 +1861,7 @@ def draw_hydraulic_jump():
         ax.text(
             x + 0.2,
             (water_surface.y[i] + energy_line.y[i]) / 2,
-            rf"$\dfrac{{Q^2}}{{2gA^2_{i-1}}}$",
+            rf"$\dfrac{{Q^2}}{{2gA^2_{i - 1}}}$",
             ha="left",
             va="center",
             fontdict=dict(color="darkslategray", size=10),
@@ -1951,9 +1917,7 @@ def FGV_intuition(
         bottom.y,
         c="0.50",
         lw=1.5,
-        path_effects=[
-            pe.withTickedStroke(offset=(0, 0), angle=-45, spacing=6, length=1.3)
-        ],
+        path_effects=[pe.withTickedStroke(offset=(0, 0), angle=-45, spacing=6, length=1.3)],
         label="Channel bottom\n" + rf"$S_0 = {S0:+.2f}$",
     )
 
@@ -1990,6 +1954,3 @@ def FGV_intuition(
         bbox=dict(boxstyle="rarrow,pad=0.3", fc="cornflowerblue", alpha=0.5, lw=0),
     )
     return fig
-
-
-

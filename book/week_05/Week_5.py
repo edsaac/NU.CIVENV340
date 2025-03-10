@@ -27,7 +27,7 @@ def page_week_05(option: TOC):
 
     if option == "Open channel flow":
         url = "https://upload.wikimedia.org/wikipedia/commons/9/92/Japan_Kyoto_philosophers_walk_DSC00297.jpg"
-        st.image(url, use_column_width=True)
+        st.image(url, use_container_width=True)
         st.caption(f"Lake Biwa Canal. Source: [wikimedia.org]({url})")
 
         st.subheader("Open-channel flow classification")
@@ -212,7 +212,6 @@ def page_week_05(option: TOC):
                 )
 
     elif option == "Specific energy":
-
         st.subheader("Total and specific energy", anchor=False)
 
         st.markdown(
@@ -224,7 +223,9 @@ def page_week_05(option: TOC):
             """
         )
 
-        st.latex(R"H = \underbrace{z}_{\substack{ \textsf{Elevation} \\ \textsf{head} }} + \underbrace{ \dfrac{p}{\gamma} }_{ \substack{ \textsf{Pressure} \\ \textsf{head} }} + \underbrace{ \alpha\dfrac{V^2}{2g} }_{ \substack{\textsf{Kinetic} \\ \textsf{head}}}")
+        st.latex(
+            R"H = \underbrace{z}_{\substack{ \textsf{Elevation} \\ \textsf{head} }} + \underbrace{ \dfrac{p}{\gamma} }_{ \substack{ \textsf{Pressure} \\ \textsf{head} }} + \underbrace{ \alpha\dfrac{V^2}{2g} }_{ \substack{\textsf{Kinetic} \\ \textsf{head}}}"
+        )
 
         st.markdown(
             R"""
@@ -245,16 +246,15 @@ def page_week_05(option: TOC):
         )
 
         st.latex(R"E = y + \dfrac{V^2}{2g} = y + \dfrac{Q^2}{2gA^2}")
-         
+
         st.divider()
-        
+
         st.header("Specific energy curve", anchor=False)
 
         st.markdown(R"""
             For a given value of $E$, the discharge can go through either a supercritical depth or
             a subcritical depth. This pair of depths are known as **alternate depths**.            
-            """
-        )
+            """)
 
         cols = st.columns([2, 1], vertical_alignment="center")
 
@@ -264,9 +264,7 @@ def page_week_05(option: TOC):
 
             depth = np.geomspace(0.01, 10, 100)
             area = width * depth
-            specific_energy = depth + np.power(discharge, 2) / (
-                2 * 9.81 * np.power(area, 2)
-            )
+            specific_energy = depth + np.power(discharge, 2) / (2 * 9.81 * np.power(area, 2))
 
             critical_i = np.argmin(specific_energy)
 
@@ -388,11 +386,10 @@ def page_week_05(option: TOC):
 
             $$
                 -\dfrac{Q^2}{gA^3}\dfrac{dA}{dy} + 1 = 0
-            $$"""
-        )
+            $$""")
 
         st.info("Explain why $dA/dy = T$", icon=":material/person_raised_hand:")
-        
+
         st.markdown(R"""
             $$
                 1 - \dfrac{Q^2T}{gA^3} = 0
@@ -413,13 +410,11 @@ def page_week_05(option: TOC):
             $$
                 \underbrace{\dfrac{V}{\sqrt{g \, D_h}}}_{\substack{\textsf{Froude} \\ \textsf{number} \\ \mathsf{F_r} }} = 1
             $$
-            """
-        )
+            """)
 
     elif option == "Froude number":
-        
         st.header("Critical depth $y_c$", anchor=False)
-        
+
         st.markdown(
             R"""
             The depth that minimizes the specific energy, i.e., follows that
@@ -436,9 +431,10 @@ def page_week_05(option: TOC):
             """
         )
 
-        st.info("""
+        st.info(
+            """
             &nbsp; Check the next section on how to use `scipy.optimize.root` to calculate critical depth in any cross section""",
-            icon="👈"
+            icon="👈",
         )
 
         st.divider()
@@ -455,8 +451,7 @@ def page_week_05(option: TOC):
                         y > y_c \\ \mathsf{F_r} < 1.0
                     \end{align*}
                 $$
-                """
-            )
+                """)
 
         with cols[1]:  # Critical
             st.markdown(R"""
@@ -467,8 +462,7 @@ def page_week_05(option: TOC):
                         y = y_c \\ \mathsf{F_r} = 1.0
                     \end{align*}
                 $$
-                """
-            )
+                """)
 
         with cols[2]:  # Subcritical
             st.markdown(R"""
@@ -480,23 +474,20 @@ def page_week_05(option: TOC):
                     \end{align*}
 
                 $$
-                """
-            )
+                """)
 
         url = "https://www.youtube.com/watch?v=cRnIsqSTX7Q"
         st.video(url)
         st.caption(f"Source: [youtube.com/@emulenews]({url})")
 
-    
     elif option == "~Critical depth calculation":
         find_critical_depth()
-    
+
     else:
         st.error("You should not be here!")
 
 
 def draw_profiles(which: str):
-
     So = -1 / 10.0  # 1 + x*S0
     x0, x1, x2 = 1, 3, 8
 
@@ -575,9 +566,7 @@ def draw_profiles(which: str):
     ### Head components - Section 1
     for i, (x, sect) in enumerate(zip([x1, x2], [section1, section2]), start=1):
         ax.plot([x] * 2, [sect[-1], 4.5], ls="dotted", lw=1, c="gray")
-        ax.text(
-            x, 4.6, f"Section\n{i}", ha="center", fontdict=dict(size=8, color="gray")
-        )
+        ax.text(x, 4.6, f"Section\n{i}", ha="center", fontdict=dict(size=8, color="gray"))
         ax.plot([x] * 4, sect, marker="o", ms=4, lw=2, c="darkslategray", ls=":")
         ax.text(
             x + 0.05,
@@ -765,9 +754,7 @@ def draw_sections(shape: str):
         )
 
         # Bottom width
-        ax.plot(
-            [p.x + 0.5, p.x + width - 0.5], [p.y - 0.1, p.y - 0.1], marker="o", c="gray"
-        )
+        ax.plot([p.x + 0.5, p.x + width - 0.5], [p.y - 0.1, p.y - 0.1], marker="o", c="gray")
         ax.text(
             p.x + 0.5 * width,
             p.y - 0.15,
@@ -890,9 +877,7 @@ def draw_sections(shape: str):
 
         # Diameter
         ax.plot([p.x - 0.2, p.x - 0.2], [c.y - r, c.y + r], marker="o", c="gray")
-        ax.text(
-            p.x - 0.21, c.y, r"$d_0$", fontdict=dict(size=20, color="gray"), ha="right"
-        )
+        ax.text(p.x - 0.21, c.y, r"$d_0$", fontdict=dict(size=20, color="gray"), ha="right")
 
         # Depth
         ax.plot([p.x + 0.1, p.x + 0.1], [c.y - r, c.y + 0.42], marker="o", c="gray")
@@ -931,9 +916,7 @@ def draw_sections(shape: str):
             va="center",
         )
 
-        ax.add_patch(
-            Arc(c, 0.5 * r, 0.5 * r, theta1=270, theta2=30, ec="gray", lw=2, zorder=1)
-        )
+        ax.add_patch(Arc(c, 0.5 * r, 0.5 * r, theta1=270, theta2=30, ec="gray", lw=2, zorder=1))
 
     # Final touches
     # ax.legend(ncols=2, loc="upper right", bbox_to_anchor=(0.20, 0.95))
@@ -946,5 +929,3 @@ def draw_sections(shape: str):
     ax.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
 
     return fig
-
-

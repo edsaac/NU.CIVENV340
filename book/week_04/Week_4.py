@@ -32,7 +32,7 @@ TOC = Literal[
 
 def page_week_04(option: TOC):
     st.title(option.replace("~", ""))
-    
+
     if option == "System curve":
         st.subheader("System head curve", anchor=False)
 
@@ -157,14 +157,14 @@ def page_week_04(option: TOC):
             with st.expander("🚁 **Centrifugal pumps**"):
                 url = "https://www.lockewell.com/images/large/goulds/3656m_LRG.jpg"
                 st.caption(f"Source: [lockwell.com]({url})")
-                st.image(url, use_column_width=True)
+                st.image(url, use_container_width=True)
                 "*****"
 
                 url = "https://en.wikipedia.org/wiki/Centrifugal_pump#/media/File:Centrifugal_Pump.png"
                 st.caption("Source: [wikimedia.org]({url})")
                 st.image(
                     "https://upload.wikimedia.org/wikipedia/commons/4/4a/Centrifugal_Pump.png",
-                    use_column_width=True,
+                    use_container_width=True,
                 )
                 "*****"
 
@@ -175,7 +175,7 @@ def page_week_04(option: TOC):
             with st.expander("🦖 **Axial-flow (propeller) pumps**"):
                 url = "https://www.industrialchemicalpump.com/photo/pl23155791-single_stage_horizontal_axial_flow_pump_axially_split_impeller_centrifugal_pump.jpg"
                 st.caption(f"Source: [industrialchemicalpump.com]({url})")
-                st.image(url, use_column_width=True)
+                st.image(url, use_container_width=True)
 
         with cols[1]:
             st.subheader("Positive-displacement pumps")
@@ -221,14 +221,10 @@ def page_week_04(option: TOC):
                 a0 = st.slider("$a_0$", 0.0, 100.0, 25.0)
 
             with cols[1]:
-                a1 = st.slider(
-                    "$a_1$", -0.0200, -0.0010, -0.0054, 0.0001, format="%.4f"
-                )
+                a1 = st.slider("$a_1$", -0.0200, -0.0010, -0.0054, 0.0001, format="%.4f")
 
             with cols[2]:
-                a2 = st.slider(
-                    "$a_2$", -0.000200, -0.000010, -0.000086, -0.000001, format="%.6f"
-                )
+                a2 = st.slider("$a_2$", -0.000200, -0.000010, -0.000086, -0.000001, format="%.6f")
 
             discharge_manufacturer = np.linspace(100, 400, 100)
             head_pump_manufacturer = (
@@ -275,9 +271,7 @@ def page_week_04(option: TOC):
             h_pump_fig.add_vline(
                 x=260,
                 name="Rated capacity",
-                annotation=dict(
-                    text="Rated capacity", font_size=19, font_color="purple"
-                ),
+                annotation=dict(text="Rated capacity", font_size=19, font_color="purple"),
                 annotation_position="top",
                 line=dict(width=2, dash="dot", color="purple"),
             )
@@ -306,14 +300,10 @@ def page_week_04(option: TOC):
 
         with tabs[1]:  ## Efficiency vs Q plot
             efficiency_manufacturer = (
-                -0.0007 * np.power(discharge_manufacturer, 2)
-                + 0.3667 * discharge_manufacturer
-                + 15
+                -0.0007 * np.power(discharge_manufacturer, 2) + 0.3667 * discharge_manufacturer + 15
             ) / 100
 
-            st.markdown(
-                "🦾 **Efficiency:** ratio of the power output to the power input "
-            )
+            st.markdown("🦾 **Efficiency:** ratio of the power output to the power input ")
 
             efficiency_fig = go.Figure()
 
@@ -330,9 +320,7 @@ def page_week_04(option: TOC):
             efficiency_fig.add_vline(
                 x=260,
                 name="Optimal operation point",
-                annotation=dict(
-                    text="Optimal operation point", font_size=19, font_color="purple"
-                ),
+                annotation=dict(text="Optimal operation point", font_size=19, font_color="purple"),
                 annotation_position="top",
                 line=dict(width=2, dash="dot", color="purple"),
             )
@@ -422,9 +410,7 @@ def page_week_04(option: TOC):
             )
 
             npsh_manufacturer = (
-                2.93
-                - 0.017 * discharge_manufacturer
-                + 0.000037 * discharge_manufacturer**2
+                2.93 - 0.017 * discharge_manufacturer + 0.000037 * discharge_manufacturer**2
             )
 
             npsh_fig = go.Figure()
@@ -479,7 +465,7 @@ def page_week_04(option: TOC):
 
         st.image(
             "https://www.101diagrams.com/wp-content/uploads/2017/09/phase-diagram-of-water-image.jpg",
-            use_column_width=True,
+            use_container_width=True,
         )
 
         st.divider()
@@ -572,9 +558,7 @@ def page_week_04(option: TOC):
                 """
             )
 
-        st.latex(
-            R"\textsf{To avoid cavitation:} \quad \mathtt{NPSH_a} > \mathtt{NPSH_r}"
-        )
+        st.latex(R"\textsf{To avoid cavitation:} \quad \mathtt{NPSH_a} > \mathtt{NPSH_r}")
         st.divider()
         st.subheader("Euler number")
         st.latex(
@@ -634,8 +618,7 @@ def page_week_04(option: TOC):
             url = "https://www.xylem.com/siteassets/brand/goulds-water-technology/product-images/45hb-70hb-high-pressure-centrifugal-booster-pumps.jpg"
             multistage_pump_photo = get_image_as_bytes(url)
             st.caption(f"Source: [xylem.com]({url})")
-            st.image(multistage_pump_photo, use_column_width=True)
-
+            st.image(multistage_pump_photo, use_container_width=True)
 
         with cols[1]:
             st.markdown(
@@ -645,18 +628,17 @@ def page_week_04(option: TOC):
             )
 
     elif option == "Operation point":
-
         cols = st.columns(2)
 
         with cols[0]:
             with st.expander("⚙️ **Pump head**"):
-                st.latex(R"H_\textsf{Pump}(Q) = \substack{\textsf{Check pump catalogue} \\ \textsf{for characteristic curve!}}")
+                st.latex(
+                    R"H_\textsf{Pump}(Q) = \substack{\textsf{Check pump catalogue} \\ \textsf{for characteristic curve!}}"
+                )
 
                 discharge_manufacturer = np.arange(100, 400, 10)
                 head_pump_manufacturer = (
-                    25.0
-                    - 0.0054 * discharge_manufacturer
-                    - 0.000086 * discharge_manufacturer**2
+                    25.0 - 0.0054 * discharge_manufacturer - 0.000086 * discharge_manufacturer**2
                 )
 
                 pump_df = pd.DataFrame(
@@ -671,17 +653,13 @@ def page_week_04(option: TOC):
                 st.latex(R"H_\textsf{System}(Q) = H_\textsf{Static head} + KQ^m")
 
                 discharge = np.arange(0, 500, 10)
-                static_head = st.slider(
-                    r"$H_\textsf{Static head}$", 0.0, 22.0, 10.0, step=0.2
-                )
+                static_head = st.slider(r"$H_\textsf{Static head}$", 0.0, 22.0, 10.0, step=0.2)
                 head_loss_K = st.slider(
                     r"$K$", 0.1e-4, 10e-4, 1e-4, 1e-5, key="head_loss", format="%.2e"
                 )
                 system_head = head_loss_K * discharge**2 + static_head
 
-                system_df = pd.DataFrame(
-                    {"Discharge (LPS)": discharge, "Head (m)": system_head}
-                )
+                system_df = pd.DataFrame({"Discharge (LPS)": discharge, "Head (m)": system_head})
 
         all_df = pd.merge(
             pump_df,
@@ -732,9 +710,7 @@ def page_week_04(option: TOC):
             height=600,
             margin=dict(t=40),
             # title_text = '''System curve''',
-            yaxis=dict(
-                title="Head pump [m]", range=[0, 30], showspikes=True, **axis_format
-            ),
+            yaxis=dict(title="Head pump [m]", range=[0, 30], showspikes=True, **axis_format),
             xaxis=dict(
                 title="Discharge [L/min]",
                 range=[0, 500],
@@ -803,7 +779,7 @@ def pump(ax, p: Point, radius: float):
 def realistic_pump(ax, p: Point, size: float):
     pump_img_url = "https://www.pump.co.uk/images/cm50-range-of-end-suction-centrifugal-pumps-p5471-2913_medium.jpg"
     img = get_image_as_PIL(pump_img_url)
-    
+
     imagebox = OffsetImage(img, zoom=size, cmap="bone_r")
 
     ax.add_artist(AnnotationBbox(imagebox, p, frameon=False, zorder=1))
@@ -856,9 +832,7 @@ def suction_pipeline_cavitate(where: str) -> plt.figure:
 
     # Atmospheric pressure
     ax.axhline(tank_xy.y + 2.0, lw=1, color="gray", ls=":")
-    ax.text(
-        -2, tank_xy.y + 2.2, r"$P_{\rm atm}/\gamma$", ha="center", fontdict=dict(size=8)
-    )
+    ax.text(-2, tank_xy.y + 2.2, r"$P_{\rm atm}/\gamma$", ha="center", fontdict=dict(size=8))
 
     # Vapor pressure
     ax.axhline(-4, lw=1, color="gray", ls=":")
@@ -888,17 +862,13 @@ def pump_and_pipeline():
     tank(ax, Point(0, 0), 2, 1.1)
     ax.plot([-0.8, 3], [1.1, 1.1], lw=1, c="gray", ls=":")
     ax.plot([-0.5, -0.5], [-1, 1.1], marker="x", lw=1, c="gray", ls=":")
-    ax.text(
-        -0.6, 0, r"$H_A$", ha="right", va="center", fontdict=dict(color="gray", size=12)
-    )
+    ax.text(-0.6, 0, r"$H_A$", ha="right", va="center", fontdict=dict(color="gray", size=12))
 
     # Tank B
     tank(ax, Point(7.5, 3.5), 2, 1.1)
     ax.plot([2.0, 11], [4.6, 4.6], lw=1, c="gray", ls=":")
     ax.plot([10.4, 10.4], [-1, 4.6], marker="x", lw=1, c="gray", ls=":")
-    ax.text(
-        10.5, 2, r"$H_B$", ha="left", va="center", fontdict=dict(color="gray", size=12)
-    )
+    ax.text(10.5, 2, r"$H_B$", ha="left", va="center", fontdict=dict(color="gray", size=12))
 
     # Energy difference
     ax.plot([2.5, 2.5], [1.1, 4.6], marker="x", lw=2, c="darkorange", ls=":")
@@ -926,9 +896,7 @@ def pump_and_pipeline():
     ax.plot([2.5, 7.5], [5.6, 4.6], lw=2, c="k", ls=":", label="HGL")
 
     # Draw the pipe
-    ax.plot(
-        [2.1, 3.0, 6.5, 7.45], [0.1, 0.1, 4, 4], lw=4, color="gray", alpha=0.7, zorder=0
-    )
+    ax.plot([2.1, 3.0, 6.5, 7.45], [0.1, 0.1, 4, 4], lw=4, color="gray", alpha=0.7, zorder=0)
 
     # Draw the pump
     pump(ax, Point(2.5, 0.1), 0.3)
@@ -948,4 +916,3 @@ def pump_and_pipeline():
     ax.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
 
     return fig
-

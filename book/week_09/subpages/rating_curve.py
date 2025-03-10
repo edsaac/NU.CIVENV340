@@ -12,7 +12,6 @@ from scipy.optimize import curve_fit
 
 
 def rating_curve():
-    
     img_url = "./book/assets/img/RatingCurve_02215500.png"
     source = "https://waterwatch.usgs.gov/"
 
@@ -23,13 +22,13 @@ def rating_curve():
         """,
         unsafe_allow_html=True,
     )
-    st.image(img_url, use_column_width=True)
+    st.image(img_url, use_container_width=True)
 
     st.divider()
     st.header("About the site")
 
     cols = st.columns([1, 2], vertical_alignment="center")
-    
+
     # Specify the USGS site number/code
     site_id = cols[0].selectbox("Site number ID", ["02215500"])
 
@@ -49,7 +48,7 @@ def rating_curve():
         """,
         unsafe_allow_html=True,
     )
-    st.image(img_url, use_column_width=True)
+    st.image(img_url, use_container_width=True)
 
     st.markdown(
         """
@@ -143,9 +142,7 @@ def rating_curve():
     fig, ax = plt.subplots()
     ax.grid(True, which="both", axis="both", zorder=1)
     ax.plot(Q, y, c="gray", lw=3, label="USGS Rating curve", zorder=2)
-    ax.scatter(
-        Q_field, y_field, label="Field measurements", c="k", marker="x", zorder=5
-    )
+    ax.scatter(Q_field, y_field, label="Field measurements", c="k", marker="x", zorder=5)
     ax.set_xlabel("Discharge (ft³/s)")
     ax.set_ylim(-5, 30)
     ax.set_ylabel("Gage height (ft)")
@@ -192,9 +189,7 @@ def rating_curve():
 
     ax.plot(Q, y, c="gray", lw=2, label="USGS Rating curve", zorder=2)
     ax.plot(Q_calc, y_calc, lw=2, c="cornflowerblue", label="Fitted curve", zorder=4)
-    ax.scatter(
-        Q_field, y_field, label="Field measurements", c="k", marker="x", zorder=5
-    )
+    ax.scatter(Q_field, y_field, label="Field measurements", c="k", marker="x", zorder=5)
 
     ax.set_xlabel("Discharge (ft³/s)")
     ax.set_ylim(-5, 30)
@@ -260,7 +255,6 @@ def rating_curve():
     R2 = 1.0 - np.sum(residual_sum_squares) / np.sum(variance)
 
     st.metric("$R^2$", f"{R2:.3}")
-
 
 
 if __name__ == "__main__":

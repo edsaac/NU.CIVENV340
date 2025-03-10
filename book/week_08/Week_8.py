@@ -1,13 +1,14 @@
-import streamlit as st
-import requests
+from typing import Literal
 from urllib.parse import urlparse
 
-import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator
+import requests
 import pandas as pd
-
+import streamlit as st
+import matplotlib.pyplot as plt
 import plotly.graph_objects as go
-from typing import Literal
+
+from matplotlib.ticker import MultipleLocator
+from dataretrieval.nwis import get_dv
 
 from .subpages import oroville_dam, watershed_delimitation
 from ..common import axis_format
@@ -22,7 +23,7 @@ TOC = Literal[
     "Design storm",
     "IDF curve",
     "~Oroville Dam",
-    "~Watershed delimitation"
+    "~Watershed delimitation",
 ]
 
 
@@ -31,9 +32,7 @@ def page_week_08(option: TOC):
 
     if option == "Water cycle":
         img_url = "./book/assets/img/USGS_WaterCycle_English_ONLINE_20230302.png"
-        source = (
-            "https://labs.waterdata.usgs.gov/visualizations/water-cycle/index.html#/"
-        )
+        source = "https://labs.waterdata.usgs.gov/visualizations/water-cycle/index.html#/"
         st.caption(
             rf"""
             **The Water Cycle** <br>
@@ -41,7 +40,7 @@ def page_week_08(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
         st.divider()
         img_url = "https://agupubs.onlinelibrary.wiley.com/cms/asset/23f15005-7268-47f1-bda1-4054ff85f657/eft21123-fig-0001-m.jpg"
@@ -54,14 +53,14 @@ def page_week_08(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
     elif option == "Drainage basin":
         st.header("Watersheds")
 
         img_url = "https://upload.wikimedia.org/wikipedia/commons/0/02/Amazonriverbasin_basemap.png"
         source = "https://commons.wikimedia.org/wiki/File:Amazonriverbasin_basemap.png"
-        
+
         st.caption(
             rf"""
             **Amazon river basin** <br>
@@ -69,11 +68,11 @@ def page_week_08(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
         with st.expander(
             "Check **Hydrosheds**, global hydrography derived from spaceborne elevation data",
-            expanded=True
+            expanded=True,
         ):
             img_url = "https://uploads-ssl.webflow.com/602ebbdd5021f30e81efbad9/62536860d9d1c6fe627d42ce_HydroSHEDS_zoom-p-1080.jpeg"
             source = "https://www.hydrosheds.org/products/hydrosheds"
@@ -84,7 +83,7 @@ def page_week_08(option: TOC):
                 """,
                 unsafe_allow_html=True,
             )
-            st.image(img_url, use_column_width=True)
+            st.image(img_url, use_container_width=True)
 
             st.divider()
             _, col, _ = st.columns([1, 10, 1])
@@ -105,7 +104,9 @@ def page_week_08(option: TOC):
 
         st.divider()
         img_url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/WBD_Base_HUStructure_small.png"
-        source = "https://www.usgs.gov/media/images/watershed-boundary-dataset-structure-visualization"
+        source = (
+            "https://www.usgs.gov/media/images/watershed-boundary-dataset-structure-visualization"
+        )
         st.caption(
             rf"""
             **Watershed Boundary Structure** <br>
@@ -113,7 +114,7 @@ def page_week_08(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
         img_url = "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/WBD_SubRegions_24x18.png"
         source = "https://www.usgs.gov/media/images/watershed-boundary-dataset-subregions-map"
@@ -125,7 +126,7 @@ def page_week_08(option: TOC):
             """,
             unsafe_allow_html=True,
         )
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
         st.divider()
         st.header("Sewage systems")
@@ -140,27 +141,27 @@ def page_week_08(option: TOC):
             unsafe_allow_html=True,
         )
 
-        st.image(img_url, use_column_width=True)
+        st.image(img_url, use_container_width=True)
 
         st.divider()
         st.markdown("#### Combined v. separate sewer systems")
-        
+
         cols = st.columns(2)
-        
+
         with cols[0]:
             img_url = "https://i0.wp.com/civilengineerspk.com/wp-content/uploads/2014/03/002.jpg"
             source = "https://www.civilengineerspk.com/design-of-sewer-system/"
-            
+
             st.markdown("**Dry weather**")
             st.caption(f":red[Dry weather] - Source: [{urlparse(source).hostname}]({source})")
-            st.image(img_url, use_column_width=True)
+            st.image(img_url, use_container_width=True)
 
         with cols[1]:
             img_url = "https://i0.wp.com/civilengineerspk.com/wp-content/uploads/2014/03/001.jpg"
             source = "https://www.civilengineerspk.com/design-of-sewer-system/"
             st.markdown("**Wet weather**")
             st.caption(f":blue[Wet weather] - Source: [{urlparse(source).hostname}]({source})")
-            st.image(img_url, use_column_width=True)
+            st.image(img_url, use_container_width=True)
 
     elif option == "Hyetograph":
         st.header("Hyetograph ↦ plot of rainfall intensity over time")
@@ -173,8 +174,8 @@ def page_week_08(option: TOC):
             """
         )
 
-        rain = get_hydrologic_data("Precipitation")
-        st.dataframe(rain)
+        # rain = get_hydrologic_data()
+        # st.dataframe(rain)
         # rain["per-hour"] = rain["value"].rolling(12, center=False).sum()
 
         # figs = dict()
@@ -217,7 +218,7 @@ def page_week_08(option: TOC):
         #         """,
         #         unsafe_allow_html=True,
         #     )
-        #     st.image(img_url, use_column_width=True)
+        #     st.image(img_url, use_container_width=True)
 
         r"""
         ******
@@ -227,8 +228,12 @@ def page_week_08(option: TOC):
         cols = st.columns(4)
 
         with cols[0]:
-            img_url = "https://upload.wikimedia.org/wikipedia/commons/4/42/Exterior_tipping_bucket.JPG"
-            source = "https://en.wikipedia.org/wiki/Rain_gauge#/media/File:Exterior_tipping_bucket.JPG"
+            img_url = (
+                "https://upload.wikimedia.org/wikipedia/commons/4/42/Exterior_tipping_bucket.JPG"
+            )
+            source = (
+                "https://en.wikipedia.org/wiki/Rain_gauge#/media/File:Exterior_tipping_bucket.JPG"
+            )
             st.caption(
                 rf"""
                 **Exterior** <br>
@@ -236,11 +241,15 @@ def page_week_08(option: TOC):
                 """,
                 unsafe_allow_html=True,
             )
-            st.image(img_url, use_column_width=True)
+            st.image(img_url, use_container_width=True)
 
         with cols[1]:
-            img_url = "https://upload.wikimedia.org/wikipedia/commons/9/90/Interior_tipping_bucket.JPG"
-            source = "https://en.wikipedia.org/wiki/Rain_gauge#/media/File:Interior_tipping_bucket.JPG"
+            img_url = (
+                "https://upload.wikimedia.org/wikipedia/commons/9/90/Interior_tipping_bucket.JPG"
+            )
+            source = (
+                "https://en.wikipedia.org/wiki/Rain_gauge#/media/File:Interior_tipping_bucket.JPG"
+            )
             st.caption(
                 rf"""
                 **Interior** <br>
@@ -248,11 +257,15 @@ def page_week_08(option: TOC):
                 """,
                 unsafe_allow_html=True,
             )
-            st.image(img_url, use_column_width=True)
+            st.image(img_url, use_container_width=True)
 
         with cols[2]:
-            img_url = "https://upload.wikimedia.org/wikipedia/commons/6/67/Tipping_Bucket_Recorder.JPG"
-            source = "https://en.wikipedia.org/wiki/Rain_gauge#/media/File:Tipping_Bucket_Recorder.JPG"
+            img_url = (
+                "https://upload.wikimedia.org/wikipedia/commons/6/67/Tipping_Bucket_Recorder.JPG"
+            )
+            source = (
+                "https://en.wikipedia.org/wiki/Rain_gauge#/media/File:Tipping_Bucket_Recorder.JPG"
+            )
             st.caption(
                 rf"""
                 **Recording** <br>
@@ -260,12 +273,10 @@ def page_week_08(option: TOC):
                 """,
                 unsafe_allow_html=True,
             )
-            st.image(img_url, use_column_width=True)
+            st.image(img_url, use_container_width=True)
 
         with cols[3]:
-            img_url = (
-                "https://upload.wikimedia.org/wikipedia/commons/f/fd/Close_up_chart.JPG"
-            )
+            img_url = "https://upload.wikimedia.org/wikipedia/commons/f/fd/Close_up_chart.JPG"
             source = "https://en.wikipedia.org/wiki/Rain_gauge#/media/File:Close_up_chart.JPG"
             st.caption(
                 rf"""
@@ -274,7 +285,7 @@ def page_week_08(option: TOC):
                 """,
                 unsafe_allow_html=True,
             )
-            st.image(img_url, use_column_width=True)
+            st.image(img_url, use_container_width=True)
 
         "******"
 
@@ -283,7 +294,7 @@ def page_week_08(option: TOC):
             "&nbsp;"
             "&nbsp;"
 
-            year = st.select_slider("Year", range(2000, 2023, 1), 2022)
+            year = st.select_slider("Year", range(2000, 2024, 1), 2022)
             month = st.select_slider("Month", range(1, 13, 1), 12)
             which = st.selectbox("Map", ["Monthly total", "Deviation from average"])
         with cols[1]:
@@ -310,16 +321,15 @@ def page_week_08(option: TOC):
                     unsafe_allow_html=True,
                 )
 
-            st.image(img_url, use_column_width=True)
+            st.image(img_url, use_container_width=True)
 
     elif option == "Runoff":
         r"""
         ## Hydrograph ↦ plot of discharge over time
         """
 
-        flow = get_hydrologic_data("Streamflow")
-
-        fig = go.Figure([go.Scatter(x=flow["dateTime"], y=flow["value"])])
+        flow = get_hydrologic_data()
+        fig = go.Figure([go.Scatter(x=flow.index, y=flow["00065_Mean"])])
 
         fig.update_layout(
             title_text="""Data from a USGS station. <br>Source <a href="https://waterdata.usgs.gov/monitoring-location/02223500/#parameterCode=00065&period=P30D">Waterdata - USGS</a>""",
@@ -346,7 +356,7 @@ def page_week_08(option: TOC):
                 """,
                 unsafe_allow_html=True,
             )
-            st.image(img_url, use_column_width=True)
+            st.image(img_url, use_container_width=True)
 
         with cols[1]:
             img_url = "https://upload.wikimedia.org/wikipedia/commons/9/95/Runoff_of_soil_%26_fertilizer.jpg"
@@ -359,7 +369,7 @@ def page_week_08(option: TOC):
                 """,
                 unsafe_allow_html=True,
             )
-            st.image(img_url, use_column_width=True)
+            st.image(img_url, use_container_width=True)
 
     elif option == "Design storm":
         st.markdown(
@@ -473,7 +483,7 @@ def page_week_08(option: TOC):
 
         cols = st.columns([3, 1])
         with cols[0]:
-            st.image("./book/assets/img/IDF curve Ohare IL.png", use_column_width=True)
+            st.image("./book/assets/img/IDF curve Ohare IL.png", use_container_width=True)
         with cols[1]:
             source = "https://hdsc.nws.noaa.gov/hdsc/pfds/pfds_map_cont.html"
             st.caption(
@@ -492,17 +502,22 @@ def page_week_08(option: TOC):
         # with cols[0]:
         #     st.map({"LAT":[42.0660], "LON":[-87.7332]}, zoom=4, use_container_width=True)
         # with cols[1]:
-        #     st.image("https://hdsc.nws.noaa.gov/hdsc/pfds/plots/42.0660_-87.7332_ams_IDF_in_ari.png", use_column_width=True)
+        #     st.image("https://hdsc.nws.noaa.gov/hdsc/pfds/plots/42.0660_-87.7332_ams_IDF_in_ari.png", use_container_width=True)
 
         url = "https://hdsc.nws.noaa.gov/hdsc/pfds/pfds_map_cont.html"
-        st.link_button("Go to NOAA Precipitation Frequency Data Server", url, use_container_width=True, type="primary")
+        st.link_button(
+            "Go to NOAA Precipitation Frequency Data Server",
+            url,
+            use_container_width=True,
+            type="primary",
+        )
 
     elif option == "~Oroville Dam":
         oroville_dam()
 
     elif option == "~Watershed delimitation":
         watershed_delimitation()
-    
+
     else:
         st.error("You should not be here!")
         r" ### 🚧 Under construction 🚧"
@@ -518,27 +533,8 @@ def open_page(url):
 
 
 @st.cache_data
-def get_hydrologic_data(variable):
-    if variable == "Precipitation":
-        key = 0
-    elif variable == "Streamflow":
-        key = 1
-    elif variable == "Stage":
-        key = 2
-    else:
-        st.error("No variable was specified")
-
-    url = "https://waterservices.usgs.gov/nwis/iv/?sites=02223500&startDT=2023-03-13T18:16:05.289-04:00&endDT=2023-04-12T18:16:05.289-04:00&siteStatus=all&format=json"
-    r = requests.get(url, stream=True)
-    data = r.json()
-    df = pd.DataFrame(data["value"]["timeSeries"][key]["values"][-1]["value"])
-    # st.json(data)
-    st.dataframe(df)
-    df["dateTime"] = pd.to_datetime(
-        df["dateTime"], format=r"%Y-%m-%d %H:%M:%S", utc=True
-    )
-    df["value"] = pd.to_numeric(df["value"])
-
+def get_hydrologic_data(dummy: str = "dummy"):
+    df, _ = get_dv(sites=["02223500"], start="2023-03-13", end="2023-04-12")
     return df
 
 
@@ -563,7 +559,7 @@ def get_hydrologic_data(variable):
 #             Source: [{urlparse(source).hostname}]({source})
 #             """, unsafe_allow_html=True
 #         )
-#         st.image(img_url, use_column_width=True)
+#         st.image(img_url, use_container_width=True)
 
 # elif option == "Rainfall-runoff models":
 #     r"""
@@ -586,4 +582,4 @@ def get_hydrologic_data(variable):
 #             Source: [{urlparse(source).hostname}]({source})
 #             """, unsafe_allow_html=True
 #         )
-#         st.image(img_url, use_column_width=True)
+#         st.image(img_url, use_container_width=True)
