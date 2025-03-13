@@ -1,6 +1,6 @@
 pip
 streamlit
-numpy==1.26.4
+numpy
 pandas
 scipy
 sympy
@@ -15,7 +15,7 @@ folium
 streamlit-folium
 gravis
 dataretrieval
-shapely==2.0.2
+shapely
 rasterio
 cartopy
 pysheds
